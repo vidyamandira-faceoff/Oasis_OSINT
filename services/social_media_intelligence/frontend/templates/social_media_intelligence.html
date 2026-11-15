@@ -1171,6 +1171,442 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 14px rgba(10, 102, 194, 0.12);
   }
+  /* Enhanced LinkedIn Workforce Layout & Theme Support */
+  .li-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .li-filter-pill {
+    padding: 5px 12px;
+    font-size: 11.5px;
+    font-weight: 700;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--border-soft);
+    background: var(--bg-surface);
+    color: var(--slate-600);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .li-filter-pill:hover {
+    border-color: #0a66c2;
+    color: #0a66c2;
+    background: rgba(10, 102, 194, 0.05);
+  }
+  .li-filter-pill.active {
+    background: #0a66c2;
+    color: #ffffff;
+    border-color: #0a66c2;
+    box-shadow: 0 2px 8px rgba(10, 102, 194, 0.25);
+  }
+  .li-filter-pill .pill-count {
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.08);
+  }
+  .li-filter-pill.active .pill-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+  .li-view-switch {
+    display: inline-flex;
+    background: var(--bg-card-subtle);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-xs);
+    padding: 2px;
+  }
+  .li-view-btn {
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+    border: none;
+    background: none;
+    color: var(--slate-500);
+    cursor: pointer;
+    border-radius: calc(var(--radius-xs) - 2px);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+  }
+  .li-view-btn.active {
+    background: var(--bg-surface);
+    color: var(--slate-900);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .li-role-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+  .role-tag-leadership {
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  .role-tag-tech {
+    background: rgba(14, 165, 233, 0.12);
+    color: #0284c7;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+  }
+  .role-tag-product {
+    background: rgba(139, 92, 246, 0.12);
+    color: #7c3aed;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+  }
+  .role-tag-ops {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+  .role-tag-standard {
+    background: rgba(100, 116, 139, 0.1);
+    color: var(--slate-600);
+    border: 1px solid var(--border-soft);
+  }
+  .li-forensic-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .li-forensic-table th {
+    background: var(--bg-card-subtle);
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--slate-600);
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-soft);
+    text-align: left;
+  }
+  .li-forensic-table td {
+    padding: 12px 14px;
+    font-size: 12.5px;
+    color: var(--slate-800);
+    border-bottom: 1px solid var(--border-soft);
+    vertical-align: middle;
+  }
+  .li-forensic-table tr:last-child td {
+    border-bottom: none;
+  }
+  .li-forensic-table tr:hover td {
+    background: rgba(10, 102, 194, 0.03);
+  }
+  body.dark-mode .li-filter-pill,
+  html[data-theme="dark"] .li-filter-pill {
+    background: #111827;
+    border-color: #1e293b;
+    color: #94a3b8;
+  }
+  body.dark-mode .li-filter-pill:hover,
+  html[data-theme="dark"] .li-filter-pill:hover {
+    background: #162032;
+    border-color: #0a66c2;
+    color: #38bdf8;
+  }
+  body.dark-mode .li-filter-pill.active,
+  html[data-theme="dark"] .li-filter-pill.active {
+    background: #0a66c2;
+    color: #ffffff;
+    border-color: #0a66c2;
+  }
+  body.dark-mode .li-view-switch,
+  html[data-theme="dark"] .li-view-switch {
+    background: #0f172a;
+    border-color: #1e293b;
+  }
+  body.dark-mode .li-view-btn.active,
+  html[data-theme="dark"] .li-view-btn.active {
+    background: #1e293b;
+    color: #ffffff;
+  }
+  body.dark-mode .li-person-card,
+  html[data-theme="dark"] .li-person-card {
+    background: #111827;
+    border-color: #1e293b;
+  }
+  body.dark-mode .li-person-card:hover,
+  html[data-theme="dark"] .li-person-card:hover {
+    border-color: #0a66c2;
+    box-shadow: 0 4px 14px rgba(10, 102, 194, 0.25);
+  }
+  body.dark-mode .li-forensic-table,
+  html[data-theme="dark"] .li-forensic-table {
+    background: #111827;
+    border-color: #1e293b;
+  }
+  body.dark-mode .li-forensic-table th,
+  html[data-theme="dark"] .li-forensic-table th {
+    background: #162032;
+    border-color: #1e293b;
+    color: #94a3b8;
+  }
+  body.dark-mode .li-forensic-table td,
+  html[data-theme="dark"] .li-forensic-table td {
+    border-color: #1e293b;
+    color: #cbd5e1;
+  }
+  body.dark-mode .li-forensic-table tr:hover td,
+  html[data-theme="dark"] .li-forensic-table tr:hover td {
+    background: #162032;
+  }
+  /* Unified Action & Export Buttons */
+  .li-btn-action,
+  .oasis-export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-xs, 6px);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none !important;
+    border: 1px solid var(--border-soft, #cbd5e1);
+    background: var(--bg-surface, #ffffff);
+    color: var(--slate-700, #334155) !important;
+    cursor: pointer;
+    line-height: 1.2;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  .li-btn-action:hover,
+  .oasis-export-btn:hover {
+    background: var(--bg-card-subtle, #f8fafc);
+    color: #0a66c2 !important;
+    border-color: #0a66c2;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(10, 102, 194, 0.18);
+    text-decoration: none !important;
+  }
+  .li-btn-action.btn-primary-action,
+  .oasis-export-btn.btn-primary-action,
+  .li-btn-action.li-btn-primary,
+  .oasis-export-btn.li-btn-primary {
+    background: rgba(10, 102, 194, 0.08);
+    color: #0a66c2 !important;
+    border-color: rgba(10, 102, 194, 0.35);
+  }
+  .li-btn-action.btn-primary-action:hover,
+  .oasis-export-btn.btn-primary-action:hover,
+  .li-btn-action.li-btn-primary:hover,
+  .oasis-export-btn.li-btn-primary:hover {
+    background: #0a66c2;
+    color: #ffffff !important;
+    border-color: #0a66c2;
+  }
+
+  /* Dark Theme Overrides for Action & Export Buttons */
+  body.dark-mode .li-btn-action,
+  html[data-theme="dark"] .li-btn-action,
+  body.dark-mode .oasis-export-btn,
+  html[data-theme="dark"] .oasis-export-btn {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  }
+  body.dark-mode .li-btn-action:hover,
+  html[data-theme="dark"] .li-btn-action:hover,
+  body.dark-mode .oasis-export-btn:hover,
+  html[data-theme="dark"] .oasis-export-btn:hover {
+    background: #334155 !important;
+    color: #38bdf8 !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 3px 10px rgba(56, 189, 248, 0.25) !important;
+  }
+  body.dark-mode .li-btn-action.btn-primary-action,
+  html[data-theme="dark"] .li-btn-action.btn-primary-action,
+  body.dark-mode .oasis-export-btn.btn-primary-action,
+  html[data-theme="dark"] .oasis-export-btn.btn-primary-action,
+  body.dark-mode .li-btn-action.li-btn-primary,
+  html[data-theme="dark"] .li-btn-action.li-btn-primary,
+  body.dark-mode .oasis-export-btn.li-btn-primary,
+  html[data-theme="dark"] .oasis-export-btn.li-btn-primary {
+    background: rgba(10, 102, 194, 0.28) !important;
+    color: #38bdf8 !important;
+    border-color: rgba(56, 189, 248, 0.45) !important;
+  }
+  body.dark-mode .li-btn-action.btn-primary-action:hover,
+  html[data-theme="dark"] .li-btn-action.btn-primary-action:hover,
+  body.dark-mode .oasis-export-btn.btn-primary-action:hover,
+  html[data-theme="dark"] .oasis-export-btn.btn-primary-action:hover,
+  body.dark-mode .li-btn-action.li-btn-primary:hover,
+  html[data-theme="dark"] .li-btn-action.li-btn-primary:hover,
+  body.dark-mode .oasis-export-btn.li-btn-primary:hover,
+  html[data-theme="dark"] .oasis-export-btn.li-btn-primary:hover {
+    background: #0a66c2 !important;
+    color: #ffffff !important;
+    border-color: #0a66c2 !important;
+  }
+
+  /* Text Field & Dropdown Dark / Light Theme Support */
+  .li-search-input {
+    width: 100%;
+    padding: 8px 12px 8px 34px;
+    font-size: 12.5px;
+    border-radius: var(--radius-xs, 4px);
+    border: 1px solid var(--border-soft, #cbd5e1);
+    background: var(--bg-card-subtle, #f8fafc);
+    color: var(--slate-900, #0f172a);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .li-search-input:focus {
+    border-color: #0a66c2;
+    background: var(--bg-surface, #ffffff);
+    box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.2);
+  }
+
+  #li-company-input:focus,
+  #li-role-select:focus,
+  #li-count-select:focus,
+  #li-domain-input:focus,
+  #li-pattern-select:focus,
+  #li-engine-select:focus {
+    border-color: #0a66c2 !important;
+    box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.25) !important;
+  }
+
+  /* Dark Mode Input Fields, Selects & Options */
+  body.dark-mode .ig-input-field,
+  html[data-theme="dark"] .ig-input-field,
+  body.dark-mode .ig-count-select,
+  html[data-theme="dark"] .ig-count-select,
+  body.dark-mode .li-search-input,
+  html[data-theme="dark"] .li-search-input,
+  body.dark-mode #li-company-input,
+  html[data-theme="dark"] #li-company-input,
+  body.dark-mode #li-role-select,
+  html[data-theme="dark"] #li-role-select,
+  body.dark-mode #li-count-select,
+  html[data-theme="dark"] #li-count-select,
+  body.dark-mode #li-domain-input,
+  html[data-theme="dark"] #li-domain-input,
+  body.dark-mode #li-pattern-select,
+  html[data-theme="dark"] #li-pattern-select,
+  body.dark-mode #li-engine-select,
+  html[data-theme="dark"] #li-engine-select {
+    background-color: #162032 !important;
+    border-color: #1f2c42 !important;
+    color: #f8fafc !important;
+  }
+  body.dark-mode .ig-input-field:focus,
+  html[data-theme="dark"] .ig-input-field:focus,
+  body.dark-mode .ig-count-select:focus,
+  html[data-theme="dark"] .ig-count-select:focus,
+  body.dark-mode .li-search-input:focus,
+  html[data-theme="dark"] .li-search-input:focus,
+  body.dark-mode #li-company-input:focus,
+  html[data-theme="dark"] #li-company-input:focus {
+    background-color: #1a273b !important;
+    border-color: #0a66c2 !important;
+    box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.35) !important;
+  }
+  body.dark-mode .ig-input-field::placeholder,
+  html[data-theme="dark"] .ig-input-field::placeholder,
+  body.dark-mode .li-search-input::placeholder,
+  html[data-theme="dark"] .li-search-input::placeholder,
+  body.dark-mode #li-company-input::placeholder,
+  html[data-theme="dark"] #li-company-input::placeholder {
+    color: #64748b !important;
+  }
+  body.dark-mode select.ig-input-field option,
+  html[data-theme="dark"] select.ig-input-field option,
+  body.dark-mode select.ig-count-select option,
+  html[data-theme="dark"] select.ig-count-select option,
+  body.dark-mode select#li-role-select option,
+  html[data-theme="dark"] select#li-role-select option,
+  body.dark-mode select#li-count-select option,
+  html[data-theme="dark"] select#li-count-select option {
+    background-color: #162032 !important;
+    color: #f8fafc !important;
+  }
+
+  /* Subordinate Components Dark Mode */
+  .li-stat-card {
+    background: var(--bg-card-subtle, #fbfcfe);
+    padding: 10px 12px;
+    border-radius: var(--radius-xs, 4px);
+    border: 1px solid var(--border-soft, #e2e8f0);
+  }
+  body.dark-mode .li-stat-card,
+  html[data-theme="dark"] .li-stat-card {
+    background: #111827 !important;
+    border-color: #1e293b !important;
+  }
+  .li-control-toolbar {
+    background: var(--bg-surface, #ffffff);
+    border: 1px solid var(--border-soft, #e2e8f0);
+    border-radius: var(--radius-sm, 8px);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  body.dark-mode .li-control-toolbar,
+  html[data-theme="dark"] .li-control-toolbar {
+    background: #111827 !important;
+    border-color: #1e293b !important;
+  }
+  .li-email-box {
+    background: var(--bg-card-subtle, #fbfcfe);
+    border: 1px solid var(--border-soft, #e2e8f0);
+    border-radius: var(--radius-xs, 4px);
+    padding: 8px 10px;
+    margin-top: 10px;
+    margin-bottom: 12px;
+  }
+  body.dark-mode .li-email-box,
+  html[data-theme="dark"] .li-email-box {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+  }
+  .li-table-email-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--slate-800);
+    background: var(--bg-card-subtle);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-soft);
+  }
+  body.dark-mode .li-table-email-pill,
+  html[data-theme="dark"] .li-table-email-pill {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    color: #cbd5e1 !important;
+  }
+  body.dark-mode #li-empty-guidance,
+  html[data-theme="dark"] #li-empty-guidance {
+    background: #111827 !important;
+    border-color: #1e293b !important;
+  }
+  body.dark-mode .ig-flash-input-card,
+  html[data-theme="dark"] .ig-flash-input-card,
+  body.dark-mode .ig-profile-card,
+  html[data-theme="dark"] .ig-profile-card {
+    background: #111827 !important;
+    border-color: #1e293b !important;
+  }
   .tw-tweets-list {
     display: flex;
     flex-direction: column;
@@ -2331,9 +2767,9 @@
 
               <form id="li-flash-form" onsubmit="event.preventDefault(); startLinkedInFlash();">
                 <div class="ig-input-row">
-                  <input type="text" id="li-company-input" class="ig-input-field" placeholder="Enter target company (e.g. OpenAI, Google, Stripe, Microsoft)..." required>
+                  <input type="text" id="li-company-input" class="ig-input-field form-input" placeholder="Enter target company (e.g. OpenAI, Google, Stripe, Microsoft)..." required>
                   
-                  <select id="li-role-select" class="ig-count-select" style="min-width: 140px;" title="Department / Title Filter">
+                  <select id="li-role-select" class="ig-count-select form-select" style="min-width: 140px;" title="Department / Title Filter">
                     <option value="" selected>All Departments</option>
                     <option value="engineer">Engineering &amp; Dev</option>
                     <option value="security">Security &amp; OSINT</option>
@@ -2343,7 +2779,7 @@
                     <option value="product">Product &amp; Design</option>
                   </select>
 
-                  <select id="li-count-select" class="ig-count-select" title="Target personnel yield limit">
+                  <select id="li-count-select" class="ig-count-select form-select" title="Target personnel yield limit">
                     <option value="10">10 Personnel</option>
                     <option value="25" selected>25 Personnel</option>
                     <option value="50">50 Personnel</option>
@@ -2449,53 +2885,99 @@
                   <div>
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                       <h3 id="li-result-company" style="font-size: 20px; font-weight: 800; color: var(--slate-900); margin: 0;">Target Corporation</h3>
-                      <span id="li-result-domain-badge" class="nav-badge" style="background: rgba(10, 102, 194, 0.1); color: #0a66c2; font-family: var(--font-mono); font-weight: 700; padding: 2px 8px;">company.com</span>
+                      <span id="li-result-domain-badge" class="nav-badge" style="background: rgba(10, 102, 194, 0.12); color: #0a66c2; font-family: var(--font-mono); font-weight: 700; padding: 2px 8px; border-radius: var(--radius-xs); border: 1px solid rgba(10, 102, 194, 0.25);">company.com</span>
                     </div>
                     <p id="li-result-summary" style="font-size: 13px; color: var(--slate-600); margin: 0;">Corporate personnel discovered via public search indexation.</p>
                   </div>
 
-                  <!-- Multi-format Export Actions -->
-                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <a id="li-export-json" href="#" target="_blank" class="oasis-export-btn">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                      JSON
+                  <!-- Multi-format Export Actions & Batch Copy -->
+                  <div class="li-actions-toolbar" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <button type="button" id="li-copy-all-btn" onclick="copyAllLinkedInEmails(this)" class="li-btn-action btn-primary-action oasis-export-btn" title="Copy all inferred corporate emails to clipboard">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy All Emails</span>
+                    </button>
+                    <a id="li-export-json" href="#" target="_blank" download class="li-btn-action oasis-export-btn" title="Download results as structured JSON">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                      <span>JSON</span>
                     </a>
-                    <a id="li-export-csv" href="#" target="_blank" class="oasis-export-btn">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                      CSV
+                    <a id="li-export-csv" href="#" target="_blank" download class="li-btn-action oasis-export-btn" title="Download personnel directory as CSV spreadsheet">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                      <span>CSV</span>
                     </a>
-                    <a id="li-export-md" href="#" target="_blank" class="oasis-export-btn">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                      Markdown
+                    <a id="li-export-md" href="#" target="_blank" download class="li-btn-action oasis-export-btn" title="Download intelligence report as Markdown dossier">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                      <span>Markdown</span>
                     </a>
                   </div>
                 </div>
 
                 <!-- Stats Ticker Row -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-soft);">
-                  <div>
-                    <div style="font-size: 11px; text-transform: uppercase; color: var(--slate-500); font-weight: 700;">Personnel Harvested</div>
-                    <div id="li-stat-count" style="font-size: 20px; font-weight: 800; color: #0a66c2;">0</div>
+                  <div class="li-stat-card">
+                    <div style="font-size: 10.5px; text-transform: uppercase; color: var(--slate-500); font-weight: 700; letter-spacing: 0.4px;">Personnel Harvested</div>
+                    <div id="li-stat-count" style="font-size: 22px; font-weight: 800; color: #0a66c2; margin-top: 2px;">0</div>
                   </div>
-                  <div>
-                    <div style="font-size: 11px; text-transform: uppercase; color: var(--slate-500); font-weight: 700;">Corporate Domain</div>
-                    <div id="li-stat-domain" style="font-size: 13.5px; font-weight: 700; color: var(--slate-800); font-family: var(--font-mono); margin-top: 4px;">N/A</div>
+                  <div class="li-stat-card">
+                    <div style="font-size: 10.5px; text-transform: uppercase; color: var(--slate-500); font-weight: 700; letter-spacing: 0.4px;">Corporate Domain</div>
+                    <div id="li-stat-domain" style="font-size: 14px; font-weight: 700; color: var(--slate-800); font-family: var(--font-mono); margin-top: 5px;">N/A</div>
                   </div>
-                  <div>
-                    <div style="font-size: 11px; text-transform: uppercase; color: var(--slate-500); font-weight: 700;">Email Formula</div>
-                    <div id="li-stat-pattern" style="font-size: 12px; font-weight: 700; color: var(--slate-800); font-family: var(--font-mono); margin-top: 4px;">{first}.{last}@...</div>
+                  <div class="li-stat-card">
+                    <div style="font-size: 10.5px; text-transform: uppercase; color: var(--slate-500); font-weight: 700; letter-spacing: 0.4px;">Email Formula</div>
+                    <div id="li-stat-pattern" style="font-size: 12.5px; font-weight: 700; color: var(--slate-800); font-family: var(--font-mono); margin-top: 5px;">{first}.{last}@...</div>
                   </div>
-                  <div>
-                    <div style="font-size: 11px; text-transform: uppercase; color: var(--slate-500); font-weight: 700;">Extraction Time</div>
-                    <div id="li-stat-duration" style="font-size: 18px; font-weight: 800; color: var(--slate-900);">0.0s</div>
+                  <div class="li-stat-card">
+                    <div style="font-size: 10.5px; text-transform: uppercase; color: var(--slate-500); font-weight: 700; letter-spacing: 0.4px;">Extraction Velocity</div>
+                    <div id="li-stat-duration" style="font-size: 18px; font-weight: 800; color: var(--slate-900); margin-top: 2px;">0.0s</div>
                   </div>
                 </div>
               </div>
 
-              <!-- Personnel Cards Grid -->
+              <!-- Controls Toolbar: Department Filter Pills, Search Bar & View Mode Switcher -->
+              <div class="li-control-toolbar">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                  <!-- Department Filter Pills -->
+                  <div id="li-filter-bar" class="li-filter-bar" style="margin-bottom: 0;">
+                    <button type="button" class="li-filter-pill active" onclick="setLinkedInFilter('all', this)">
+                      All Roles <span class="pill-count" id="li-pill-count-all">0</span>
+                    </button>
+                    <button type="button" class="li-filter-pill" onclick="setLinkedInFilter('leadership', this)">
+                      Leadership <span class="pill-count" id="li-pill-count-leadership">0</span>
+                    </button>
+                    <button type="button" class="li-filter-pill" onclick="setLinkedInFilter('engineering', this)">
+                      Engineering &amp; AI <span class="pill-count" id="li-pill-count-engineering">0</span>
+                    </button>
+                    <button type="button" class="li-filter-pill" onclick="setLinkedInFilter('product', this)">
+                      Product &amp; Design <span class="pill-count" id="li-pill-count-product">0</span>
+                    </button>
+                    <button type="button" class="li-filter-pill" onclick="setLinkedInFilter('operations', this)">
+                      Ops &amp; Legal <span class="pill-count" id="li-pill-count-operations">0</span>
+                    </button>
+                  </div>
+
+                  <!-- View Mode Switcher (Grid vs Table) -->
+                  <div class="li-view-switch">
+                    <button type="button" id="li-view-grid-btn" class="li-view-btn active" onclick="setLinkedInView('grid')" title="Cards Grid View">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                      Cards
+                    </button>
+                    <button type="button" id="li-view-table-btn" class="li-view-btn" onclick="setLinkedInView('table')" title="Forensic Table View">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                      Table
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Instant Search Bar -->
+                <div style="display: flex; align-items: center; gap: 8px; position: relative; width: 100%;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--slate-400)" stroke-width="2" style="position: absolute; left: 12px; pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="li-search-input" class="li-search-input form-input" placeholder="Search filtered personnel by name, job title, or email address..." oninput="onLinkedInSearchChange()" />
+                </div>
+              </div>
+
+              <!-- Header Title & Count -->
               <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                 <h4 style="font-size: 15px; font-weight: 800; color: var(--slate-900); margin: 0; display: flex; align-items: center; gap: 6px;">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0a66c2" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                   Discovered Corporate Personnel (<span id="li-personnel-badge-count">0</span>)
                 </h4>
                 <div style="font-size: 12px; color: var(--slate-500);">
@@ -2503,8 +2985,28 @@
                 </div>
               </div>
 
+              <!-- 1. Cards Grid View Container -->
               <div id="li-personnel-list" class="li-personnel-grid">
                 <!-- Dynamically populated personnel cards -->
+              </div>
+
+              <!-- 2. Forensic Table View Container -->
+              <div id="li-personnel-table-wrapper" style="display: none; overflow-x: auto;">
+                <table class="li-forensic-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 45px;">#</th>
+                      <th>Personnel</th>
+                      <th>Corporate Title</th>
+                      <th>Inferred Email</th>
+                      <th>Profile Link</th>
+                      <th style="text-align: right;">Cross-Pivots</th>
+                    </tr>
+                  </thead>
+                  <tbody id="li-personnel-table-body">
+                    <!-- Dynamically populated table rows -->
+                  </tbody>
+                </table>
               </div>
             </div>
 
@@ -3667,98 +4169,311 @@ function copyToClipboard(text, el) {
   });
 }
 
+let currentLinkedInData = null;
+let currentLinkedInFilter = 'all';
+let currentLinkedInView = 'grid';
+
+function classifyLinkedInRole(title) {
+  const t = (title || '').toLowerCase();
+  if (t.includes('ceo') || t.includes('cto') || t.includes('cfo') || t.includes('coo') || t.includes('president') || t.includes('vp') || t.includes('vice president') || t.includes('director') || t.includes('head of') || t.includes('chief') || t.includes('founder') || t.includes('partner') || t.includes('lead')) {
+    return { category: 'leadership', label: 'Leadership', tagClass: 'role-tag-leadership' };
+  }
+  if (t.includes('engineer') || t.includes('developer') || t.includes('scientist') || t.includes('research') || t.includes('ai') || t.includes('architect') || t.includes('tech') || t.includes('security') || t.includes('software')) {
+    return { category: 'engineering', label: 'Engineering & AI', tagClass: 'role-tag-tech' };
+  }
+  if (t.includes('product') || t.includes('design') || t.includes('ux') || t.includes('ui') || t.includes('manager') || t.includes('program')) {
+    return { category: 'product', label: 'Product & Design', tagClass: 'role-tag-product' };
+  }
+  if (t.includes('legal') || t.includes('counsel') || t.includes('operations') || t.includes('hr') || t.includes('talent') || t.includes('finance') || t.includes('recruiter') || t.includes('sales') || t.includes('marketing') || t.includes('affairs')) {
+    return { category: 'operations', label: 'Ops & Legal', tagClass: 'role-tag-ops' };
+  }
+  return { category: 'other', label: 'Professional', tagClass: 'role-tag-standard' };
+}
+
 function handleLinkedInCompletion(data) {
+  currentLinkedInData = data;
   const resultsContainer = document.getElementById("li-results-container");
   const guidanceEl = document.getElementById("li-empty-guidance");
-  resultsContainer.style.display = "block";
-  guidanceEl.style.display = "none";
+  if (resultsContainer) resultsContainer.style.display = "block";
+  if (guidanceEl) guidanceEl.style.display = "none";
 
   const company = data.company || "Target Corporation";
   const domain = data.domain || "company.com";
   const personnel = data.personnel || [];
   const duration = data.duration || 0.1;
 
-  document.getElementById("li-result-company").textContent = company;
-  document.getElementById("li-result-domain-badge").textContent = domain;
-  document.getElementById("li-result-summary").textContent = `Extracted ${personnel.length} verified personnel profiles from public search indexation.`;
+  // Complete progress bar state
+  const progressPanel = document.getElementById("li-progress-panel");
+  const statusPill = document.getElementById("li-status-pill");
+  const statusPillText = document.getElementById("li-status-pill-text");
+  const progressTitle = document.getElementById("li-progress-title");
+  const progressSubtitle = document.getElementById("li-progress-subtitle");
+  const progressFill = document.getElementById("li-progress-fill");
+  const progressPercent = document.getElementById("li-progress-percent");
+  const timerEl = document.getElementById("li-progress-timer");
 
-  document.getElementById("li-stat-count").textContent = String(personnel.length);
-  document.getElementById("li-stat-domain").textContent = domain;
-  document.getElementById("li-stat-duration").textContent = `${duration}s`;
-  document.getElementById("li-personnel-badge-count").textContent = String(personnel.length);
+  if (progressPanel) progressPanel.className = "oasis-progress-panel active completed";
+  if (statusPill) {
+    statusPill.className = "oasis-status-pill status-success";
+    statusPill.style.background = "rgba(16, 185, 129, 0.12)";
+    statusPill.style.color = "#059669";
+    statusPill.style.borderColor = "rgba(16, 185, 129, 0.3)";
+  }
+  if (statusPillText) statusPillText.textContent = "HARVEST COMPLETED";
+  if (progressFill) {
+    progressFill.className = "oasis-progress-fill completed-fill";
+    progressFill.style.width = "100%";
+    progressFill.style.background = "linear-gradient(90deg, #10b981 0%, #059669 100%)";
+  }
+  if (progressPercent) progressPercent.textContent = "100% Complete";
+  if (timerEl) timerEl.textContent = `Elapsed: ${duration}s`;
+  if (progressTitle) progressTitle.textContent = `Workforce Harvest Complete: ${company}`;
+  if (progressSubtitle) progressSubtitle.textContent = `Finished in ${duration}s • ${personnel.length} corporate personnel identified.`;
+
+  // Summary Metrics
+  const compEl = document.getElementById("li-result-company");
+  const domBadge = document.getElementById("li-result-domain-badge");
+  const summaryEl = document.getElementById("li-result-summary");
+  const statCount = document.getElementById("li-stat-count");
+  const statDom = document.getElementById("li-stat-domain");
+  const statPat = document.getElementById("li-stat-pattern");
+  const statDur = document.getElementById("li-stat-duration");
+
+  if (compEl) compEl.textContent = company;
+  if (domBadge) domBadge.textContent = domain;
+  if (summaryEl) summaryEl.textContent = `Extracted ${personnel.length} verified personnel profiles from public search indexation.`;
+  if (statCount) statCount.textContent = String(personnel.length);
+  if (statDom) statDom.textContent = domain;
+  if (statPat) statPat.textContent = data.email_pattern || "{first}.{last}@...";
+  if (statDur) statDur.textContent = `${duration}s`;
 
   // Set export URLs
-  document.getElementById("li-export-json").href = `/api/social_media_intelligence/linkedin/download?company=${encodeURIComponent(company)}&format=json`;
-  document.getElementById("li-export-csv").href = `/api/social_media_intelligence/linkedin/download?company=${encodeURIComponent(company)}&format=csv`;
-  document.getElementById("li-export-md").href = `/api/social_media_intelligence/linkedin/download?company=${encodeURIComponent(company)}&format=md`;
+  const jsonBtn = document.getElementById("li-export-json");
+  const csvBtn = document.getElementById("li-export-csv");
+  const mdBtn = document.getElementById("li-export-md");
+  if (jsonBtn) jsonBtn.href = `/api/social_media_intelligence/linkedin/download?company=${encodeURIComponent(company)}&format=json`;
+  if (csvBtn) csvBtn.href = `/api/social_media_intelligence/linkedin/download?company=${encodeURIComponent(company)}&format=csv`;
+  if (mdBtn) mdBtn.href = `/api/social_media_intelligence/linkedin/download?company=${encodeURIComponent(company)}&format=md`;
 
+  // Update category counts for filter pills
+  let countLead = 0, countEng = 0, countProd = 0, countOps = 0;
+  personnel.forEach(p => {
+    const cls = classifyLinkedInRole(p.title);
+    if (cls.category === 'leadership') countLead++;
+    else if (cls.category === 'engineering') countEng++;
+    else if (cls.category === 'product') countProd++;
+    else if (cls.category === 'operations') countOps++;
+  });
+
+  const cAll = document.getElementById("li-pill-count-all");
+  const cLead = document.getElementById("li-pill-count-leadership");
+  const cEng = document.getElementById("li-pill-count-engineering");
+  const cProd = document.getElementById("li-pill-count-product");
+  const cOps = document.getElementById("li-pill-count-operations");
+
+  if (cAll) cAll.textContent = String(personnel.length);
+  if (cLead) cLead.textContent = String(countLead);
+  if (cEng) cEng.textContent = String(countEng);
+  if (cProd) cProd.textContent = String(countProd);
+  if (cOps) cOps.textContent = String(countOps);
+
+  renderLinkedInPersonnel();
+}
+
+function setLinkedInFilter(category, btn) {
+  currentLinkedInFilter = category;
+  document.querySelectorAll("#li-filter-bar .li-filter-pill").forEach(p => p.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderLinkedInPersonnel();
+}
+
+function setLinkedInView(view) {
+  currentLinkedInView = view;
+  const gridContainer = document.getElementById("li-personnel-list");
+  const tableContainer = document.getElementById("li-personnel-table-wrapper");
+  const gridBtn = document.getElementById("li-view-grid-btn");
+  const tableBtn = document.getElementById("li-view-table-btn");
+
+  if (view === 'grid') {
+    if (gridContainer) gridContainer.style.display = "grid";
+    if (tableContainer) tableContainer.style.display = "none";
+    if (gridBtn) gridBtn.classList.add("active");
+    if (tableBtn) tableBtn.classList.remove("active");
+  } else {
+    if (gridContainer) gridContainer.style.display = "none";
+    if (tableContainer) tableContainer.style.display = "block";
+    if (gridBtn) gridBtn.classList.remove("active");
+    if (tableBtn) tableBtn.classList.add("active");
+  }
+}
+
+function onLinkedInSearchChange() {
+  renderLinkedInPersonnel();
+}
+
+function renderLinkedInPersonnel() {
+  if (!currentLinkedInData || !currentLinkedInData.personnel) return;
   const listEl = document.getElementById("li-personnel-list");
-  listEl.innerHTML = "";
+  const tableBody = document.getElementById("li-personnel-table-body");
+  const countBadge = document.getElementById("li-personnel-badge-count");
+  const searchInput = document.getElementById("li-search-input");
+  const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
 
-  if (personnel.length === 0) {
-    listEl.innerHTML = `
-      <div style="grid-column: 1 / -1; padding: 32px; text-align: center; color: var(--slate-500); background: var(--bg-surface); border: 1px dashed var(--border-soft); border-radius: var(--radius-sm);">
-        <p style="margin: 0; font-weight: 600;">No corporate personnel matched the filter criteria for "${escapeHtml(company)}". Try broadening your department filter or selecting Multi-Engine.</p>
-      </div>
-    `;
-    return;
+  const allPersonnel = currentLinkedInData.personnel || [];
+  const company = currentLinkedInData.company || "Company";
+
+  const filtered = allPersonnel.filter(p => {
+    const roleInfo = classifyLinkedInRole(p.title);
+    if (currentLinkedInFilter !== 'all' && roleInfo.category !== currentLinkedInFilter) {
+      return false;
+    }
+    if (query) {
+      const matchText = `${p.name} ${p.title} ${p.inferred_email} ${p.profile_url}`.toLowerCase();
+      if (!matchText.includes(query)) return false;
+    }
+    return true;
+  });
+
+  if (countBadge) countBadge.textContent = String(filtered.length);
+
+  // Render Grid Cards
+  if (listEl) {
+    listEl.innerHTML = "";
+    if (filtered.length === 0) {
+      listEl.innerHTML = `
+        <div style="grid-column: 1 / -1; padding: 36px 20px; text-align: center; color: var(--slate-500); background: var(--bg-card-subtle); border: 1px dashed var(--border-soft); border-radius: var(--radius-sm);">
+          <p style="margin: 0; font-weight: 700; font-size: 13.5px; color: var(--slate-700);">No personnel matched the selected filter or search query.</p>
+          <p style="margin: 4px 0 0 0; font-size: 12px; color: var(--slate-500);">Try selecting "All Roles" or clearing your keyword filter.</p>
+        </div>
+      `;
+    } else {
+      filtered.forEach((p, idx) => {
+        const card = document.createElement("div");
+        card.className = "li-person-card";
+
+        const name = escapeHtml(p.name || "Individual");
+        const title = escapeHtml(p.title || `Professional at ${company}`);
+        const email = escapeHtml(p.inferred_email || "");
+        const url = escapeHtml(p.profile_url || "#");
+        const initials = name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase() || "LI";
+        const roleInfo = classifyLinkedInRole(p.title);
+
+        card.innerHTML = `
+          <div>
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px;">
+              <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
+                <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #0a66c2 0%, #004182 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(10, 102, 194, 0.25);">
+                  ${initials}
+                </div>
+                <div style="min-width: 0; flex: 1;">
+                  <div style="font-weight: 800; font-size: 14.5px; color: var(--slate-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    ${name}
+                  </div>
+                  <div style="font-size: 12px; color: var(--slate-600); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px;">
+                    ${title}
+                  </div>
+                </div>
+              </div>
+              <span class="li-role-tag ${roleInfo.tagClass}">${roleInfo.label}</span>
+            </div>
+
+            <div class="li-email-box">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--slate-500); letter-spacing: 0.3px;">Inferred Corporate Email</span>
+                <button type="button" onclick="copyToClipboard('${email}', this)" style="background: none; border: none; font-size: 10.5px; font-weight: 700; color: #0a66c2; cursor: pointer; padding: 0;">Copy</button>
+              </div>
+              <div style="font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--slate-800); word-break: break-all;">
+                ${email}
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; border-top: 1px solid var(--border-soft); margin-top: 10px; flex-wrap: wrap;">
+            <a href="${url}" target="_blank" rel="noopener noreferrer" style="font-size: 11.5px; font-weight: 700; color: #0a66c2; display: inline-flex; align-items: center; gap: 4px; text-decoration: none;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              LinkedIn Profile ↗
+            </a>
+
+            <div style="display: flex; gap: 6px;">
+              <a href="/services/email-intelligence?target=${encodeURIComponent(email)}" target="_blank" title="Probe Inferred Email" style="padding: 3px 8px; font-size: 11px; font-weight: 700; background: rgba(249, 115, 22, 0.1); color: #ea580c; border: 1px solid rgba(249, 115, 22, 0.25); border-radius: var(--radius-xs); text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">
+                <span>Pivot Email</span>
+              </a>
+              <a href="/services/recon-username?target=${encodeURIComponent(name.toLowerCase().replace(/[^a-z0-9]/g, ''))}" target="_blank" title="Probe Online Handles" style="padding: 3px 8px; font-size: 11px; font-weight: 700; background: var(--bg-surface); color: var(--slate-700); border: 1px solid var(--border-soft); border-radius: var(--radius-xs); text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">
+                <span>Handles</span>
+              </a>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+    }
   }
 
-  personnel.forEach(p => {
-    const card = document.createElement("div");
-    card.className = "li-person-card";
+  // Render Table Rows
+  if (tableBody) {
+    tableBody.innerHTML = "";
+    if (filtered.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" style="padding: 32px; text-align: center; color: var(--slate-500);">
+            No personnel matched the selected filter or search query.
+          </td>
+        </tr>
+      `;
+    } else {
+      filtered.forEach((p, idx) => {
+        const tr = document.createElement("tr");
+        const name = escapeHtml(p.name || "Individual");
+        const title = escapeHtml(p.title || `Professional at ${company}`);
+        const email = escapeHtml(p.inferred_email || "");
+        const url = escapeHtml(p.profile_url || "#");
+        const roleInfo = classifyLinkedInRole(p.title);
 
-    const name = escapeHtml(p.name || "Individual");
-    const title = escapeHtml(p.title || `Professional at ${company}`);
-    const email = escapeHtml(p.inferred_email || "");
-    const url = escapeHtml(p.profile_url || "#");
-    const initials = name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase() || "LI";
-
-    card.innerHTML = `
-      <div>
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-          <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #0a66c2 0%, #004182 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(10, 102, 194, 0.25);">
-            ${initials}
-          </div>
-          <div style="min-width: 0; flex: 1;">
-            <div style="font-weight: 800; font-size: 14.5px; color: var(--slate-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              ${name}
+        tr.innerHTML = `
+          <td style="font-family: var(--font-mono); font-size: 11px; color: var(--slate-500); font-weight: 700;">${idx + 1}</td>
+          <td>
+            <div style="font-weight: 800; color: var(--slate-900);">${name}</div>
+          </td>
+          <td>
+            <div style="font-size: 12px; color: var(--slate-700);">${title}</div>
+            <span class="li-role-tag ${roleInfo.tagClass}" style="margin-top: 2px;">${roleInfo.label}</span>
+          </td>
+          <td>
+            <div class="li-table-email-pill">
+              <span>${email}</span>
+              <button type="button" onclick="copyToClipboard('${email}', this)" style="background: none; border: none; font-size: 10px; font-weight: 700; color: #0a66c2; cursor: pointer; padding: 0;">Copy</button>
             </div>
-            <div style="font-size: 12px; color: #0a66c2; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              ${title}
+          </td>
+          <td>
+            <a href="${url}" target="_blank" rel="noopener noreferrer" style="font-size: 11.5px; font-weight: 700; color: #0a66c2; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">
+              <span>View Profile ↗</span>
+            </a>
+          </td>
+          <td style="text-align: right;">
+            <div style="display: inline-flex; gap: 5px;">
+              <a href="/services/email-intelligence?target=${encodeURIComponent(email)}" target="_blank" style="padding: 2px 7px; font-size: 10.5px; font-weight: 700; background: rgba(249, 115, 22, 0.1); color: #ea580c; border: 1px solid rgba(249, 115, 22, 0.25); border-radius: 4px; text-decoration: none;">Email</a>
+              <a href="/services/recon-username?target=${encodeURIComponent(name.toLowerCase().replace(/[^a-z0-9]/g, ''))}" target="_blank" style="padding: 2px 7px; font-size: 10.5px; font-weight: 700; background: var(--bg-surface); color: var(--slate-700); border: 1px solid var(--border-soft); border-radius: 4px; text-decoration: none;">Handles</a>
             </div>
-          </div>
-        </div>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+  }
+}
 
-        <div style="background: var(--bg-card-subtle); border: 1px solid var(--border-soft); border-radius: var(--radius-xs); padding: 8px 10px; margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-            <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--slate-500);">Inferred Corporate Email</span>
-            <button type="button" onclick="copyToClipboard('${email}', this)" style="background: none; border: none; font-size: 10.5px; font-weight: 700; color: #0a66c2; cursor: pointer; padding: 0;">Copy</button>
-          </div>
-          <div style="font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--slate-800); word-break: break-all;">
-            ${email}
-          </div>
-        </div>
-      </div>
+function copyAllLinkedInEmails(btn) {
+  if (!currentLinkedInData || !currentLinkedInData.personnel || currentLinkedInData.personnel.length === 0) return;
+  const emails = currentLinkedInData.personnel.map(p => p.inferred_email).filter(Boolean);
+  if (emails.length === 0) return;
 
-      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; border-top: 1px solid var(--border-soft); margin-top: 10px; flex-wrap: wrap;">
-        <a href="${url}" target="_blank" rel="noopener noreferrer" style="font-size: 11.5px; font-weight: 700; color: #0a66c2; display: inline-flex; align-items: center; gap: 4px; text-decoration: none;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          LinkedIn Profile ↗
-        </a>
-
-        <div style="display: flex; gap: 6px;">
-          <a href="/services/email-intelligence?target=${encodeURIComponent(email)}" target="_blank" title="Probe Inferred Email" style="padding: 3px 8px; font-size: 11px; font-weight: 700; background: rgba(249, 115, 22, 0.1); color: #ea580c; border: 1px solid rgba(249, 115, 22, 0.25); border-radius: var(--radius-xs); text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">
-            <span>Pivot Email</span>
-          </a>
-          <a href="/services/recon-username?target=${encodeURIComponent(name.toLowerCase().replace(/\s+/g, ''))}" target="_blank" title="Probe Online Handles" style="padding: 3px 8px; font-size: 11px; font-weight: 700; background: var(--bg-surface); color: var(--slate-700); border: 1px solid var(--border-soft); border-radius: var(--radius-xs); text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">
-            <span>Handles</span>
-          </a>
-        </div>
-      </div>
-    `;
-
-    listEl.appendChild(card);
+  const text = emails.join(", ");
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) {
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Copied (${emails.length})</span>`;
+      setTimeout(() => { btn.innerHTML = origHtml; }, 2000);
+    }
   });
 }
 
