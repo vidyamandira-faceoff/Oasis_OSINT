@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page_title | default("OASIS — Strategic OSINT Platform & Terminal Login") }}</title>
+  <title>{{ page_title | default("OASIS — Strategic OSINT Platform & Login") }}</title>
   
   <!-- Global Oasis Design System Styles -->
-  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/style.css?v=1.6.1">
   <link rel="stylesheet" href="/static/css/dark_mode.css" id="shared-dark-mode">
   <link rel="stylesheet" href="/static/css/mobile.css" id="shared-mobile-responsive">
-  <link rel="stylesheet" href="/static/services/landing/css/landing.css">
+  <link rel="stylesheet" href="/static/services/landing/css/landing.css?v=1.6.1">
 
   <!-- Early Theme Setter to Prevent Flash of Unstyled Content -->
   <script>
@@ -43,12 +43,12 @@
             <line x1="17" y1="12" x2="21" y2="12"></line>
           </svg>
         </div>
-        <div>
+        <div class="landing-brand-text">
           <div class="landing-brand-title">
             OASIS
             <span class="landing-brand-badge">{{ app_version | default("v1.6.0") }}</span>
           </div>
-          <div style="font-size: 11px; color: var(--slate-500); font-weight: 500;">
+          <div class="landing-brand-sub">
             OSINT Aggregation &amp; Strategic Intelligence System
           </div>
         </div>
@@ -62,12 +62,6 @@
       </nav>
 
       <div class="landing-nav-right">
-        <!-- Live System Telemetry Pill -->
-        <div class="landing-telemetry-pill" title="Gateway Operational">
-          <span class="status-dot-active"></span>
-          <span id="nav-system-status-text">6 Engines Online</span>
-        </div>
-
         <!-- Theme Toggle Button -->
         <button class="header-icon-btn" id="theme-toggle-btn" title="Toggle Dark / Light Mode" aria-label="Toggle Theme" onclick="toggleOasisTheme()" style="width: 36px; height: 36px; border-radius: 6px; border: 1px solid var(--border-soft); background: var(--bg-card-subtle); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--slate-700);">
           <svg class="theme-toggle-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -86,14 +80,14 @@
           </svg>
         </button>
 
-        <!-- Direct Terminal Jump Button -->
+        <!-- Direct Login Jump Button -->
         <a href="#login-box" class="btn-nav-terminal" onclick="focusLoginInput(event)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
             <polyline points="10 17 15 12 10 7"></polyline>
             <line x1="15" y1="12" x2="3" y2="12"></line>
           </svg>
-          <span>Terminal Login</span>
+          <span>Login</span>
         </a>
       </div>
     </header>
@@ -350,7 +344,7 @@
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
                 </div>
-                <span class="suite-status-badge">Maigret Engine</span>
+                <span class="suite-status-badge">Entity Profiler</span>
               </div>
               <h3 class="suite-card-title">Username &amp; Handle Intelligence</h3>
               <p class="suite-card-desc">
@@ -386,11 +380,11 @@
                     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                   </svg>
                 </div>
-                <span class="suite-status-badge" style="background: rgba(2, 132, 199, 0.1); color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">Photon Crawler</span>
+                <span class="suite-status-badge" style="background: rgba(2, 132, 199, 0.1); color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">Surface Crawler</span>
               </div>
               <h3 class="suite-card-title">Domain &amp; Website Intelligence</h3>
               <p class="suite-card-desc">
-                Deep recursive surface crawler for URL endpoints, subdomains, exposed cryptographic API secrets, and Wayback historical seed resolution.
+                Deep recursive surface crawler for URL endpoints, subdomains, exposed cryptographic API secrets, and historical archive seed resolution.
               </p>
               <ul class="suite-specs-list">
                 <li class="suite-specs-item">
@@ -493,7 +487,7 @@
                     <polyline points="22,6 12,13 2,6"></polyline>
                   </svg>
                 </div>
-                <span class="suite-status-badge" style="background: rgba(99, 102, 241, 0.1); color: #6366f1; border-color: rgba(99, 102, 241, 0.3);">Holehe Engine</span>
+                <span class="suite-status-badge" style="background: rgba(99, 102, 241, 0.1); color: #6366f1; border-color: rgba(99, 102, 241, 0.3);">Reverse Footprint</span>
               </div>
               <h3 class="suite-card-title">Email Intelligence &amp; Footprint</h3>
               <p class="suite-card-desc">
@@ -643,7 +637,7 @@
               <div class="term-line-dim">[SYS-BOOT] Initializing OASIS Gateway Services...</div>
               <div class="term-line-ok">[AUTH-GATEWAY] Terminal Security Module: READY (Port 5050)</div>
               <div class="term-line-ok">[ENGINE-1] Username Reconnaissance Matrix (3,000+ registries): LOADED</div>
-              <div class="term-line-ok">[ENGINE-2] Domain &amp; Website Intelligence Engine (Photon Spider): LOADED</div>
+              <div class="term-line-ok">[ENGINE-2] Domain &amp; Website Intelligence Engine (Surface Spider): LOADED</div>
               <div class="term-line-ok">[ENGINE-3] Social Media Reconnaissance Cluster (Flash/Pro): ONLINE</div>
               <div class="term-line-ok">[ENGINE-4] Telephone &amp; Carrier Intelligence Platform: ONLINE</div>
               <div class="term-line-ok">[ENGINE-5] Email Footprint &amp; Password Reset Engine: READY</div>
@@ -928,9 +922,9 @@
         const res = await fetch('/api/status');
         if (res.ok) {
           const data = await res.json();
-          const pill = document.getElementById('nav-system-status-text');
-          if (pill && data.active_modules) {
-            pill.innerText = `${data.active_modules.length} Engines Online`;
+          const clockEl2 = document.getElementById('term-timestamp');
+          if (clockEl2 && data.timestamp) {
+            clockEl2.title = `Server time: ${data.timestamp}`;
           }
         }
       } catch (e) {
