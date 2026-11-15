@@ -129,20 +129,80 @@ body.dark-mode .role-pill-dark {
 html[data-theme="dark"] .form-input,
 html[data-theme="dark"] .form-select,
 body.dark-mode .form-input,
-body.dark-mode .form-select {
+body.dark-mode .form-select,
+html[data-theme="dark"] .ig-input-field,
+body.dark-mode .ig-input-field,
+html[data-theme="dark"] .ig-count-select,
+body.dark-mode .ig-count-select,
+html[data-theme="dark"] .li-search-input,
+body.dark-mode .li-search-input {
   background-color: #162032 !important;
   border: 1px solid #1f2c42 !important;
   color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .ig-input-field::placeholder,
+body.dark-mode .ig-input-field::placeholder,
+html[data-theme="dark"] .li-search-input::placeholder,
+body.dark-mode .li-search-input::placeholder {
+  color: #64748b !important;
 }
 
 html[data-theme="dark"] select.form-select option,
 body.dark-mode select.form-select option,
 html[data-theme="dark"] .form-select option,
 body.dark-mode .form-select option,
+html[data-theme="dark"] select.ig-input-field option,
+body.dark-mode select.ig-input-field option,
+html[data-theme="dark"] select.ig-count-select option,
+body.dark-mode select.ig-count-select option,
 html[data-theme="dark"] option,
 body.dark-mode option {
   background-color: #162032 !important;
   color: #f8fafc !important;
+}
+
+/* Unified Action & Export Buttons in Dark Mode */
+html[data-theme="dark"] .oasis-export-btn,
+body.dark-mode .oasis-export-btn,
+html[data-theme="dark"] .li-btn-action,
+body.dark-mode .li-btn-action,
+html[data-theme="dark"] .ig-export-btn,
+body.dark-mode .ig-export-btn {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-theme="dark"] .oasis-export-btn:hover,
+body.dark-mode .oasis-export-btn:hover,
+html[data-theme="dark"] .li-btn-action:hover,
+body.dark-mode .li-btn-action:hover,
+html[data-theme="dark"] .ig-export-btn:hover,
+body.dark-mode .ig-export-btn:hover {
+  background-color: #334155 !important;
+  color: #38bdf8 !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 3px 10px rgba(56, 189, 248, 0.25) !important;
+}
+
+html[data-theme="dark"] .oasis-export-btn.btn-primary-action,
+body.dark-mode .oasis-export-btn.btn-primary-action,
+html[data-theme="dark"] .li-btn-action.li-btn-primary,
+body.dark-mode .li-btn-action.li-btn-primary {
+  background-color: rgba(10, 102, 194, 0.28) !important;
+  color: #38bdf8 !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+}
+
+html[data-theme="dark"] .oasis-export-btn.btn-primary-action:hover,
+body.dark-mode .oasis-export-btn.btn-primary-action:hover,
+html[data-theme="dark"] .li-btn-action.li-btn-primary:hover,
+body.dark-mode .li-btn-action.li-btn-primary:hover {
+  background-color: #0a66c2 !important;
+  color: #ffffff !important;
+  border-color: #0a66c2 !important;
 }
 
 html[data-theme="dark"] .form-input[readonly],
