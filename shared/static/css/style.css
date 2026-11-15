@@ -2439,3 +2439,211 @@ body {
     flex: 1;
   }
 }
+
+/* =========================================================================
+   ADMIN EXCLUSIVE: OSINT TOOL ARCHITECTURE & ENGINE TELEMETRY
+   Visible strictly to Admin role across all service frontend views
+   ========================================================================= */
+.admin-tools-spec-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--ember-600);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow-subtle);
+  position: relative;
+  overflow: hidden;
+}
+.admin-tools-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.admin-tools-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-badge-pill {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--ember-700);
+  border: 1px solid rgba(217, 119, 6, 0.28);
+}
+.admin-tools-title h4 {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--slate-900);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+.admin-tool-item-card {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.18s ease;
+}
+.admin-tool-item-card:hover {
+  border-color: var(--border-main);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.admin-tool-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.admin-tool-name-group {
+  display: flex;
+  flex-direction: column;
+}
+.admin-tool-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--slate-900);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-tool-version {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--slate-500);
+  margin-top: 2px;
+}
+.admin-tool-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  white-space: nowrap;
+}
+.admin-tool-role-desc {
+  font-size: 12px;
+  color: var(--slate-600);
+  line-height: 1.45;
+}
+.admin-tool-specs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-soft);
+}
+.admin-tool-chip {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  color: var(--slate-700);
+}
+.admin-tool-chip.accent {
+  background: rgba(2, 132, 199, 0.08);
+  border-color: rgba(2, 132, 199, 0.2);
+  color: #0284c7;
+}
+
+/* Sidebar Admin Tool Widget */
+.admin-sidebar-tools-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-top: 3px solid var(--ember-600);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.admin-sidebar-tools-header {
+  padding: 12px 16px;
+  background: var(--bg-card-subtle);
+  border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.admin-sidebar-tools-list {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin-sidebar-tool-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+}
+
+/* Dark mode overrides */
+html[data-theme="dark"] .admin-tools-spec-panel,
+body.dark-mode .admin-tools-spec-panel {
+  background: #111827;
+  border-color: #1e293b;
+  border-left-color: var(--ember-500);
+}
+html[data-theme="dark"] .admin-tool-item-card,
+body.dark-mode .admin-tool-item-card {
+  background: #162032;
+  border-color: #1e293b;
+}
+html[data-theme="dark"] .admin-tools-title h4,
+body.dark-mode .admin-tools-title h4,
+html[data-theme="dark"] .admin-tool-name,
+body.dark-mode .admin-tool-name {
+  color: #ffffff;
+}
+html[data-theme="dark"] .admin-tool-role-desc,
+body.dark-mode .admin-tool-role-desc {
+  color: #94a3b8;
+}
+html[data-theme="dark"] .admin-tool-chip,
+body.dark-mode .admin-tool-chip {
+  background: #0f172a;
+  border-color: #1e293b;
+  color: #cbd5e1;
+}
+html[data-theme="dark"] .admin-sidebar-tools-card,
+body.dark-mode .admin-sidebar-tools-card {
+  background: #111827;
+  border-color: #1e293b;
+}
+html[data-theme="dark"] .admin-sidebar-tools-header,
+body.dark-mode .admin-sidebar-tools-header,
+html[data-theme="dark"] .admin-sidebar-tool-row,
+body.dark-mode .admin-sidebar-tool-row {
+  background: #162032;
+  border-color: #1e293b;
+}

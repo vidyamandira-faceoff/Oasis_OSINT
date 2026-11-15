@@ -32,12 +32,15 @@ class IPRunRequest(BaseModel):
     timeout: Optional[float] = Field(default=1.5, ge=0.5, le=5.0)
     force: Optional[bool] = False
 
+from core.security import get_session_from_request
 from roles.accounts import is_admin_user
 
 @router.get("/services/ip-network-intelligence")
 async def page_view(request: Request, target: Optional[str] = None):
-    current_username = request.cookies.get("oasis_user") or "alex"
-    target_prefix = "/role_admin" if (is_admin_user(current_username) or current_username.lower() == "admin") else "/role_user"
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        return RedirectResponse(url="/login", status_code=302)
+    target_prefix = "/role_admin" if session.get("is_admin") else "/role_user"
     url = f"{target_prefix}/services/ip-network-intelligence"
     if target:
         import urllib.parse

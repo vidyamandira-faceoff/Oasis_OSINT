@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initClock();
   fetchSystemStatus();
   fetchNotificationCounts();
+  initSessionSecurityWatcher();
   setInterval(fetchSystemStatus, 4000);
   setInterval(fetchNotificationCounts, 5000);
 });
@@ -223,12 +224,109 @@ function copyToClipboard(text) {
   });
 }
 
-function handleSignOut() {
+// ==========================================================================
+// SESSION SECURITY & SMART IDLE WATCHER (Access Token Auto-Refresh & Idle Guard)
+// ==========================================================================
+const IDLE_LIMIT_MS = 30 * 60 * 1000;          // 30 minutes idle threshold
+const TOKEN_REFRESH_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes refresh cycle
+let lastActivityTimestamp = Date.now();
+let isAutoLoggingOut = false;
+
+function recordUserActivity() {
+  lastActivityTimestamp = Date.now();
+}
+
+// Transparent Background Token Refresh
+async function refreshSessionToken() {
   try {
-    localStorage.removeItem("oasis_user");
-    document.cookie = "oasis_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-  } catch (e) {}
-  window.location.href = "/";
+    const res = await fetch("/api/auth/refresh", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+    if (res.ok) {
+      console.log("[OASIS Security] Access token refreshed silently.");
+      return true;
+    }
+  } catch (err) {
+    console.warn("[OASIS Security] Token refresh failed:", err);
+  }
+  return false;
+}
+
+// Smart Idle Inspector (Protects Active Scans & Recons)
+async function checkIdleSecurityStatus() {
+  if (isAutoLoggingOut) return;
+  const idleElapsed = Date.now() - lastActivityTimestamp;
+
+  if (idleElapsed >= IDLE_LIMIT_MS) {
+    // Before logging out, check if ANY OSINT scan or recon task is running!
+    try {
+      const res = await fetch("/api/auth/scan-status");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.has_active_scans) {
+          // OSINT task is actively running! Keep user session alive and refresh tokens!
+          console.info(`[OASIS Security] User idle for ${Math.round(idleElapsed / 60000)}m, but ${data.active_count} OSINT scan(s) are active (${data.active_tools.join(', ')}). Session protected & refreshed.`);
+          recordUserActivity();
+          await refreshSessionToken();
+          return;
+        }
+      }
+    } catch (e) {
+      // In case of network check failure, do not kill active scans
+    }
+
+    // No scans running and user has been idle for >= 30m: perform clean auto-logout
+    console.warn("[OASIS Security] User idle limit exceeded with no active background scans. Initiating auto-logout.");
+    isAutoLoggingOut = true;
+    handleSignOut();
+  }
+}
+
+function initSessionSecurityWatcher() {
+  // Activity event listeners
+  ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, recordUserActivity, { passive: true });
+  });
+
+  // Periodic token refresh (every 10 minutes)
+  setInterval(refreshSessionToken, TOKEN_REFRESH_INTERVAL_MS);
+
+  // Periodic idle inspector (checks every 30 seconds)
+  setInterval(checkIdleSecurityStatus, 30 * 1000);
+}
+
+// Browser Back/Forward Cache (bfcache) & Post-Signout Guard
+window.addEventListener('pageshow', function (event) {
+  const isBfCache = event.persisted || (window.performance && window.performance.getEntriesByType && window.performance.getEntriesByType("navigation")[0]?.type === "back_forward");
+  if (isBfCache) {
+    fetch('/api/auth/session')
+      .then(res => res.json())
+      .then(data => {
+        if (!data || !data.authenticated) {
+          window.location.replace('/login');
+        }
+      })
+      .catch(() => {
+        window.location.replace('/login');
+      });
+  }
+});
+
+async function handleSignOut() {
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+    document.cookie = "oasis_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" }
+    });
+  } catch (e) {
+    console.error("Sign out error:", e);
+  }
+  // Replace current location to purge authenticated view from session history
+  window.location.replace("/login");
 }
 
 // Immediate task abortion dispatchers

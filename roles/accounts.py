@@ -6,6 +6,8 @@ Normal users have standard, equal access with simple, non-title based usernames.
 
 from typing import Dict, Any, Optional
 
+import hmac
+
 # Single Admin Account
 ADMIN_ACCOUNT: Dict[str, Any] = {
     "username": "admin",
@@ -64,21 +66,13 @@ def authenticate_user(username: str, password: Optional[str] = "") -> Optional[D
     if clean_user in ALL_USERS:
         account = ALL_USERS[clean_user]
         expected_pass = account["password"]
-        if not password or password == expected_pass or password in ("admin123", "alex123", "sam123", "jordan123"):
+        # Constant-time comparison to protect against timing attacks
+        if password and hmac.compare_digest(password, expected_pass):
             return account
         return None
 
-    # Dynamic normal user fallback (always standard 'user' role)
-    display = username.strip().replace("_", " ").title() if username else "User"
-    return {
-        "username": clean_user or "user",
-        "password": password or "",
-        "role": "user",
-        "displayName": display,
-        "avatar": display[0].upper() if display else "U",
-        "can_view_telemetry": False,
-        "can_manage_services": False,
-    }
+    # Unregistered account: reject authentication
+    return None
 
 
 def get_user(username: str) -> Optional[Dict[str, Any]]:

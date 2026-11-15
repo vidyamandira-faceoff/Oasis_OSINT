@@ -1,10 +1,11 @@
 from pathlib import Path
 from typing import Optional
-from fastapi import APIRouter, Request, Query
+from fastapi import APIRouter, Request, Query, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from core.config import BASE_DIR, SERVICES_DIR, GATEWAY_PORT
+from core.security import get_session_from_request
 from roles.accounts import get_user, is_admin_user
 from roles.user.service import get_user_dashboard_data
 from services.dashboard.backend.service import get_dashboard_summary
@@ -16,12 +17,16 @@ templates = Jinja2Templates(directory=str(BASE_DIR))
 
 
 def _get_user_context(request: Request, active_view: str, extra: Optional[dict] = None) -> dict:
-    current_username = request.cookies.get("oasis_user") or "alex"
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        raise HTTPException(status_code=401, detail="Authentication required.")
+
+    current_username = session["username"]
     user_account = get_user(current_username) or {
         "username": current_username,
-        "displayName": current_username.title(),
-        "role": "user",
-        "avatar": current_username[0].upper(),
+        "displayName": session.get("displayName", current_username.title()),
+        "role": session.get("role", "user"),
+        "avatar": session.get("avatar", current_username[0].upper()),
     }
     ctx = {
         "request": request,
@@ -228,7 +233,10 @@ async def user_changelog_page(request: Request):
 @router.get("/api/user/profile")
 async def get_user_profile(request: Request):
     """Returns standard user station metadata."""
-    current_user = request.cookies.get("oasis_user") or "alex"
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        raise HTTPException(status_code=401, detail="Authentication required.")
+    current_user = session["username"]
     return {
         "success": True,
         "profile": get_user_dashboard_data(current_user)

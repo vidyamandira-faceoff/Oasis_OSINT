@@ -586,6 +586,113 @@
     <!-- Left Column: Operations & Intelligence Findings -->
     <div class="network-main-column">
 
+      <!-- Admin Privilege OSINT Tool Architecture Panel -->
+      <div class="admin-tools-spec-panel">
+        <div class="admin-tools-header">
+          <div class="admin-tools-title">
+            <span class="admin-badge-pill">Admin Governance</span>
+            <h4>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ember-600)" stroke-width="2.2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+              </svg>
+              Exact OSINT Engines Functioning for this Service
+            </h4>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="admin-tool-status-badge">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+              4 Engines Online &amp; Operational
+            </span>
+          </div>
+        </div>
+
+        <div class="admin-tools-grid">
+          <!-- Tool 1 -->
+          <div class="admin-tool-item-card">
+            <div class="admin-tool-top-row">
+              <div class="admin-tool-name-group">
+                <div class="admin-tool-name">
+                  <span>MaxMind GeoIP Engine</span>
+                </div>
+                <span class="admin-tool-version">GeoLite2 · MMDB Binary Tree</span>
+              </div>
+              <span class="admin-tool-status-badge">Geo Resolution</span>
+            </div>
+            <div class="admin-tool-role-desc">
+              Binary tree IP database and REST resolvers mapping physical coordinates, city, region, postal code, and ISP/hosting provider attribution without active probing.
+            </div>
+            <div class="admin-tool-specs-list">
+              <span class="admin-tool-chip accent">Protocol: MMDB Binary Tree / REST</span>
+              <span class="admin-tool-chip">Data: Lat/Long, City, Country, ISP</span>
+              <span class="admin-tool-chip">Mode: Passive Extraction</span>
+            </div>
+          </div>
+
+          <!-- Tool 2 -->
+          <div class="admin-tool-item-card">
+            <div class="admin-tool-top-row">
+              <div class="admin-tool-name-group">
+                <div class="admin-tool-name">
+                  <span>BGP &amp; ASN Routing Worker</span>
+                </div>
+                <span class="admin-tool-version">v1.4.0 · Team Cymru WHOIS</span>
+              </div>
+              <span class="admin-tool-status-badge">BGP Routing</span>
+            </div>
+            <div class="admin-tool-role-desc">
+              Direct WHOIS socket queries to Team Cymru BGP routing table for AS Number, routing prefix CIDR, upstream transit ASN, and regional allocation registry.
+            </div>
+            <div class="admin-tool-specs-list">
+              <span class="admin-tool-chip accent">Protocol: Team Cymru WHOIS / TCP 43</span>
+              <span class="admin-tool-chip">Registrars: ARIN, RIPE, APNIC, AFRINIC</span>
+              <span class="admin-tool-chip">Outputs: ASN, BGP Prefix, Org</span>
+            </div>
+          </div>
+
+          <!-- Tool 3 -->
+          <div class="admin-tool-item-card">
+            <div class="admin-tool-top-row">
+              <div class="admin-tool-name-group">
+                <div class="admin-tool-name">
+                  <span>16-Port Socket Prober</span>
+                </div>
+                <span class="admin-tool-version">v1.2.0 · Concurrent Sockets</span>
+              </div>
+              <span class="admin-tool-status-badge">Port Triage</span>
+            </div>
+            <div class="admin-tool-role-desc">
+              Concurrent non-intrusive TCP socket handshake auditor probing 16 critical services (SSH, FTP, HTTP, HTTPS, RDP, MySQL, Postgres, DNS) with stealth timeout profiles.
+            </div>
+            <div class="admin-tool-specs-list">
+              <span class="admin-tool-chip accent">Protocol: Async TCP Handshake</span>
+              <span class="admin-tool-chip">Profile: 0.8s, 1.5s, 3.0s Timeout</span>
+              <span class="admin-tool-chip">Scope: 16 Critical Ports</span>
+            </div>
+          </div>
+
+          <!-- Tool 4 -->
+          <div class="admin-tool-item-card">
+            <div class="admin-tool-top-row">
+              <div class="admin-tool-name-group">
+                <div class="admin-tool-name">
+                  <span>TLS X.509 Decoder</span>
+                </div>
+                <span class="admin-tool-version">v1.0.8 · OpenSSL Sockets</span>
+              </div>
+              <span class="admin-tool-status-badge">Crypto Triage</span>
+            </div>
+            <div class="admin-tool-role-desc">
+              Performs TLS handshakes to extract Subject Alternative Names (SAN hostnames), Common Name, issuing Certificate Authority, cipher suites, and expiry timestamps.
+            </div>
+            <div class="admin-tool-specs-list">
+              <span class="admin-tool-chip accent">Protocol: OpenSSL SSLSocket / X.509</span>
+              <span class="admin-tool-chip">Features: SAN Extractor, CA Audit</span>
+              <span class="admin-tool-chip">Analysis: Cipher &amp; Expiry</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Target Input & Scoping Panel -->
       <div class="input-panel">
         <form id="networkReconForm" onsubmit="handleIpSubmit(event)">
@@ -980,6 +1087,50 @@
 
     <!-- Right Column: Sticky Capabilities & Intelligence Guide -->
     <div class="network-side-column">
+
+      <!-- Admin Tool Quick-Telemetry Card -->
+      <div class="admin-sidebar-tools-card">
+        <div class="admin-sidebar-tools-header">
+          <div style="display: flex; align-items: center; gap: 7px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ember-600)" stroke-width="2.2">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
+            <span style="font-size: 12.5px; font-weight: 800; color: var(--slate-900);">Admin OSINT Tools</span>
+          </div>
+          <span class="admin-badge-pill" style="font-size: 9px; padding: 2px 6px;">4 Active</span>
+        </div>
+        <div class="admin-sidebar-tools-list">
+          <div class="admin-sidebar-tool-row">
+            <div>
+              <div style="font-weight: 700; color: var(--slate-900);">MaxMind GeoIP Engine</div>
+              <div style="font-size: 10px; color: var(--slate-500); font-family: var(--font-mono);">GeoLite2 · MMDB Tree</div>
+            </div>
+            <span class="admin-tool-status-badge" style="font-size: 9.5px; padding: 1px 6px;">Optimal</span>
+          </div>
+          <div class="admin-sidebar-tool-row">
+            <div>
+              <div style="font-weight: 700; color: var(--slate-900);">BGP / ASN Worker</div>
+              <div style="font-size: 10px; color: var(--slate-500); font-family: var(--font-mono);">Team Cymru WHOIS</div>
+            </div>
+            <span class="admin-tool-status-badge" style="font-size: 9.5px; padding: 1px 6px;">Optimal</span>
+          </div>
+          <div class="admin-sidebar-tool-row">
+            <div>
+              <div style="font-weight: 700; color: var(--slate-900);">16-Port Socket Prober</div>
+              <div style="font-size: 10px; color: var(--slate-500); font-family: var(--font-mono);">Async TCP Handshake</div>
+            </div>
+            <span class="admin-tool-status-badge" style="font-size: 9.5px; padding: 1px 6px;">Optimal</span>
+          </div>
+          <div class="admin-sidebar-tool-row">
+            <div>
+              <div style="font-weight: 700; color: var(--slate-900);">TLS X.509 Decoder</div>
+              <div style="font-size: 10px; color: var(--slate-500); font-family: var(--font-mono);">OpenSSL SSLSocket</div>
+            </div>
+            <span class="admin-tool-status-badge" style="font-size: 9.5px; padding: 1px 6px;">Optimal</span>
+          </div>
+        </div>
+      </div>
+
       <div class="capabilities-card">
         <div class="capabilities-header">
           <div style="display: flex; align-items: center; gap: 8px;">

@@ -3,6 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import JSONResponse, RedirectResponse
 from pathlib import Path
 from core.config import BASE_DIR
+from core.security import get_session_from_request
 from roles.accounts import is_admin_user
 from services.notifications.backend.service import list_tool_notifications, get_stats, purge_completed_notifications
 
@@ -15,8 +16,10 @@ templates = Jinja2Templates(directory=[
 
 @router.get("/notifications")
 async def notifications_page(request: Request, status: str = "ALL", tool: str = "ALL"):
-    current_username = request.cookies.get("oasis_user") or "alex"
-    target_prefix = "/role_admin" if (is_admin_user(current_username) or current_username.lower() == "admin") else "/role_user"
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        return RedirectResponse(url="/login", status_code=302)
+    target_prefix = "/role_admin" if session.get("is_admin") else "/role_user"
     return RedirectResponse(url=f"{target_prefix}/notifications", status_code=302)
 
 @router.get("/api/notifications")

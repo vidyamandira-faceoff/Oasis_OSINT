@@ -1,10 +1,11 @@
 from pathlib import Path
 from typing import Optional
-from fastapi import APIRouter, Request, Query
+from fastapi import APIRouter, Request, Query, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from core.config import BASE_DIR, SERVICES_DIR, GATEWAY_PORT
+from core.security import get_session_from_request
 from roles.accounts import get_user, is_admin_user
 from roles.admin.service import get_admin_dashboard_data
 from services.dashboard.backend.service import get_dashboard_summary
@@ -16,12 +17,18 @@ templates = Jinja2Templates(directory=str(BASE_DIR))
 
 
 def _get_admin_context(request: Request, active_view: str, extra: Optional[dict] = None) -> dict:
-    current_username = request.cookies.get("oasis_user") or "admin"
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        raise HTTPException(status_code=401, detail="Authentication required.")
+    if not session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Admin privileges required.")
+
+    current_username = session["username"]
     user_account = get_user(current_username) or {
-        "username": "admin",
-        "displayName": "Admin",
+        "username": current_username,
+        "displayName": session.get("displayName", "Admin"),
         "role": "admin",
-        "avatar": "A",
+        "avatar": session.get("avatar", "A"),
     }
     admin_data = get_admin_dashboard_data()
     ctx = {
@@ -244,10 +251,14 @@ async def admin_changelog_page(request: Request):
 @router.get("/api/admin/telemetry")
 async def get_admin_telemetry(request: Request):
     """Returns platform microservice & tool health telemetry for Admin role."""
-    current_user = request.cookies.get("oasis_user") or ""
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        raise HTTPException(status_code=401, detail="Authentication required.")
+    if not session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Admin privileges required.")
     data = get_admin_dashboard_data()
     return {
         "success": True,
-        "is_admin": is_admin_user(current_user) or current_user.lower() == "admin",
+        "is_admin": True,
         "data": data,
     }

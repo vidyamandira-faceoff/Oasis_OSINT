@@ -52,6 +52,7 @@ nohup.out
 .env.*
 !.env.example
 secrets.json
+.oasis_secret
 *.key
 *.pem
 *.cert

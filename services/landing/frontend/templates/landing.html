@@ -859,21 +859,19 @@
           if (submitText) submitText.innerText = "Authenticate & Enter Dashboard";
         }
       } catch (err) {
-        console.warn("Backend auth API unreachable, applying graceful offline authorization:", err);
-        const fallbackUser = {
-          username: username,
-          displayName: username.replace(/_/g, " ").replace(/\./g, " ").toUpperCase(),
-          role: username.toLowerCase() === "admin" ? "admin" : "user",
-          avatar: username.charAt(0).toUpperCase()
-        };
-        localStorage.setItem("oasis_user", JSON.stringify(fallbackUser));
-        document.cookie = `oasis_user=${encodeURIComponent(username)}; path=/; max-age=604800; samesite=lax`;
-        window.location.href = (username.toLowerCase() === 'admin') ? '/role_admin/dashboard' : '/role_user/dashboard';
+        showFeedback("Network error: Unable to reach authentication server.", "error");
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitText) submitText.innerText = "Authenticate & Enter Dashboard";
       }
     }
 
     // Switch Station User
-    function handleSwitchStation() {
+    async function handleSwitchStation() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (_) {}
       const banner = document.getElementById('active-session-banner');
       if (banner) banner.classList.remove('visible');
       const userEl = document.getElementById('login-username');
@@ -881,15 +879,18 @@
         userEl.value = "";
         userEl.focus();
       }
+      const passEl = document.getElementById('login-password');
+      if (passEl) passEl.value = "";
     }
 
-    // Hydrate Active Session on Page Load
-    function checkActiveSession() {
+    // Hydrate Active Session on Page Load via backend session verification
+    async function checkActiveSession() {
       try {
-        const raw = localStorage.getItem('oasis_user');
-        if (raw) {
-          const u = JSON.parse(raw);
-          if (u && (u.username || u.displayName)) {
+        const res = await fetch('/api/auth/session');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.authenticated && data.user) {
+            const u = data.user;
             const banner = document.getElementById('active-session-banner');
             const nameEl = document.getElementById('active-session-name');
             const roleEl = document.getElementById('active-session-role');
@@ -904,8 +905,13 @@
               const userEl = document.getElementById('login-username');
               if (userEl && !userEl.value) userEl.value = u.username;
             }
+            return;
           }
         }
+        // Not authenticated: ensure storage is cleared and banner is hidden
+        localStorage.removeItem('oasis_user');
+        const banner = document.getElementById('active-session-banner');
+        if (banner) banner.classList.remove('visible');
       } catch (e) {
         console.warn("Session check error:", e);
       }
