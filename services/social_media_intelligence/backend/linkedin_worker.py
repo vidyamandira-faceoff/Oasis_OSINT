@@ -3,22 +3,13 @@ import sys
 import re
 import time
 import json
-import asyncio
+import base64
+import urllib.parse
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from urllib.parse import unquote, urlparse
-
-# Add CrossLinked_OSINT to sys.path safely
-CROSSLINKED_DIR = Path("/mnt/devdata/works/VivekMedha/CrossLinked_OSINT")
-if str(CROSSLINKED_DIR) not in sys.path:
-    sys.path.insert(0, str(CROSSLINKED_DIR))
-
-try:
-    from crosslinked.search import CrossLinked
-    from crosslinked import utils
-except ImportError:
-    CrossLinked = None
-    utils = None
+import requests
+from bs4 import BeautifulSoup
 
 def clean_company_name(company: str) -> str:
     """Sanitizes target company name, stripping quotes, domains, and trailing punctuation."""
@@ -69,6 +60,156 @@ def generate_corporate_email(name: str, pattern: str = "{first}.{last}@{domain}"
         email = f"{email}@{dom}"
     return email
 
+def _harvest_from_yahoo(company: str, max_results: int = 50, timeout: float = 12.0, proxy: str = "") -> List[Dict[str, str]]:
+    """
+    Harvests LinkedIn personnel profiles via Yahoo zero-credential search indexation.
+    Decodes redirected and direct search links and extracts verified names and titles.
+    """
+    findings = []
+    seen_urls = set()
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    }
+    proxies = {"http": proxy, "https": proxy} if proxy else None
+
+    # Calculate pages needed
+    b = 1
+    max_pages = max(1, (max_results // 7) + 2)
+
+    for page in range(max_pages):
+        encoded_query = urllib.parse.quote(f'site:linkedin.com/in "{company}"')
+        url = f'https://search.yahoo.com/search?p={encoded_query}&b={b}&pz=10'
+        try:
+            resp = requests.get(url, headers=headers, proxies=proxies, timeout=timeout)
+            if resp.status_code != 200:
+                break
+
+            soup = BeautifulSoup(resp.text, 'html.parser')
+            page_found = 0
+
+            for a in soup.find_all('a'):
+                raw_href = a.get('href', '')
+                dest_url = ''
+                if '/RU=' in raw_href:
+                    m = re.search(r'/RU=([^/]+)/', raw_href)
+                    if m:
+                        dest_url = urllib.parse.unquote(m.group(1))
+                elif 'linkedin.com/in/' in raw_href:
+                    dest_url = raw_href
+
+                if not dest_url or 'linkedin.com/in/' not in dest_url:
+                    continue
+
+                clean_url = dest_url.split('?')[0].rstrip('/')
+                if clean_url in seen_urls:
+                    continue
+
+                # Extract clean title from h3 or anchor text
+                h3 = a.find('h3')
+                raw_title = h3.get_text(strip=True) if h3 else a.get_text(strip=True)
+                if not raw_title or len(raw_title) < 4:
+                    continue
+
+                # Strip breadcrumb noise if present
+                clean_title = re.sub(r'^(LinkedIn|Linkedin)[^\w]*', '', raw_title)
+                clean_title = re.sub(r'^https?:\/\/[^\s]+', '', clean_title)
+                clean_title = re.sub(r'^[^\w]*linkedin\.com[^\s]*', '', clean_title, flags=re.I)
+                if '›' in clean_title:
+                    clean_title = clean_title.split('›')[-1].strip()
+
+                # Parse Person Name and Job Title
+                name = ''
+                job_title = ''
+
+                parts = re.split(r'\s+[-–—]\s+', clean_title, maxsplit=1)
+                if len(parts) == 2:
+                    name = parts[0].strip()
+                    job_title = parts[1].replace('| LinkedIn', '').replace('LinkedIn', '').strip(' .-|')
+                else:
+                    name = clean_title.replace('| LinkedIn', '').replace('LinkedIn', '').strip(' .-|')
+                    job_title = f"Professional at {company.capitalize()}"
+
+                name = format_person_name(name)
+                if not name or len(name) < 2 or 'linkedin' in name.lower():
+                    continue
+
+                seen_urls.add(clean_url)
+                findings.append({
+                    "source_engine": "yahoo",
+                    "url": clean_url,
+                    "raw_name": name,
+                    "title": job_title or f"Professional at {company.capitalize()}",
+                    "text": clean_title
+                })
+                page_found += 1
+
+                if len(findings) >= max_results:
+                    break
+
+            if page_found == 0 or len(findings) >= max_results:
+                break
+
+            b += 7
+            time.sleep(0.3)
+
+        except Exception:
+            break
+
+    return findings
+
+def _harvest_from_bing(company: str, max_results: int = 50, timeout: float = 12.0, proxy: str = "") -> List[Dict[str, str]]:
+    """
+    Fallback harvester using Bing search indexation.
+    """
+    findings = []
+    seen_urls = set()
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+    }
+    proxies = {"http": proxy, "https": proxy} if proxy else None
+    url = f'https://www.bing.com/search?q=%22{urllib.parse.quote(company)}%22+site:linkedin.com/in/'
+
+    try:
+        resp = requests.get(url, headers=headers, proxies=proxies, timeout=timeout)
+        if resp.status_code == 200:
+            soup = BeautifulSoup(resp.text, 'html.parser')
+            for a in soup.find_all('a'):
+                href = a.get('href', '')
+                if '/ck/a?' in href:
+                    m = re.search(r'[?&]u=a1([^&]+)', href)
+                    if m:
+                        b64_str = m.group(1) + '=' * ((4 - len(m.group(1)) % 4) % 4)
+                        try:
+                            href = base64.urlsafe_b64decode(b64_str).decode('utf-8', errors='ignore')
+                        except Exception:
+                            pass
+                if 'linkedin.com/in/' in href:
+                    clean_url = href.split('?')[0].rstrip('/')
+                    if clean_url in seen_urls:
+                        continue
+                    txt = a.get_text(strip=True)
+                    if not txt or len(txt) < 4:
+                        continue
+                    parts = re.split(r'\s+[-–—]\s+', txt, maxsplit=1)
+                    name = format_person_name(parts[0])
+                    job_title = parts[1].replace('| LinkedIn', '').strip() if len(parts) > 1 else f"Professional at {company.capitalize()}"
+                    seen_urls.add(clean_url)
+                    findings.append({
+                        "source_engine": "bing",
+                        "url": clean_url,
+                        "raw_name": name,
+                        "title": job_title,
+                        "text": txt
+                    })
+                    if len(findings) >= max_results:
+                        break
+    except Exception:
+        pass
+
+    return findings
+
 def scrape_linkedin_workforce(
     company_name: str,
     title_filter: str = "",
@@ -95,48 +236,34 @@ def scrape_linkedin_workforce(
     if not search_engines:
         search_engines = ["yahoo", "bing"]
 
-    proxies = [proxy] if proxy else []
     raw_findings = []
     seen_urls = set()
 
-    # Prioritize Yahoo for zero-credential fast indexation
-    ordered_engines = []
-    if "yahoo" in search_engines:
-        ordered_engines.append("yahoo")
-    for e in search_engines:
-        if e not in ordered_engines:
-            ordered_engines.append(e)
+    # Step 1: Query Yahoo (primary high-yield zero-credential index)
+    if "yahoo" in search_engines or "all" in search_engines or True:
+        yahoo_results = _harvest_from_yahoo(
+            company=clean_company,
+            max_results=max_results,
+            timeout=timeout,
+            proxy=proxy
+        )
+        for item in yahoo_results:
+            if item["url"] not in seen_urls:
+                seen_urls.add(item["url"])
+                raw_findings.append(item)
 
-    for eng in ordered_engines:
-        try:
-            cl = CrossLinked(
-                search_engine=eng,
-                target=clean_company,
-                timeout=timeout,
-                conn_timeout=4,
-                proxies=proxies,
-                jitter=jitter
-            )
-            eng_results = cl.search() or []
-            for item in eng_results:
-                url = item.get("url", "")
-                if url and url not in seen_urls:
-                    seen_urls.add(url)
-                    raw_findings.append({
-                        "source_engine": eng,
-                        "url": url,
-                        "raw_name": item.get("name", ""),
-                        "title": item.get("title", "N/A"),
-                        "text": item.get("text", "")
-                    })
-                if len(raw_findings) >= max_results:
-                    break
-        except Exception as e:
-            # Continue to next search engine if one encounters rate limits
-            continue
-
-        if len(raw_findings) >= max_results:
-            break
+    # Step 2: Fallback to Bing if needed
+    if len(raw_findings) < max_results and ("bing" in search_engines or "all" in search_engines):
+        bing_results = _harvest_from_bing(
+            company=clean_company,
+            max_results=max_results - len(raw_findings),
+            timeout=timeout,
+            proxy=proxy
+        )
+        for item in bing_results:
+            if item["url"] not in seen_urls:
+                seen_urls.add(item["url"])
+                raw_findings.append(item)
 
     # Process and filter personnel
     personnel_list = []
@@ -146,7 +273,7 @@ def scrape_linkedin_workforce(
         formatted_name = format_person_name(item.get("raw_name", ""))
         job_title = item.get("title", "N/A").strip()
         if job_title == "N/A" or not job_title:
-            job_title = f"Professional at {clean_company}"
+            job_title = f"Professional at {clean_company.capitalize()}"
 
         # Apply department / title filter if requested
         if clean_filter and clean_filter != "all":
@@ -157,13 +284,13 @@ def scrape_linkedin_workforce(
         inferred_email = generate_corporate_email(formatted_name, pattern, target_domain)
 
         personnel_list.append({
-            "id": idx,
+            "id": len(personnel_list) + 1,
             "name": formatted_name,
             "title": job_title,
-            "company": clean_company,
+            "company": clean_company.capitalize(),
             "profile_url": item.get("url", ""),
             "inferred_email": inferred_email,
-            "source_engine": item.get("source_engine", "web"),
+            "source_engine": item.get("source_engine", "yahoo"),
             "raw_snippet": item.get("text", "")
         })
 
@@ -177,6 +304,6 @@ def scrape_linkedin_workforce(
         "duration": elapsed,
         "total_discovered": len(personnel_list),
         "personnel": personnel_list,
-        "engines_queried": ordered_engines,
+        "engines_queried": ["yahoo", "bing"],
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())
     }

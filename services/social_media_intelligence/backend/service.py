@@ -1617,18 +1617,20 @@ def execute_linkedin_task(
             try:
                 with open(cached_file, "r", encoding="utf-8") as f:
                     cached_data = json.load(f)
-                return {
-                    "mode": "flash",
-                    "status": "COMPLETED",
-                    "cached": True,
-                    "company": cached_data.get("company", clean_company),
-                    "domain": cached_data.get("domain", ""),
-                    "elapsed": 0.1,
-                    "duration": cached_data.get("duration", 0.1),
-                    "personnel": cached_data.get("personnel", []),
-                    "total_discovered": cached_data.get("total_discovered", len(cached_data.get("personnel", []))),
-                    "progress_msg": f"Retrieved from internal OASIS dossier vault ({len(cached_data.get('personnel', []))} personnel)."
-                }
+                cached_personnel = cached_data.get("personnel", [])
+                if cached_personnel and len(cached_personnel) > 0:
+                    return {
+                        "mode": "flash",
+                        "status": "COMPLETED",
+                        "cached": True,
+                        "company": cached_data.get("company", clean_company),
+                        "domain": cached_data.get("domain", ""),
+                        "elapsed": 0.1,
+                        "duration": cached_data.get("duration", 0.1),
+                        "personnel": cached_personnel,
+                        "total_discovered": cached_data.get("total_discovered", len(cached_personnel)),
+                        "progress_msg": f"Retrieved from internal OASIS dossier vault ({len(cached_personnel)} personnel)."
+                    }
             except Exception:
                 pass
 
@@ -1696,18 +1698,20 @@ def get_linkedin_status(company: str) -> Dict[str, Any]:
         try:
             with open(cached_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            return {
-                "company": clean_company,
-                "mode": "flash",
-                "status": "COMPLETED",
-                "cached": True,
-                "elapsed": 0,
-                "progress_msg": "Retrieved from internal OASIS dossier vault.",
-                "domain": data.get("domain", ""),
-                "personnel": data.get("personnel", []),
-                "total_discovered": data.get("total_discovered", len(data.get("personnel", []))),
-                "error": None
-            }
+            cached_personnel = data.get("personnel", [])
+            if cached_personnel and len(cached_personnel) > 0:
+                return {
+                    "company": clean_company,
+                    "mode": "flash",
+                    "status": "COMPLETED",
+                    "cached": True,
+                    "elapsed": 0,
+                    "progress_msg": "Retrieved from internal OASIS dossier vault.",
+                    "domain": data.get("domain", ""),
+                    "personnel": cached_personnel,
+                    "total_discovered": data.get("total_discovered", len(cached_personnel)),
+                    "error": None
+                }
         except Exception:
             pass
 
