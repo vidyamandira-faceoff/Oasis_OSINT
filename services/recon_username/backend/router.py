@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from typing import List, Optional
@@ -31,18 +31,17 @@ class ReconRunRequest(BaseModel):
     recursive: Optional[bool] = False
     tor: Optional[bool] = False
 
-@router.get("/services/recon-username", response_class=HTMLResponse)
+from roles.accounts import is_admin_user
+
+@router.get("/services/recon-username")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/recon_username/frontend/templates/recon_username.html",
-        context={
-            "page_title": "Username Intelligence & Identity Reconnaissance — Oasis",
-            "active_view": "recon_username",
-            "initial_target": initial_target
-        }
-    )
+    current_username = request.cookies.get("oasis_user") or "alex"
+    target_prefix = "/role_admin" if (is_admin_user(current_username) or current_username.lower() == "admin") else "/role_user"
+    url = f"{target_prefix}/services/recon-username"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/recon_username/run")
 async def run_task(req: ReconRunRequest):

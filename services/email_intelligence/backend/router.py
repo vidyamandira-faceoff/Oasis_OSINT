@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from typing import Optional, List
@@ -33,18 +33,17 @@ class MailboxRunRequest(BaseModel):
     force: Optional[bool] = False
     timeout: Optional[int] = 10
 
-@router.get("/services/email-intelligence", response_class=HTMLResponse)
+from roles.accounts import is_admin_user
+
+@router.get("/services/email-intelligence")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/email_intelligence/frontend/templates/email_intelligence.html",
-        context={
-            "page_title": "Email Intelligence & Account Footprint — Oasis",
-            "active_view": "email_intelligence",
-            "initial_target": initial_target
-        }
-    )
+    current_username = request.cookies.get("oasis_user") or "alex"
+    target_prefix = "/role_admin" if (is_admin_user(current_username) or current_username.lower() == "admin") else "/role_user"
+    url = f"{target_prefix}/services/email-intelligence"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/email_intelligence/run")
 async def run_email_task(req: EmailRunRequest):

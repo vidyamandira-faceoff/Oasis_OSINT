@@ -26,18 +26,17 @@ class DomainRunRequest(BaseModel):
     wayback: Optional[bool] = False
     force: Optional[bool] = False
 
-@router.get("/services/domain-intelligence", response_class=HTMLResponse)
+from roles.accounts import is_admin_user
+
+@router.get("/services/domain-intelligence")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/domain_intelligence/frontend/templates/domain_intelligence.html",
-        context={
-            "page_title": "Domain & Website Intelligence — Oasis",
-            "active_view": "domain_intelligence",
-            "initial_target": initial_target
-        }
-    )
+    current_username = request.cookies.get("oasis_user") or "alex"
+    target_prefix = "/role_admin" if (is_admin_user(current_username) or current_username.lower() == "admin") else "/role_user"
+    url = f"{target_prefix}/services/domain-intelligence"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 # Backward-compatibility redirects for previously fragmented routes
 @router.get("/services/recon-website-url")

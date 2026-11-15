@@ -392,6 +392,247 @@
     color: var(--ember-600);
   }
 
+  /* =========================================================================
+     ADMIN GOVERNANCE, TOOL MAPPING & EFFICIENCY DIAGNOSTICS STYLES
+     ========================================================================= */
+  .admin-panel-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 24px 26px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .admin-panel-card.accent-admin {
+    border-top: 3px solid #dc2626;
+  }
+  .admin-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .admin-panel-title-group h3 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--slate-900);
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.01em;
+  }
+  .admin-panel-title-group p {
+    font-size: 12.5px;
+    color: var(--slate-500);
+    margin: 0;
+  }
+  .admin-badge-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .admin-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .admin-kpi-box {
+    background: var(--bg-card-subtle);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+  }
+  .admin-kpi-val {
+    font-size: 22px;
+    font-weight: 850;
+    font-family: var(--font-mono);
+    color: var(--slate-900);
+    line-height: 1.15;
+  }
+  .admin-kpi-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--slate-500);
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+  .usage-bars-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .usage-bar-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .usage-bar-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--slate-700);
+  }
+  .usage-track {
+    height: 10px;
+    background: var(--slate-100);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border-soft);
+  }
+  .usage-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+  .mapping-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-subtle);
+  }
+  .mapping-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    min-width: 820px;
+  }
+  .mapping-table th {
+    background: var(--bg-card-subtle);
+    padding: 11px 16px;
+    text-align: left;
+    font-weight: 750;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--slate-600);
+    border-bottom: 1px solid var(--border-soft);
+    letter-spacing: 0.04em;
+  }
+  .mapping-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--slate-800);
+    vertical-align: top;
+  }
+  .mapping-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tool-tag {
+    display: inline-block;
+    background: var(--bg-card-subtle);
+    border: 1px solid var(--border-soft);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    margin: 2px 2px 2px 0;
+  }
+  .badge-health-opt {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .badge-health-warn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .badge-status-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10.5px;
+  }
+  .badge-status-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10.5px;
+  }
+
+  /* Dark Mode Overrides for Admin Governance Suite */
+  html[data-theme="dark"] .admin-panel-card,
+  body.dark-mode .admin-panel-card {
+    background: #111827;
+    border-color: var(--border-soft);
+  }
+  html[data-theme="dark"] .admin-panel-title-group h3,
+  body.dark-mode .admin-panel-title-group h3 {
+    color: #ffffff;
+  }
+  html[data-theme="dark"] .admin-kpi-box,
+  body.dark-mode .admin-kpi-box {
+    background: #162032;
+    border-color: #1e293b;
+  }
+  html[data-theme="dark"] .admin-kpi-val,
+  body.dark-mode .admin-kpi-val {
+    color: #ffffff;
+  }
+  html[data-theme="dark"] .mapping-table th,
+  body.dark-mode .mapping-table th {
+    background: #162032;
+    color: #94a3b8;
+    border-color: #1e293b;
+  }
+  html[data-theme="dark"] .mapping-table td,
+  body.dark-mode .mapping-table td {
+    border-color: #1e293b;
+    color: #e2e8f0;
+  }
+  html[data-theme="dark"] .tool-tag,
+  body.dark-mode .tool-tag {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+  }
+  html[data-theme="dark"] .usage-track,
+  body.dark-mode .usage-track {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  @media (max-width: 900px) {
+    .admin-kpi-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 580px) {
+    .admin-kpi-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
 </style>
 {% endblock %}
 
@@ -402,19 +643,39 @@
     <!-- 1. Hero Welcome Card -->
     <div class="hero-welcome-card">
       <div class="hero-welcome-left">
-        <div class="hero-logo-box">
+        <div class="hero-logo-box" {% if is_admin %}style="background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff;"{% endif %}>
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            {% if is_admin %}
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            {% else %}
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            {% endif %}
           </svg>
         </div>
         <div>
           <div class="hero-greeting-tag">
-            <span>OASIS OPERATIONAL PLATFORM &bull; ENGINES ACTIVE</span>
+            {% if is_admin %}
+              <span style="background: rgba(220, 38, 38, 0.12); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.25); padding: 3px 8px; border-radius: 4px; font-weight: 800; font-family: var(--font-mono); font-size: 11px;">
+                ROOT ADMIN &bull; PLATFORM GOVERNANCE &amp; TELEMETRY CONSOLE
+              </span>
+            {% else %}
+              <span>OASIS OPERATIONAL PLATFORM &bull; ENGINES ACTIVE</span>
+            {% endif %}
           </div>
-          <h1 class="hero-title">Intelligence Operations Overview</h1>
+          <h1 class="hero-title">
+            {% if is_admin %}
+              Platform Telemetry &amp; Microservice Governance
+            {% else %}
+              Intelligence Operations Overview
+            {% endif %}
+          </h1>
           <p class="hero-subtitle">
-            Unified open-source intelligence collection, reconnaissance, and entity correlation terminal. Launch multi-vector investigations across identity handles, web infrastructure, social platforms, and network perimeters.
+            {% if is_admin %}
+              Privileged system administration console for inspecting underlying tool mappings, multi-user popularity distributions, operational health indices, and daemon efficiency diagnostics across all services.
+            {% else %}
+              Unified open-source intelligence collection, reconnaissance, and entity correlation terminal. Launch multi-vector investigations across identity handles, web infrastructure, social platforms, and network perimeters.
+            {% endif %}
           </p>
         </div>
       </div>
@@ -432,6 +693,207 @@
         </div>
       </div>
     </div>
+
+    {% if is_admin and admin_data %}
+    <!-- =========================================================================
+         ADMIN PRIVILEGED SUITE: GOVERNANCE, TOOL MAPPINGS & EFFICIENCY RADAR
+         ========================================================================= -->
+
+    <!-- Admin KPI Strip -->
+    <div class="admin-kpi-grid">
+      <div class="admin-kpi-box">
+        <div class="admin-kpi-val" style="color: #059669;">{{ admin_data.overall_health_score }}</div>
+        <div class="admin-kpi-label">Platform Health Index</div>
+      </div>
+      <div class="admin-kpi-box">
+        <div class="admin-kpi-val" style="color: var(--ember-600);">{{ admin_data.active_microservices_count }} / {{ admin_data.active_microservices_count }}</div>
+        <div class="admin-kpi-label">Active Microservices</div>
+      </div>
+      <div class="admin-kpi-box">
+        <div class="admin-kpi-val" style="color: #0284c7;">{{ admin_data.total_tools_mapped }} Tools</div>
+        <div class="admin-kpi-label">Functioning Engines</div>
+      </div>
+      <div class="admin-kpi-box">
+        <div class="admin-kpi-val" style="color: #6366f1;">{{ admin_data.average_system_latency }}</div>
+        <div class="admin-kpi-label">Average Response Latency</div>
+      </div>
+    </div>
+
+    <!-- Admin Feature 1: Tool Usage Analytics & Popularity Distribution -->
+    <div class="admin-panel-card accent-admin">
+      <div class="admin-panel-header">
+        <div class="admin-panel-title-group">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            Tool Usage Distribution &amp; Popularity (More Used vs. Less Used by Users)
+          </h3>
+          <p>Statistical breakdown of reconnaissance tools executed by majority of registered analysts and investigators</p>
+        </div>
+        <div class="admin-badge-strip">
+          <span style="font-family: var(--font-mono); font-size: 11px; background: var(--bg-card-subtle); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-soft); font-weight: 600;">
+            Telemetry Source: Multi-User Aggregate (Live)
+          </span>
+        </div>
+      </div>
+
+      <div class="usage-bars-container">
+        {% for item in admin_data.usage_ranking %}
+        <div class="usage-bar-row">
+          <div class="usage-bar-meta">
+            <span>
+              <strong>#{{ item.rank }}</strong> {{ item.service }}
+              <span class="tool-tag" style="margin-left: 8px;">{{ item.tier }}</span>
+            </span>
+            <span style="font-family: var(--font-mono); font-weight: 700;">{{ item.share }}% of all queries</span>
+          </div>
+          <div class="usage-track">
+            <div class="usage-fill" style="width: {{ item.share }}%; background: {% if item.rank == 1 %}#059669{% elif item.rank == 2 %}#0284c7{% elif item.rank <= 4 %}#6366f1{% else %}#d97706{% endif %};"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Admin Feature 2: Exact Microservice-to-Tool Architecture Mapping -->
+    <div class="admin-panel-card">
+      <div class="admin-panel-header">
+        <div class="admin-panel-title-group">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ember-600)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            Microservice Architecture &amp; Exact Tool Mapping Matrix
+          </h3>
+          <p>Inventory of exact underlying engines, workers, daemons, and algorithms functioning against each microservice</p>
+        </div>
+        <span class="badge-health-opt">
+          <span class="dot" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
+          All 6 Services Mapped &amp; Operational
+        </span>
+      </div>
+
+      <div class="mapping-table-wrap">
+        <table class="mapping-table">
+          <thead>
+            <tr>
+              <th style="width: 26%;">Microservice &amp; Route</th>
+              <th style="width: 38%;">Exact Functioning Tools &amp; Engines</th>
+              <th style="width: 18%;">Operational Health</th>
+              <th style="width: 18%;">Efficiency &amp; Latency</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ms in admin_data.microservices %}
+            <tr>
+              <td>
+                <div style="font-weight: 750; font-size: 13.5px; color: var(--slate-900); margin-bottom: 2px;">{{ ms.name }}</div>
+                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--slate-500);">{{ ms.route }}</div>
+                <div style="margin-top: 6px;">
+                  <span class="tool-tag" style="background: var(--ember-50); color: var(--ember-800); border-color: var(--ember-200);">{{ ms.usage_tier }}</span>
+                </div>
+              </td>
+              <td>
+                {% for tool in ms.tools %}
+                <div style="margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-soft);">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                    <span style="font-weight: 700; color: var(--slate-850);">{{ tool.tool_name }}</span>
+                    <span class="tool-tag">{{ tool.version }}</span>
+                  </div>
+                  <div style="font-size: 11.5px; color: var(--slate-500); margin-top: 2px;">{{ tool.role }}</div>
+                  <div style="font-family: var(--font-mono); font-size: 10.5px; color: var(--slate-400); margin-top: 2px;">Protocol: {{ tool.protocol }}</div>
+                </div>
+                {% endfor %}
+              </td>
+              <td>
+                <div style="margin-bottom: 6px;">
+                  {% if ms.status == 'Optimal' %}
+                    <span class="badge-health-opt">Functioning Properly</span>
+                  {% else %}
+                    <span class="badge-health-warn">Monitored Active</span>
+                  {% endif %}
+                </div>
+                <div style="font-size: 11.5px; color: var(--slate-600); font-weight: 600;">
+                  Health Score: <strong>{{ ms.health_score }}%</strong>
+                </div>
+                <div style="font-size: 11px; color: var(--slate-500); margin-top: 2px;">
+                  Success Rate: {{ ms.success_rate }}
+                </div>
+              </td>
+              <td>
+                <div style="font-weight: 700; color: var(--slate-800); margin-bottom: 3px;">
+                  Avg Latency: <span style="font-family: var(--font-mono);">{{ ms.avg_latency }}</span>
+                </div>
+                <div style="font-size: 11.5px; color: var(--slate-500);">
+                  Efficiency: <strong style="color: {% if ms.efficiency == 'High' %}#059669{% else %}#d97706{% endif %};">{{ ms.efficiency }}</strong>
+                </div>
+                <div style="font-size: 10.5px; color: var(--slate-400); margin-top: 4px;">
+                  Process Daemon: Isolated
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Admin Feature 3 & 4: Live Execution Audit Timeline ("When Used") -->
+    <div class="admin-panel-card">
+      <div class="admin-panel-header">
+        <div class="admin-panel-title-group">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            When Used: Live Platform Execution Audit Log
+          </h3>
+          <p>Chronological timeline recording when tools were triggered, by which user, target examined, and execution performance</p>
+        </div>
+        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--slate-500);">
+          Trailing 24-Hour Buffer
+        </span>
+      </div>
+
+      <div class="mapping-table-wrap">
+        <table class="mapping-table">
+          <thead>
+            <tr>
+              <th>Timestamp (When Used)</th>
+              <th>Analyst User</th>
+              <th>Microservice &amp; Tool</th>
+              <th>Target Identifier</th>
+              <th>Duration</th>
+              <th>Status &amp; Verification</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for exec in admin_data.recent_executions %}
+            <tr>
+              <td style="font-family: var(--font-mono); font-size: 11.5px; white-space: nowrap; color: var(--slate-600);">
+                {{ exec.timestamp }}
+              </td>
+              <td>
+                <span class="tool-tag" style="background: var(--ember-50); color: var(--ember-800); border-color: var(--ember-200);">
+                  {{ exec.user }}
+                </span>
+              </td>
+              <td>
+                <div style="font-weight: 700; color: var(--slate-900);">{{ exec.service }}</div>
+                <div style="font-size: 11px; color: var(--slate-500);">{{ exec.tool }}</div>
+              </td>
+              <td style="font-family: var(--font-mono); font-weight: 600; color: var(--slate-800);">
+                {{ exec.target }}
+              </td>
+              <td style="font-family: var(--font-mono); font-size: 11.5px;">
+                {{ exec.duration }}
+              </td>
+              <td>
+                <span class="{{ exec.status_class }}">{{ exec.status }}</span>
+                <div style="font-size: 10.5px; color: var(--slate-500); margin-top: 2px;">{{ exec.findings }}</div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
 
     <!-- 2. Core Intelligence Modules Section -->
     <div class="section-heading-bar">

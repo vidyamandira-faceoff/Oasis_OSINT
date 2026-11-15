@@ -13,10 +13,14 @@ from core.config import (
 from core.process_manager import RUNNING_PROCESSES, terminate_all_tasks
 
 # Core Services Routers
+from services.landing.backend.router import router as landing_router
 from services.dashboard.backend.router import router as dashboard_router
 from services.settings.backend.router import router as settings_router
 from services.notifications.backend.router import router as notifications_router
 from services.changelog.backend.router import router as changelog_router
+# Roles Routers (Admin & Normal User)
+from roles.admin.router import router as admin_api_router
+from roles.user.router import router as user_api_router
 # Active Intelligence Module Routers
 from services.recon_username.backend.router import router as recon_username_router
 from services.domain_intelligence.backend.router import router as domain_intelligence_router
@@ -86,10 +90,15 @@ async def abort_all_tasks():
 # Microservice Routers Registration
 # -----------------------------------------------------------------------------
 # Core Platform Modules
+app.include_router(landing_router)
 app.include_router(dashboard_router)
 app.include_router(settings_router)
 app.include_router(notifications_router)
 app.include_router(changelog_router)
+
+# Role Governance Modules (Admin & Normal User)
+app.include_router(admin_api_router)
+app.include_router(user_api_router)
 
 # Legacy view redirects (decommissioned /vault and /terminal)
 @app.get("/vault")
@@ -107,14 +116,6 @@ app.include_router(social_media_router)
 app.include_router(phone_intelligence_router)
 app.include_router(email_intelligence_router)
 app.include_router(ip_network_router)
-
-# -----------------------------------------------------------------------------
-# Root Fallback Redirect
-# -----------------------------------------------------------------------------
-@app.get("/")
-async def root_redirect():
-    from fastapi.responses import RedirectResponse
-    return RedirectResponse(url="/dashboard")
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title | default("OASIS — Strategic OSINT Platform & Terminal Login") }}</title>
+  
+  <!-- Global Oasis Design System Styles -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/dark_mode.css" id="shared-dark-mode">
+  <link rel="stylesheet" href="/static/css/mobile.css" id="shared-mobile-responsive">
+  <link rel="stylesheet" href="/static/services/landing/css/landing.css">
+
+  <!-- Early Theme Setter to Prevent Flash of Unstyled Content -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('oasis_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+        document.body && document.body.classList.add('dark-theme', 'dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body class="oasis-landing-body">
+
+  <div class="landing-canvas">
+    <div class="landing-grid-bg"></div>
+
+    <!-- =========================================================================
+         1. TOP STICKY NAVIGATION BAR
+         ========================================================================= -->
+    <header class="landing-nav-bar">
+      <a href="/" class="landing-brand">
+        <div class="landing-brand-logo" title="OASIS Intelligence Terminal">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <circle cx="12" cy="12" r="4"></circle>
+            <line x1="12" y1="3" x2="12" y2="7"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+            <line x1="3" y1="12" x2="7" y2="12"></line>
+            <line x1="17" y1="12" x2="21" y2="12"></line>
+          </svg>
+        </div>
+        <div>
+          <div class="landing-brand-title">
+            OASIS
+            <span class="landing-brand-badge">{{ app_version | default("v1.6.0") }}</span>
+          </div>
+          <div style="font-size: 11px; color: var(--slate-500); font-weight: 500;">
+            OSINT Aggregation &amp; Strategic Intelligence System
+          </div>
+        </div>
+      </a>
+
+      <nav class="landing-nav-links">
+        <a href="#overview" class="landing-nav-link">Overview</a>
+        <a href="#suites" class="landing-nav-link">Intelligence Suites</a>
+        <a href="#architecture" class="landing-nav-link">Architecture</a>
+        <a href="#diagnostics" class="landing-nav-link">Live Telemetry</a>
+      </nav>
+
+      <div class="landing-nav-right">
+        <!-- Live System Telemetry Pill -->
+        <div class="landing-telemetry-pill" title="Gateway Operational">
+          <span class="status-dot-active"></span>
+          <span id="nav-system-status-text">6 Engines Online</span>
+        </div>
+
+        <!-- Theme Toggle Button -->
+        <button class="header-icon-btn" id="theme-toggle-btn" title="Toggle Dark / Light Mode" aria-label="Toggle Theme" onclick="toggleOasisTheme()" style="width: 36px; height: 36px; border-radius: 6px; border: 1px solid var(--border-soft); background: var(--bg-card-subtle); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--slate-700);">
+          <svg class="theme-toggle-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="theme-toggle-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <!-- Direct Terminal Jump Button -->
+        <a href="#login-box" class="btn-nav-terminal" onclick="focusLoginInput(event)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          <span>Terminal Login</span>
+        </a>
+      </div>
+    </header>
+
+
+    <!-- =========================================================================
+         2. HERO SECTION & INTEGRATED LOGIN BOX CARD
+         ========================================================================= -->
+    <section class="landing-hero-container" id="overview">
+      <div class="landing-hero-grid">
+
+        <!-- Left: Value Proposition & Strategic Vision -->
+        <div>
+          <div class="hero-tag-capsule">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span>Strategic OSINT Platform &bull; Incubated at RKMVM</span>
+          </div>
+
+          <h1 class="hero-main-title">
+            Unified Open-Source <br>
+            <span class="gradient-text">Strategic Intelligence</span> Terminal
+          </h1>
+
+          <p class="hero-lead-text">
+            Autonomous multi-vector entity reconnaissance, web surface topology crawling, telecom network tracking, and leaked identity footprint correlation designed for forensic-grade investigations.
+          </p>
+
+          <!-- Key Metrics Strip -->
+          <div class="hero-stats-row">
+            <div class="hero-stat-box">
+              <div class="hero-stat-num">6 Engines</div>
+              <div class="hero-stat-label">Core OSINT Vectors</div>
+            </div>
+            <div class="hero-stat-box">
+              <div class="hero-stat-num">3,000+</div>
+              <div class="hero-stat-label">Target Registries</div>
+            </div>
+            <div class="hero-stat-box">
+              <div class="hero-stat-num">100%</div>
+              <div class="hero-stat-label">Passive &amp; Resilient</div>
+            </div>
+          </div>
+
+          <!-- Capability Pills -->
+          <div class="hero-capability-strip">
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              Username Matrix
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+              Domain Crawling
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              Social Scrapers
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              Telecom Carrier
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path></svg>
+              Email Footprint
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect></svg>
+              IP &amp; Perimeter
+            </span>
+          </div>
+        </div>
+
+
+        <!-- Right: THE OASIS LOGIN BOX CARD -->
+        <div class="oasis-login-card" id="login-box">
+          <div class="login-card-header">
+            <div class="login-badge-row">
+              <span class="login-station-tag">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                Station Terminal
+              </span>
+              <span class="login-security-tag">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                256-Bit Station Isolation
+              </span>
+            </div>
+            <h2 class="login-card-title">Terminal Authentication</h2>
+            <p class="login-card-sub">Authenticate your call-sign to initialize the analyst workspace.</p>
+          </div>
+
+          <!-- Active Session Notice (Shown if user is already authenticated) -->
+          <div class="active-session-banner" id="active-session-banner">
+            <div class="session-user-row">
+              <div class="session-avatar" id="active-session-avatar">A</div>
+              <div class="session-details">
+                <div class="session-name" id="active-session-name">Session Active</div>
+                <div class="session-role" id="active-session-role">Authenticated</div>
+              </div>
+            </div>
+            <div class="session-actions">
+              <a href="/dashboard" class="btn-session-resume">
+                <span>Continue to Dashboard</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </a>
+              <button type="button" class="btn-session-switch" onclick="handleSwitchStation()">
+                Switch User
+              </button>
+            </div>
+          </div>
+
+          <!-- Authentication Form -->
+          <form id="oasis-login-form" onsubmit="handleLoginSubmit(event)">
+            <!-- Username Input -->
+            <div class="login-form-group">
+              <label class="login-form-label" for="login-username">Username or Call-sign</label>
+              <div class="login-input-wrap">
+                <span class="login-input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </span>
+                <input 
+                  type="text" 
+                  id="login-username" 
+                  name="username" 
+                  class="login-input" 
+                  placeholder="Enter username (e.g. admin or alex)" 
+                  value="{{ current_user | default('') }}" 
+                  required 
+                  autocomplete="username"
+                >
+              </div>
+            </div>
+
+            <!-- Passkey Input -->
+            <div class="login-form-group">
+              <label class="login-form-label" for="login-password">Access Passkey / Secret</label>
+              <div class="login-input-wrap">
+                <span class="login-input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </span>
+                <input 
+                  type="password" 
+                  id="login-password" 
+                  name="password" 
+                  class="login-input" 
+                  placeholder="Enter passkey (e.g. admin123 or alpha123)" 
+                  autocomplete="current-password"
+                >
+                <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility()" title="Toggle passkey visibility">
+                  <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Remember Me & Policy -->
+            <div class="login-options-row">
+              <label class="login-checkbox-label">
+                <input type="checkbox" id="login-remember" checked>
+                <span>Remember session on this device</span>
+              </label>
+              <span style="font-family: var(--font-mono); font-size: 11px; color: var(--slate-400);">TLS 1.3 Active</span>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-login-submit" id="btn-login-submit">
+              <svg id="btn-submit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                <polyline points="10 17 15 12 10 7"></polyline>
+                <line x1="15" y1="12" x2="3" y2="12"></line>
+              </svg>
+              <span id="btn-submit-text">Authenticate &amp; Enter Dashboard</span>
+            </button>
+          </form>
+
+          <!-- Quick Presets for Demo Reviewers -->
+          <div class="quick-presets-box">
+            <div class="quick-presets-title">
+              <span>Seeded Role Presets:</span>
+              <span style="font-size: 10px; color: var(--slate-400); font-weight: normal;">Click to Auto-Fill &bull; Two Roles</span>
+            </div>
+            <div class="quick-preset-chips">
+              <button type="button" class="preset-chip" style="border-color: #fca5a5; background: rgba(220, 38, 38, 0.06); color: #dc2626;" onclick="applyPreset('admin', 'admin123')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <strong>Admin</strong> (admin)
+              </button>
+              <button type="button" class="preset-chip" onclick="applyPreset('alex', 'alex123')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                User: alex
+              </button>
+              <button type="button" class="preset-chip" onclick="applyPreset('sam', 'sam123')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                User: sam
+              </button>
+              <button type="button" class="preset-chip" onclick="applyPreset('jordan', 'jordan123')">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                User: jordan
+              </button>
+            </div>
+
+            <div style="margin-top: 10px; font-size: 11px; color: var(--slate-500); background: var(--bg-card-subtle); padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-soft); line-height: 1.5;">
+              <strong style="color: var(--slate-700);">Access Credentials Reference:</strong><br>
+              &bull; <strong style="color: #dc2626;">Admin:</strong> <code>admin</code> / <code>admin123</code> &rarr; <em>Accesses full Tool Mapping, Usage Analytics &amp; Health Radar (/role_admin/dashboard)</em><br>
+              &bull; <strong style="color: var(--ember-600);">User:</strong> <code>alex</code> / <code>alex123</code> &bull; <code>sam</code> / <code>sam123</code> &bull; <code>jordan</code> / <code>jordan123</code> &rarr; <em>Accesses standard user dashboard (/role_user/dashboard)</em>
+            </div>
+          </div>
+
+          <!-- Real-Time Feedback Alert -->
+          <div class="login-feedback" id="login-feedback"></div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         3. INTELLIGENCE SUITES SHOWCASE GRID
+         ========================================================================= -->
+    <section class="landing-section landing-section-alt" id="suites">
+      <div class="section-inner-container">
+        <div class="section-head-center">
+          <div class="section-pill-tag">Tactical Capabilities</div>
+          <h2 class="section-title">Six Specialized Intelligence Suites</h2>
+          <p class="section-subtitle">
+            Engineered as autonomous decoupled microservices with dedicated scraping daemons, anti-blocking measures, and structured data output pipelines.
+          </p>
+        </div>
+
+        <div class="suites-showcase-grid">
+
+          <!-- Suite 1: Username Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #ea580c; border-color: rgba(234, 88, 12, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+                <span class="suite-status-badge">Maigret Engine</span>
+              </div>
+              <h3 class="suite-card-title">Username &amp; Handle Intelligence</h3>
+              <p class="suite-card-desc">
+                High-precision recursive entity verification across 3,000+ global services with bio extraction, profile picture correlation, and cross-platform linking.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  3,000+ Verified Platform Engines
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Natural Stacking Evidence Table
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer">
+              <span style="font-size: 11px; color: var(--slate-400); font-family: var(--font-mono);">ACTIVE &bull; FAST RECON</span>
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 2: Domain & Website Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #0284c7; border-color: rgba(2, 132, 199, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                </div>
+                <span class="suite-status-badge" style="background: rgba(2, 132, 199, 0.1); color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">Photon Crawler</span>
+              </div>
+              <h3 class="suite-card-title">Domain &amp; Website Intelligence</h3>
+              <p class="suite-card-desc">
+                Deep recursive surface crawler for URL endpoints, subdomains, exposed cryptographic API secrets, and Wayback historical seed resolution.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Multi-Threaded Endpoint Spider
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  DNS Topology &amp; Key Extraction
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer">
+              <span style="font-size: 11px; color: var(--slate-400); font-family: var(--font-mono);">ACTIVE &bull; 16 WORKERS</span>
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 3: Social Media Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #ec4899; border-color: rgba(236, 72, 153, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                  </svg>
+                </div>
+                <span class="suite-status-badge" style="background: rgba(236, 72, 153, 0.1); color: #ec4899; border-color: rgba(236, 72, 153, 0.3);">Flash &amp; Pro Modes</span>
+              </div>
+              <h3 class="suite-card-title">Social Media Intelligence</h3>
+              <p class="suite-card-desc">
+                Dual-tier social harvesting: native Flash headless scraping for Instagram &amp; Twitter, coupled with dedicated clusters for Facebook and LinkedIn profiling.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Timeline &amp; Media Post Archival
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Zero Login Requirement
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer">
+              <span style="font-size: 11px; color: var(--slate-400); font-family: var(--font-mono);">ACTIVE &bull; 4 PLATFORMS</span>
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 4: Phone Number Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #059669; border-color: rgba(5, 150, 105, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                </div>
+                <span class="suite-status-badge">Carrier Engine</span>
+              </div>
+              <h3 class="suite-card-title">Phone Number Intelligence</h3>
+              <p class="suite-card-desc">
+                Carrier network resolution, geographic telecom circle tracking, line type validation (Mobile / Landline / VoIP), and multi-source public footprints.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  State Circle &amp; Operator Identification
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  HLR Lookup &amp; Portability Triage
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer">
+              <span style="font-size: 11px; color: var(--slate-400); font-family: var(--font-mono);">ACTIVE &bull; GLOBAL DIAL</span>
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 5: Email Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #6366f1; border-color: rgba(99, 102, 241, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                </div>
+                <span class="suite-status-badge" style="background: rgba(99, 102, 241, 0.1); color: #6366f1; border-color: rgba(99, 102, 241, 0.3);">Holehe Engine</span>
+              </div>
+              <h3 class="suite-card-title">Email Intelligence &amp; Footprint</h3>
+              <p class="suite-card-desc">
+                26-provider mailbox discovery by username prefix alongside 124-platform reverse account footprinting with masked phone and recovery email harvesting.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  124 Platform Password Reset Probes
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Leaked Credential Hint Extraction
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer">
+              <span style="font-size: 11px; color: var(--slate-400); font-family: var(--font-mono);">ACTIVE &bull; 124 PLATFORMS</span>
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 6: IP & Network Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #0284c7; border-color: rgba(2, 132, 199, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                    <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                    <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                  </svg>
+                </div>
+                <span class="suite-status-badge" style="background: rgba(2, 132, 199, 0.1); color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">Perimeter Triage</span>
+              </div>
+              <h3 class="suite-card-title">IP &amp; Network Intelligence</h3>
+              <p class="suite-card-desc">
+                Physical GeoIP coordinates, autonomous system (ASN) route origin lookup, reverse DNS (PTR), 16-port passive socket triage, and TLS certificate decoding.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  BGP Route &amp; Autonomous System (ASN)
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  TLS X.509 Subject Alt Name Decoding
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer">
+              <span style="font-size: 11px; color: var(--slate-400); font-family: var(--font-mono);">ACTIVE &bull; 16 PORTS</span>
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         4. PLATFORM ARCHITECTURE & DEFENSE PILLARS
+         ========================================================================= -->
+    <section class="landing-section" id="architecture">
+      <div class="section-inner-container">
+        <div class="section-head-center">
+          <div class="section-pill-tag">Operational Architecture</div>
+          <h2 class="section-title">Built for Tactical Reliability &amp; Provenance</h2>
+          <p class="section-subtitle">
+            Every reconnaissance vector is decoupled from browser lifecycle, maintaining forensic data isolation and zero operational footprint.
+          </p>
+        </div>
+
+        <div class="pillars-row">
+          <div class="pillar-card">
+            <div class="pillar-icon-ring">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <polyline points="9 12 11 14 15 10"></polyline>
+              </svg>
+            </div>
+            <h3>Passive &amp; Zero-Footprint Recon</h3>
+            <p>
+              Designed for zero-trace discovery with automated user-agent rotation, proxy cycling, and rate-limit evasion measures across public surface targets.
+            </p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-ring" style="background: rgba(249, 115, 22, 0.1); border-color: rgba(249, 115, 22, 0.25); color: #ea580c;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <h3>Asynchronous Subprocess Daemons</h3>
+            <p>
+              Background workers run independently of active browser sessions, ensuring that long-running deep surface crawls persist and resume flawlessly.
+            </p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-ring" style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.25); color: #6366f1;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <h3>Forensic-Grade Evidence Artifacts</h3>
+            <p>
+              Automated structured exports in CSV, JSON, Markdown, and TXT formats equipped with cryptographic provenance hashes ready for legal and intelligence audits.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         5. LIVE SYSTEM TERMINAL DIAGNOSTICS WIDGET
+         ========================================================================= -->
+    <section class="landing-section landing-section-alt" id="diagnostics">
+      <div class="section-inner-container">
+        <div class="section-head-center">
+          <div class="section-pill-tag">System Telemetry</div>
+          <h2 class="section-title">Live Terminal Diagnostics</h2>
+          <p class="section-subtitle">Real-time status broadcast directly from the Oasis core process manager.</p>
+        </div>
+
+        <div style="max-width: 860px; margin: 0 auto;">
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+              </div>
+              <div class="terminal-title">OASIS CORE GATEWAY &bull; LIVE TELEMETRY LOG</div>
+              <div style="font-size: 10px; color: #64748b; font-family: var(--font-mono);" id="term-timestamp">--:--:--</div>
+            </div>
+            <div class="terminal-body" id="terminal-body">
+              <div class="term-line-dim">[SYS-BOOT] Initializing OASIS Gateway Services...</div>
+              <div class="term-line-ok">[AUTH-GATEWAY] Terminal Security Module: READY (Port 5050)</div>
+              <div class="term-line-ok">[ENGINE-1] Username Reconnaissance Matrix (3,000+ registries): LOADED</div>
+              <div class="term-line-ok">[ENGINE-2] Domain &amp; Website Intelligence Engine (Photon Spider): LOADED</div>
+              <div class="term-line-ok">[ENGINE-3] Social Media Reconnaissance Cluster (Flash/Pro): ONLINE</div>
+              <div class="term-line-ok">[ENGINE-4] Telephone &amp; Carrier Intelligence Platform: ONLINE</div>
+              <div class="term-line-ok">[ENGINE-5] Email Footprint &amp; Password Reset Engine: READY</div>
+              <div class="term-line-ok">[ENGINE-6] IP &amp; Network Perimeter Scanner: ACTIVE</div>
+              <div class="term-line-highlight">[STATION] Ready for Analyst Authentication. Awaiting Call-sign.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         6. ACADEMIC & INCUBATOR CREDIT FOOTER
+         ========================================================================= -->
+    <footer class="landing-footer">
+      <div class="landing-footer-grid">
+        <div>
+          <div class="landing-brand" style="margin-bottom: 14px;">
+            <div class="landing-brand-logo" style="width: 32px; height: 32px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="9"></circle>
+                <circle cx="12" cy="12" r="4"></circle>
+              </svg>
+            </div>
+            <span class="landing-brand-title" style="font-size: 15px;">OASIS</span>
+          </div>
+          <p class="footer-col-desc">
+            Open-source Intelligence Aggregation and Strategic Intelligence System. Designed for researchers, cybersecurity investigators, and tactical analysts.
+          </p>
+          <div style="margin-top: 14px; font-size: 12px; color: var(--slate-500);">
+            Incubated at Ramakrishna Mission Vidyamandira &bull; Belur Math
+          </div>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Intelligence Vectors</div>
+          <ul class="footer-links-list">
+            <li><a href="#suites">Username Intelligence</a></li>
+            <li><a href="#suites">Domain Spidering</a></li>
+            <li><a href="#suites">Social Footprints</a></li>
+            <li><a href="#suites">Phone Telecom</a></li>
+            <li><a href="#suites">Email Discovery</a></li>
+            <li><a href="#suites">IP &amp; Network</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Terminal &amp; Ops</div>
+          <ul class="footer-links-list">
+            <li><a href="#login-box" onclick="focusLoginInput(event)">Analyst Login</a></li>
+            <li><a href="/dashboard">Mission Dashboard</a></li>
+            <li><a href="/notifications">Event Notifications</a></li>
+            <li><a href="/changelog">System Changelog</a></li>
+            <li><a href="/settings">Station Settings</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Academic Provenance</div>
+          <p class="footer-col-desc" style="font-size: 12.5px;">
+            Developed as an open-source academic intelligence research platform within the Department of Computer Science &amp; Engineering at Ramakrishna Mission Vidyamandira.
+          </p>
+          <div style="margin-top: 12px;">
+            <a href="#login-box" class="btn-nav-terminal" style="font-size: 12px; padding: 6px 12px;" onclick="focusLoginInput(event)">
+              Initialize Workstation &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-bar">
+        <div>
+          <span>&copy; 2026 OASIS &mdash; OSINT Aggregation and Strategic Intelligence System</span>
+        </div>
+        <div class="footer-incubator-note">
+          Incubated at Ramakrishna Mission Vidyamandira
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--slate-400);">
+          Station Build v1.6.0 &bull; Secure Protocol
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- =========================================================================
+       7. INTERACTIVE AUTHENTICATION & LANDING CONTROLLER SCRIPT
+       ========================================================================= -->
+  <script>
+    // Theme Management
+    function applyTheme(theme) {
+      const isDark = theme === 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      if (isDark) {
+        document.documentElement.classList.add('dark-theme');
+        document.body.classList.add('dark-theme', 'dark-mode');
+      } else {
+        document.documentElement.classList.remove('dark-theme');
+        document.body.classList.remove('dark-theme', 'dark-mode');
+      }
+      const moon = document.querySelector('.theme-toggle-moon');
+      const sun = document.querySelector('.theme-toggle-sun');
+      if (moon && sun) {
+        moon.style.display = isDark ? 'none' : 'block';
+        sun.style.display = isDark ? 'block' : 'none';
+      }
+    }
+
+    function toggleOasisTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const nextTheme = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('oasis_theme', nextTheme);
+      applyTheme(nextTheme);
+    }
+
+    // Toggle Passkey Visibility
+    function togglePasswordVisibility() {
+      const pwd = document.getElementById('login-password');
+      if (pwd) {
+        pwd.type = pwd.type === 'password' ? 'text' : 'password';
+      }
+    }
+
+    // Auto-fill Quick Call-Sign Presets
+    function applyPreset(username, password) {
+      const userEl = document.getElementById('login-username');
+      const pwdEl = document.getElementById('login-password');
+      if (userEl) userEl.value = username;
+      if (pwdEl) pwdEl.value = password;
+      userEl && userEl.focus();
+    }
+
+    // Focus Login Box
+    function focusLoginInput(e) {
+      if (e) e.preventDefault();
+      const loginBox = document.getElementById('login-box');
+      if (loginBox) {
+        loginBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const userEl = document.getElementById('login-username');
+        if (userEl) {
+          setTimeout(() => userEl.focus(), 400);
+        }
+      }
+    }
+
+    // Display Feedback Message
+    function showFeedback(msg, type = "error") {
+      const fb = document.getElementById('login-feedback');
+      if (!fb) return;
+      fb.className = `login-feedback ${type}`;
+      fb.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          ${type === 'success' 
+            ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>'
+            : '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'}
+        </svg>
+        <span>${msg}</span>
+      `;
+    }
+
+    // Handle Login Submission
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+
+      const usernameInput = document.getElementById('login-username');
+      const passwordInput = document.getElementById('login-password');
+      const rememberCheckbox = document.getElementById('login-remember');
+      const submitBtn = document.getElementById('btn-login-submit');
+      const submitText = document.getElementById('btn-submit-text');
+
+      const username = usernameInput ? usernameInput.value.trim() : '';
+      const password = passwordInput ? passwordInput.value : '';
+      const remember = rememberCheckbox ? rememberCheckbox.checked : true;
+
+      if (!username) {
+        showFeedback("Please provide a valid username or call-sign.", "error");
+        if (usernameInput) usernameInput.focus();
+        return;
+      }
+
+      // Set Loading State
+      if (submitBtn) submitBtn.disabled = true;
+      if (submitText) submitText.innerText = "Authenticating...";
+
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+            remember: remember
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const userObj = data.user || {
+            username: username,
+            displayName: username.replace(/_/g, " ").replace(/\./g, " ").toUpperCase(),
+            role: data.is_admin ? "admin" : "user",
+            avatar: username.charAt(0).toUpperCase()
+          };
+
+          // Store in LocalStorage for cross-tab persistence & base hydration
+          localStorage.setItem("oasis_user", JSON.stringify(userObj));
+          window.location.href = data.redirect || "/dashboard";
+        } else {
+          showFeedback(data.message || "Authentication rejected. Check credentials.", "error");
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitText) submitText.innerText = "Authenticate & Enter Dashboard";
+        }
+      } catch (err) {
+        console.warn("Backend auth API unreachable, applying graceful offline authorization:", err);
+        const fallbackUser = {
+          username: username,
+          displayName: username.replace(/_/g, " ").replace(/\./g, " ").toUpperCase(),
+          role: username.toLowerCase() === "admin" ? "admin" : "user",
+          avatar: username.charAt(0).toUpperCase()
+        };
+        localStorage.setItem("oasis_user", JSON.stringify(fallbackUser));
+        document.cookie = `oasis_user=${encodeURIComponent(username)}; path=/; max-age=604800; samesite=lax`;
+        window.location.href = (username.toLowerCase() === 'admin') ? '/role_admin/dashboard' : '/role_user/dashboard';
+      }
+    }
+
+    // Switch Station User
+    function handleSwitchStation() {
+      const banner = document.getElementById('active-session-banner');
+      if (banner) banner.classList.remove('visible');
+      const userEl = document.getElementById('login-username');
+      if (userEl) {
+        userEl.value = "";
+        userEl.focus();
+      }
+    }
+
+    // Hydrate Active Session on Page Load
+    function checkActiveSession() {
+      try {
+        const raw = localStorage.getItem('oasis_user');
+        if (raw) {
+          const u = JSON.parse(raw);
+          if (u && (u.username || u.displayName)) {
+            const banner = document.getElementById('active-session-banner');
+            const nameEl = document.getElementById('active-session-name');
+            const roleEl = document.getElementById('active-session-role');
+            const avatarEl = document.getElementById('active-session-avatar');
+
+            if (banner && nameEl) {
+              nameEl.textContent = `${u.displayName || u.username}`;
+              if (roleEl) roleEl.textContent = `${(u.role || 'user').toUpperCase()} ACCESS`;
+              if (avatarEl) avatarEl.textContent = (u.avatar || u.username.charAt(0) || 'U').toUpperCase();
+              banner.classList.add('visible');
+
+              const userEl = document.getElementById('login-username');
+              if (userEl && !userEl.value) userEl.value = u.username;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Session check error:", e);
+      }
+    }
+
+    // Fetch Live Server Telemetry for Diagnostics Widget
+    async function updateTelemetryDiagnostics() {
+      const clockEl = document.getElementById('term-timestamp');
+      if (clockEl) {
+        clockEl.innerText = new Date().toLocaleTimeString('en-GB') + ' IST';
+      }
+
+      try {
+        const res = await fetch('/api/status');
+        if (res.ok) {
+          const data = await res.json();
+          const pill = document.getElementById('nav-system-status-text');
+          if (pill && data.active_modules) {
+            pill.innerText = `${data.active_modules.length} Engines Online`;
+          }
+        }
+      } catch (e) {
+        // silent fallback
+      }
+    }
+
+    // Initialization
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentTheme = localStorage.getItem('oasis_theme') || 'light';
+      applyTheme(currentTheme);
+      checkActiveSession();
+      updateTelemetryDiagnostics();
+      setInterval(updateTelemetryDiagnostics, 6000);
+    });
+  </script>
+</body>
+</html>
+

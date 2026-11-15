@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any
@@ -34,19 +34,17 @@ class SocialRunRequest(BaseModel):
     platform: Optional[str] = "all"   # "all", "instagram", "facebook", "twitter", "linkedin"
     force: Optional[bool] = False
 
-@router.get("/services/social-media-intelligence", response_class=HTMLResponse)
+from roles.accounts import is_admin_user
+
+@router.get("/services/social-media-intelligence")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/social_media_intelligence/frontend/templates/social_media_intelligence.html",
-        context={
-            "page_title": "Social Media Intelligence & Account Analysis — Oasis",
-            "active_view": "social_media_intelligence",
-            "initial_target": initial_target,
-            "native_endpoints": NATIVE_SCRAPER_ENDPOINTS
-        }
-    )
+    current_username = request.cookies.get("oasis_user") or "alex"
+    target_prefix = "/role_admin" if (is_admin_user(current_username) or current_username.lower() == "admin") else "/role_user"
+    url = f"{target_prefix}/services/social-media-intelligence"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/social_media_intelligence/run")
 async def run_task(req: SocialRunRequest):

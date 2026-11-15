@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -24,20 +24,18 @@ class PhoneRunRequest(BaseModel):
     country: Optional[str] = "IN"
     force: Optional[bool] = False
 
-@router.get("/services/phone-intelligence", response_class=HTMLResponse)
-@router.get("/services/recon-phone", response_class=HTMLResponse)
+from roles.accounts import is_admin_user
+
+@router.get("/services/phone-intelligence")
+@router.get("/services/recon-phone")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/phone_intelligence/frontend/templates/phone_intelligence.html",
-        context={
-            "page_title": "Phone Number Intelligence & Carrier Profiler — Oasis",
-            "active_view": "phone_intelligence",
-            "initial_target": initial_target,
-            "native_endpoint": NATIVE_PHONE_ENDPOINT
-        }
-    )
+    current_username = request.cookies.get("oasis_user") or "alex"
+    target_prefix = "/role_admin" if (is_admin_user(current_username) or current_username.lower() == "admin") else "/role_user"
+    url = f"{target_prefix}/services/phone-intelligence"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/phone_intelligence/run")
 async def run_task(req: PhoneRunRequest):

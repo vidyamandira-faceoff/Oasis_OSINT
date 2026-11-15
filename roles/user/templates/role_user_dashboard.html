@@ -1,0 +1,974 @@
+{% extends "shared/templates/base.html" %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="/static/services/dashboard/css/dark_mode.css">
+<style>
+  .dashboard-welcome-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-bottom: 24px;
+  }
+
+  /* 1. Hero Welcome Card (Executive Intelligence Station Style) */
+  .hero-welcome-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 26px 32px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .hero-welcome-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--ember-600);
+  }
+
+  .hero-welcome-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    min-width: 320px;
+  }
+  .hero-logo-box {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    background: var(--slate-900);
+    border: 1px solid var(--slate-800);
+    color: var(--ember-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-subtle);
+    flex-shrink: 0;
+  }
+
+  .hero-greeting-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ember-600);
+    margin-bottom: 6px;
+  }
+  .hero-greeting-tag .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--emerald-500);
+  }
+
+  .hero-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--slate-900);
+    letter-spacing: -0.02em;
+    margin: 0 0 4px 0;
+    line-height: 1.25;
+  }
+  .hero-subtitle {
+    font-size: 13.5px;
+    color: var(--slate-600);
+    margin: 0;
+    max-width: 680px;
+    line-height: 1.5;
+  }
+
+  .hero-welcome-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .system-clock-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-card-subtle);
+    border: 1px solid var(--border-soft);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+  }
+  .system-clock-badge svg {
+    color: var(--ember-600);
+  }
+  .clock-meta-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--slate-400);
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .clock-time-val {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--slate-800);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* 2. Section Header */
+  .section-heading-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+  .section-heading-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--slate-900);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.01em;
+  }
+  .section-heading-sub {
+    font-size: 12.5px;
+    color: var(--slate-500);
+  }
+  @media (max-width: 768px) {
+    .section-heading-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    .section-heading-sub {
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .module-card-title-group h3 {
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+  }
+
+  /* 3. Core Modules Grid */
+  .modules-showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 860px) {
+    .modules-showcase-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .module-feature-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 22px 24px;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.18s ease;
+    position: relative;
+  }
+  .module-feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-float);
+    border-color: var(--border-main);
+  }
+  .module-feature-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--border-soft);
+    transition: background 0.18s ease;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+  }
+  .module-feature-card:hover::before {
+    background: var(--ember-600);
+  }
+
+  .module-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  .module-card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--slate-100);
+    color: var(--slate-700);
+    border: 1px solid var(--border-soft);
+    transition: all 0.18s ease;
+  }
+  .module-feature-card:hover .module-card-icon {
+    background: var(--ember-50);
+    color: var(--ember-600);
+    border-color: var(--ember-200);
+  }
+
+  .icon-green-bg { background: var(--slate-100); color: var(--slate-700); }
+  .icon-blue-bg { background: var(--slate-100); color: var(--slate-700); }
+  .icon-pink-bg { background: var(--slate-100); color: var(--slate-700); }
+  .icon-emerald-bg { background: var(--slate-100); color: var(--slate-700); }
+  .icon-indigo-bg { background: var(--slate-100); color: var(--slate-700); }
+
+  .module-card-title-group h3 {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--slate-900);
+    margin: 0 0 3px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.01em;
+  }
+  .module-card-badge {
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.08);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  .module-card-desc {
+    font-size: 13px;
+    color: var(--slate-600);
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+  }
+
+  .module-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-soft);
+    padding-top: 16px;
+    margin-top: auto;
+  }
+  .module-action-cta {
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--slate-800);
+    transition: color 0.18s ease;
+  }
+  .module-feature-card:hover .module-action-cta {
+    color: var(--ember-600);
+  }
+  .module-status-chip {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--slate-500);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .module-status-chip .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--emerald-500);
+  }
+
+  /* 4. Platform Architecture & Capabilities Pillars */
+  .platform-pillars-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 24px 28px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+  }
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 900px) {
+    .pillars-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .pillar-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .pillar-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card-subtle);
+    border: 1px solid var(--border-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .pillar-info h4 {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--slate-900);
+    margin: 0 0 3px 0;
+  }
+  .pillar-info p {
+    font-size: 12px;
+    color: var(--slate-500);
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  /* 5. Quick Tools & Operations Toolbar */
+  .quick-ops-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 960px) {
+    .quick-ops-bar {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .quick-op-link {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--slate-700);
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: all 0.18s ease;
+  }
+  .quick-op-link:hover {
+    border-color: var(--border-main);
+    background: var(--bg-card-subtle);
+    color: var(--slate-900);
+  }
+  .quick-op-link svg {
+    color: var(--slate-400);
+    transition: color 0.18s ease;
+  }
+  .quick-op-link:hover svg {
+    color: var(--ember-600);
+  }
+
+  /* =========================================================================
+     ADMIN GOVERNANCE, TOOL MAPPING & EFFICIENCY DIAGNOSTICS STYLES
+     ========================================================================= */
+  .admin-panel-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 24px 26px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .admin-panel-card.accent-admin {
+    border-top: 3px solid #dc2626;
+  }
+  .admin-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .admin-panel-title-group h3 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--slate-900);
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.01em;
+  }
+  .admin-panel-title-group p {
+    font-size: 12.5px;
+    color: var(--slate-500);
+    margin: 0;
+  }
+  .admin-badge-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .admin-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .admin-kpi-box {
+    background: var(--bg-card-subtle);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+  }
+  .admin-kpi-val {
+    font-size: 22px;
+    font-weight: 850;
+    font-family: var(--font-mono);
+    color: var(--slate-900);
+    line-height: 1.15;
+  }
+  .admin-kpi-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--slate-500);
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+  .usage-bars-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .usage-bar-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .usage-bar-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--slate-700);
+  }
+  .usage-track {
+    height: 10px;
+    background: var(--slate-100);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border-soft);
+  }
+  .usage-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+  .mapping-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-subtle);
+  }
+  .mapping-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    min-width: 820px;
+  }
+  .mapping-table th {
+    background: var(--bg-card-subtle);
+    padding: 11px 16px;
+    text-align: left;
+    font-weight: 750;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--slate-600);
+    border-bottom: 1px solid var(--border-soft);
+    letter-spacing: 0.04em;
+  }
+  .mapping-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--slate-800);
+    vertical-align: top;
+  }
+  .mapping-table tr:last-child td {
+    border-bottom: none;
+  }
+  .tool-tag {
+    display: inline-block;
+    background: var(--bg-card-subtle);
+    border: 1px solid var(--border-soft);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    margin: 2px 2px 2px 0;
+  }
+  .badge-health-opt {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .badge-health-warn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .badge-status-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10.5px;
+  }
+  .badge-status-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10.5px;
+  }
+
+  /* Dark Mode Overrides for Admin Governance Suite */
+  html[data-theme="dark"] .admin-panel-card,
+  body.dark-mode .admin-panel-card {
+    background: #111827;
+    border-color: var(--border-soft);
+  }
+  html[data-theme="dark"] .admin-panel-title-group h3,
+  body.dark-mode .admin-panel-title-group h3 {
+    color: #ffffff;
+  }
+  html[data-theme="dark"] .admin-kpi-box,
+  body.dark-mode .admin-kpi-box {
+    background: #162032;
+    border-color: #1e293b;
+  }
+  html[data-theme="dark"] .admin-kpi-val,
+  body.dark-mode .admin-kpi-val {
+    color: #ffffff;
+  }
+  html[data-theme="dark"] .mapping-table th,
+  body.dark-mode .mapping-table th {
+    background: #162032;
+    color: #94a3b8;
+    border-color: #1e293b;
+  }
+  html[data-theme="dark"] .mapping-table td,
+  body.dark-mode .mapping-table td {
+    border-color: #1e293b;
+    color: #e2e8f0;
+  }
+  html[data-theme="dark"] .tool-tag,
+  body.dark-mode .tool-tag {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+  }
+  html[data-theme="dark"] .usage-track,
+  body.dark-mode .usage-track {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  @media (max-width: 900px) {
+    .admin-kpi-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 580px) {
+    .admin-kpi-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="view-page active-view">
+  <div class="dashboard-welcome-container">
+
+    <!-- 1. Hero Welcome Card -->
+    <div class="hero-welcome-card">
+      <div class="hero-welcome-left">
+        <div class="hero-logo-box" {% if is_admin %}style="background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff;"{% endif %}>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            {% if is_admin %}
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            {% else %}
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            {% endif %}
+          </svg>
+        </div>
+        <div>
+          <div class="hero-greeting-tag">
+            {% if is_admin %}
+              <span style="background: rgba(220, 38, 38, 0.12); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.25); padding: 3px 8px; border-radius: 4px; font-weight: 800; font-family: var(--font-mono); font-size: 11px;">
+                ROOT ADMIN &bull; PLATFORM GOVERNANCE &amp; TELEMETRY CONSOLE
+              </span>
+            {% else %}
+              <span>OASIS OPERATIONAL PLATFORM &bull; ENGINES ACTIVE</span>
+            {% endif %}
+          </div>
+          <h1 class="hero-title">
+            {% if is_admin %}
+              Platform Telemetry &amp; Microservice Governance
+            {% else %}
+              Intelligence Operations Overview
+            {% endif %}
+          </h1>
+          <p class="hero-subtitle">
+            {% if is_admin %}
+              Privileged system administration console for inspecting underlying tool mappings, multi-user popularity distributions, operational health indices, and daemon efficiency diagnostics across all services.
+            {% else %}
+              Unified open-source intelligence collection, reconnaissance, and entity correlation terminal. Launch multi-vector investigations across identity handles, web infrastructure, social platforms, and network perimeters.
+            {% endif %}
+          </p>
+        </div>
+      </div>
+
+      <div class="hero-welcome-right">
+        <div class="system-clock-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <div>
+            <span class="clock-meta-label" id="live-date-str">SYSTEM DATE</span>
+            <span class="clock-time-val" id="live-clock-text">--:--:-- IST</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 2. Core Intelligence Modules Section -->
+    <div class="section-heading-bar">
+      <div class="section-heading-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ember-500)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>Primary Intelligence Modules</span>
+      </div>
+      <div class="section-heading-sub">
+        6 Active Reconnaissance Suites Ready for Investigation
+      </div>
+    </div>
+
+    <!-- 3. Core Modules Grid -->
+    <div class="modules-showcase-grid">
+
+      <!-- Module 1: Username Intelligence -->
+      <a href="/role_user/services/recon-username" class="module-feature-card card-recon-username">
+        <div>
+          <div class="module-card-top">
+            <div class="module-card-icon icon-green-bg">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div class="module-card-title-group">
+              <h3>
+                Username &amp; Identity Intelligence
+                <span class="module-card-badge">Active</span>
+              </h3>
+              <span style="font-size: 12px; color: var(--slate-500);">3,000+ Global Online Platform Registries</span>
+            </div>
+          </div>
+          <p class="module-card-desc">
+            Enumerate registered accounts across thousands of web platforms. Harvest profile biographies, avatars, verified handles, and cross-platform identity linkages.
+          </p>
+        </div>
+        <div class="module-card-footer">
+          <span class="module-action-cta">
+            Launch Username Recon
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- Module 2: Domain & Website Intelligence -->
+      <a href="/role_user/services/domain-intelligence" class="module-feature-card card-domain-intel">
+        <div>
+          <div class="module-card-top">
+            <div class="module-card-icon icon-blue-bg">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+            <div class="module-card-title-group">
+              <h3>
+                Domain &amp; Website Intelligence
+                <span class="module-card-badge">Active</span>
+              </h3>
+              <span style="font-size: 12px; color: var(--slate-500);">Web Spidering &bull; DNS Topology &bull; Secret Scanning</span>
+            </div>
+          </div>
+          <p class="module-card-desc">
+            Deep recursive crawling of web endpoints, automated DNS subdomain resolution, client-side JavaScript route extraction, and high-entropy secret detection.
+          </p>
+        </div>
+        <div class="module-card-footer">
+          <span class="module-action-cta">
+            Launch Domain Recon
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- Module 3: Social Media Intelligence -->
+      <a href="/role_user/services/social-media-intelligence" class="module-feature-card card-social-intel">
+        <div>
+          <div class="module-card-top">
+            <div class="module-card-icon icon-pink-bg">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+            </div>
+            <div class="module-card-title-group">
+              <h3>
+                Social Media Intelligence
+                <span class="module-card-badge" style="background: rgba(236, 72, 153, 0.12); color: #ec4899;">Flash &amp; Pro Modes</span>
+              </h3>
+              <span style="font-size: 12px; color: var(--slate-500);">Instagram (Internal) &bull; X / Twitter &bull; Facebook &bull; LinkedIn</span>
+            </div>
+          </div>
+          <p class="module-card-desc">
+            Dual-tier social intelligence: native in-app Flash recon for Instagram and Twitter with timeline and media harvesting, plus dedicated clusters for Facebook and LinkedIn.
+          </p>
+        </div>
+        <div class="module-card-footer">
+          <span class="module-action-cta" style="color: #ec4899;">
+            Launch Social Scrapers
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- Module 4: Phone Number Intelligence -->
+      <a href="/role_user/services/phone-intelligence" class="module-feature-card card-phone-intel">
+        <div>
+          <div class="module-card-top">
+            <div class="module-card-icon icon-emerald-bg">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </div>
+            <div class="module-card-title-group">
+              <h3>
+                Phone Number Intelligence
+                <span class="module-card-badge">Native Scraper</span>
+              </h3>
+              <span style="font-size: 12px; color: var(--slate-500);">Carrier Resolution &bull; Circle Mapping &bull; Search Platform</span>
+            </div>
+          </div>
+          <p class="module-card-desc">
+            Direct access to native telephone investigation intelligence for carrier network resolution, geographic telecom circle mapping, line type validation, and multi-source footprints.
+          </p>
+        </div>
+        <div class="module-card-footer">
+          <span class="module-action-cta">
+            Launch Phone Scraper
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- Module 5: Email Intelligence -->
+      <a href="/role_user/services/email-intelligence" class="module-feature-card card-email-intel">
+        <div>
+          <div class="module-card-top">
+            <div class="module-card-icon icon-indigo-bg">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div class="module-card-title-group">
+              <h3>
+                Email Intelligence &amp; Footprint
+                <span class="module-card-badge" style="background: rgba(99, 102, 241, 0.12); color: #6366f1;">Active Engine</span>
+              </h3>
+              <span style="font-size: 12px; color: var(--slate-500);">124 Platform Registries &bull; 26 Mailbox Providers &bull; Leaked Hints</span>
+            </div>
+          </div>
+          <p class="module-card-desc">
+            Dual-engine email triage: 26-provider Mailbox Discovery by username plus 124-platform Reverse Account Footprinting with masked phone and recovery email harvesting.
+          </p>
+        </div>
+        <div class="module-card-footer">
+          <span class="module-action-cta" style="color: #6366f1;">
+            Launch Email Recon
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- Module 6: IP & Network Intelligence -->
+      <a href="/role_user/services/ip-network-intelligence" class="module-feature-card card-ip-intel">
+        <div>
+          <div class="module-card-top">
+            <div class="module-card-icon icon-blue-bg">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+              </svg>
+            </div>
+            <div class="module-card-title-group">
+              <h3>
+                IP &amp; Network Intelligence
+                <span class="module-card-badge" style="background: rgba(14, 165, 233, 0.12); color: #0284c7;">Active Engine</span>
+              </h3>
+              <span style="font-size: 12px; color: var(--slate-500);">GeoIP Coordinates &bull; ASN/BGP Routing &bull; Tactical Port Triage</span>
+            </div>
+          </div>
+          <p class="module-card-desc">
+            Tactical perimeter reconnaissance: physical GeoIP coordinates, autonomous system (ASN) route origin, reverse DNS (PTR), 16-port non-intrusive triage, and TLS certificate decoding.
+          </p>
+        </div>
+        <div class="module-card-footer">
+          <span class="module-action-cta" style="color: #0284c7;">
+            Launch Network Recon
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- 4. Quick Platform Navigation Shortcuts -->
+    <div class="quick-ops-bar">
+      <a href="/role_user/changelog" class="quick-op-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="1.05" y1="12" x2="7" y2="12"></line>
+          <line x1="17.01" y1="12" x2="22.96" y2="12"></line>
+        </svg>
+        <span>System Changelog</span>
+      </a>
+      <a href="/role_user/notifications" class="quick-op-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span>Event Notifications</span>
+      </a>
+      <a href="/role_user/changelog" class="quick-op-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="1.05" y1="12" x2="7" y2="12"></line>
+          <line x1="17.01" y1="12" x2="22.96" y2="12"></line>
+          <line x1="12" y1="1.05" x2="12" y2="7"></line>
+          <line x1="12" y1="17.01" x2="12" y2="22.96"></line>
+        </svg>
+        <span>Release Changelog</span>
+      </a>
+    </div>
+
+    <!-- 5. Platform Architecture & Capabilities Pillars -->
+    <div class="platform-pillars-card">
+      <div class="pillars-grid">
+        <div class="pillar-item">
+          <div class="pillar-icon-box" style="background: rgba(16, 185, 129, 0.12); color: #059669; border-color: rgba(16, 185, 129, 0.25);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+          </div>
+          <div class="pillar-info">
+            <h4>Passive &amp; Resilient Reconnaissance</h4>
+            <p>Engineered for zero-footprint information retrieval with automated proxy cycling, anti-blocking measures, and session resilience.</p>
+          </div>
+        </div>
+        <div class="pillar-item">
+          <div class="pillar-icon-box" style="background: rgba(249, 115, 22, 0.12); color: #ea580c; border-color: rgba(249, 115, 22, 0.25);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div class="pillar-info">
+            <h4>Asynchronous Multi-Engine Tasks</h4>
+            <p>Decoupled background execution keeps investigations running continuously without browser dependency or session loss.</p>
+          </div>
+        </div>
+        <div class="pillar-item">
+          <div class="pillar-icon-box" style="background: rgba(99, 102, 241, 0.12); color: #6366f1; border-color: rgba(99, 102, 241, 0.25);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+          </div>
+          <div class="pillar-info">
+            <h4>Forensic-Grade Artifacts</h4>
+            <p>Direct structured data exports in CSV, JSON, Markdown, and TXT formats with cryptographic hash provenance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

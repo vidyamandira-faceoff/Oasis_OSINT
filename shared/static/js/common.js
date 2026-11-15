@@ -5,12 +5,47 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
+  initUserSession();
   initClock();
   fetchSystemStatus();
   fetchNotificationCounts();
   setInterval(fetchSystemStatus, 4000);
   setInterval(fetchNotificationCounts, 5000);
 });
+
+// --------------------------------------------------------------------------
+// USER SESSION HYDRATION (Dynamic Station Profile)
+// --------------------------------------------------------------------------
+function initUserSession() {
+  try {
+    const raw = localStorage.getItem('oasis_user');
+    if (raw) {
+      const u = JSON.parse(raw);
+      if (u && (u.username || u.displayName)) {
+        const name = u.displayName || u.username;
+        const role = (u.role === 'admin' ? 'ADMIN' : 'USER');
+        const initial = (name.charAt(0) || (role === 'ADMIN' ? 'A' : 'U')).toUpperCase();
+
+        const sidebarName = document.getElementById('sidebar-user-name');
+        if (sidebarName) sidebarName.textContent = name;
+
+        const sidebarRole = document.getElementById('sidebar-user-role');
+        if (sidebarRole) sidebarRole.textContent = role;
+
+        const sidebarAvatar = document.getElementById('sidebar-user-avatar');
+        if (sidebarAvatar) sidebarAvatar.textContent = initial;
+
+        const headerAvatar = document.getElementById('header-user-avatar');
+        if (headerAvatar) {
+          headerAvatar.textContent = initial;
+          headerAvatar.setAttribute('title', `${name} (${role})`);
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("User session hydration warning:", e);
+  }
+}
 
 // --------------------------------------------------------------------------
 // THEME SWITCHER CONTROLLER (Dark Mode <-> Light Mode)
@@ -189,10 +224,11 @@ function copyToClipboard(text) {
 }
 
 function handleSignOut() {
-  if (confirm("Are you sure you want to sign out of Oasis?")) {
-    alert("Session signed out successfully. Recon engines remaining in background.");
-    window.location.href = "/dashboard";
-  }
+  try {
+    localStorage.removeItem("oasis_user");
+    document.cookie = "oasis_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  } catch (e) {}
+  window.location.href = "/";
 }
 
 // Immediate task abortion dispatchers
