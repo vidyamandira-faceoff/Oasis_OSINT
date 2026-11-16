@@ -1595,6 +1595,224 @@
     border-color: #1e293b !important;
     color: #cbd5e1 !important;
   }
+
+  /* LinkedIn Advanced Tuning Toggle & Panel */
+  .li-tuning-wrapper {
+    margin-top: 14px;
+    width: 100%;
+    clear: both;
+    display: block;
+  }
+  .li-tuning-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card-subtle, #fbfcfe);
+    border: 1px solid var(--border-soft, #e2e8f0);
+    border-radius: var(--radius-sm, 6px);
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--slate-700, #334155);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    box-sizing: border-box;
+  }
+  .li-tuning-toggle-btn:hover {
+    background: var(--bg-surface, #ffffff);
+    border-color: #0a66c2;
+    color: #0a66c2;
+  }
+  .li-tuning-toggle-btn.active {
+    background: rgba(10, 102, 194, 0.08);
+    border-color: #0a66c2;
+    color: #0a66c2;
+  }
+  .li-toggle-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+  }
+  .li-toggle-switch {
+    width: 28px;
+    height: 16px;
+    background: var(--border-soft, #cbd5e1);
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.2s ease;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .li-toggle-thumb {
+    width: 12px;
+    height: 12px;
+    background: #ffffff;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .li-tuning-toggle-btn.active .li-toggle-switch {
+    background: #0a66c2;
+  }
+  .li-tuning-toggle-btn.active .li-toggle-thumb {
+    transform: translateX(12px);
+  }
+  .li-toggle-chevron {
+    transition: transform 0.2s ease;
+  }
+  .li-tuning-toggle-btn.active .li-toggle-chevron {
+    transform: rotate(180deg);
+  }
+  .li-tuning-panel {
+    display: none;
+    margin-top: 12px;
+    padding: 16px 18px;
+    background: var(--bg-card-subtle, #fbfcfe);
+    border: 1px solid var(--border-soft, #e2e8f0);
+    border-radius: var(--radius-sm, 6px);
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+  .li-tuning-panel.open {
+    display: block;
+    animation: fadeIn 0.2s ease;
+  }
+  .li-tuning-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  @media (max-width: 900px) {
+    .li-tuning-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+  }
+  .li-tuning-col {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box !important;
+  }
+  .li-tuning-col label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--slate-500);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .li-tuning-control,
+  #li-domain-input,
+  #li-pattern-select,
+  #li-engine-select {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+    height: 38px !important;
+    padding: 8px 12px !important;
+    font-size: 12.5px !important;
+    line-height: 20px !important;
+    border-radius: var(--radius-sm, 6px) !important;
+    border: 1px solid var(--border-soft, #cbd5e1);
+    background: var(--bg-surface, #ffffff);
+    color: var(--slate-900, #0f172a);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .li-tuning-control:focus,
+  #li-domain-input:focus,
+  #li-pattern-select:focus,
+  #li-engine-select:focus {
+    border-color: #0a66c2 !important;
+    box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.2) !important;
+  }
+  .li-tuning-hint {
+    display: block;
+    font-size: 10.5px;
+    color: var(--slate-500);
+    margin-top: 4px;
+    line-height: 1.35;
+  }
+
+  body.dark-mode .li-tuning-toggle-btn,
+  html[data-theme="dark"] .li-tuning-toggle-btn {
+    background: #162032 !important;
+    border-color: #1f2c42 !important;
+    color: #cbd5e1 !important;
+  }
+  body.dark-mode .li-tuning-toggle-btn:hover,
+  html[data-theme="dark"] .li-tuning-toggle-btn:hover {
+    border-color: #0a66c2 !important;
+    color: #38bdf8 !important;
+    background: #1a273b !important;
+  }
+  body.dark-mode .li-tuning-toggle-btn.active,
+  html[data-theme="dark"] .li-tuning-toggle-btn.active {
+    background: rgba(10, 102, 194, 0.2) !important;
+    border-color: #0a66c2 !important;
+    color: #38bdf8 !important;
+  }
+  body.dark-mode .li-toggle-switch,
+  html[data-theme="dark"] .li-toggle-switch {
+    background: #334155;
+  }
+  body.dark-mode .li-tuning-toggle-btn.active .li-toggle-switch,
+  html[data-theme="dark"] .li-tuning-toggle-btn.active .li-toggle-switch {
+    background: #0a66c2;
+  }
+  body.dark-mode .li-tuning-panel,
+  html[data-theme="dark"] .li-tuning-panel {
+    background: #111a2e !important;
+    border-color: #1f2c42 !important;
+  }
+  body.dark-mode .li-tuning-control,
+  html[data-theme="dark"] .li-tuning-control,
+  body.dark-mode #li-domain-input,
+  html[data-theme="dark"] #li-domain-input,
+  body.dark-mode #li-pattern-select,
+  html[data-theme="dark"] #li-pattern-select,
+  body.dark-mode #li-engine-select,
+  html[data-theme="dark"] #li-engine-select {
+    background-color: #162032 !important;
+    border-color: #1f2c42 !important;
+    color: #f8fafc !important;
+  }
+  body.dark-mode .li-tuning-control:focus,
+  html[data-theme="dark"] .li-tuning-control:focus,
+  body.dark-mode #li-domain-input:focus,
+  html[data-theme="dark"] #li-domain-input:focus,
+  body.dark-mode #li-pattern-select:focus,
+  html[data-theme="dark"] #li-pattern-select:focus,
+  body.dark-mode #li-engine-select:focus,
+  html[data-theme="dark"] #li-engine-select:focus {
+    background-color: #1a273b !important;
+    border-color: #0a66c2 !important;
+    box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.35) !important;
+  }
+  body.dark-mode .li-tuning-control::placeholder,
+  html[data-theme="dark"] .li-tuning-control::placeholder {
+    color: #64748b !important;
+  }
+  body.dark-mode select.li-tuning-control option,
+  html[data-theme="dark"] select.li-tuning-control option {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+  }
   body.dark-mode #li-empty-guidance,
   html[data-theme="dark"] #li-empty-guidance {
     background: #111827 !important;
@@ -2770,7 +2988,7 @@
                 <div class="ig-input-row">
                   <input type="text" id="li-company-input" class="ig-input-field form-input" placeholder="Enter target company (e.g. OpenAI, Google, Stripe, Microsoft)..." required>
                   
-                  <select id="li-role-select" class="ig-count-select form-select" style="min-width: 140px;" title="Department / Title Filter">
+                  <select id="li-role-select" class="ig-count-select form-select" style="min-width: 140px;" title="Department / Title Filter" onchange="onLinkedInRoleSelectChange()">
                     <option value="" selected>All Departments</option>
                     <option value="engineer">Engineering &amp; Dev</option>
                     <option value="security">Security &amp; OSINT</option>
@@ -2780,7 +2998,7 @@
                     <option value="product">Product &amp; Design</option>
                   </select>
 
-                  <select id="li-count-select" class="ig-count-select form-select" title="Target personnel yield limit">
+                  <select id="li-count-select" class="ig-count-select form-select" title="Target personnel yield limit" onchange="onLinkedInCountSelectChange()">
                     <option value="10">10 Personnel</option>
                     <option value="25" selected>25 Personnel</option>
                     <option value="50">50 Personnel</option>
@@ -2795,54 +3013,57 @@
                   </button>
                 </div>
 
-                <!-- Advanced Configuration: Domain, Email Pattern & Search Scope -->
-                <details style="font-size: 12.5px; color: var(--slate-600); margin-top: 14px;">
-                  <summary style="cursor: pointer; font-weight: 700; color: var(--slate-800); display: inline-flex; align-items: center; gap: 6px;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                    Corporate Email Synthesis &amp; Indexation Tuning
-                  </summary>
-                  <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-                    <div>
-                      <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate-500); margin-bottom: 4px;">
-                        Corporate Domain Override
-                      </label>
-                      <input type="text" id="li-domain-input" class="ig-input-field" style="padding: 8px 12px; font-size: 12px; width: 100%;" placeholder="e.g. google.com (auto if blank)">
-                      <span style="display: block; font-size: 10.5px; color: var(--slate-500); margin-top: 3px;">
-                        Domain suffix applied to inferred corporate emails.
-                      </span>
-                    </div>
+                <!-- Advanced Configuration Toggle & Structured Panel -->
+                <div class="li-tuning-wrapper">
+                  <button type="button" id="li-tuning-toggle-btn" class="li-tuning-toggle-btn" onclick="toggleLinkedInTuning()" title="Toggle Email Synthesis &amp; Search Scope Tuning">
+                    <span class="li-toggle-icon-wrap">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </span>
+                    <span>Advanced Tuning</span>
+                    <span class="li-toggle-switch">
+                      <span class="li-toggle-thumb"></span>
+                    </span>
+                    <svg class="li-toggle-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
 
-                    <div>
-                      <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate-500); margin-bottom: 4px;">
-                        Email Synthesis Pattern
-                      </label>
-                      <select id="li-pattern-select" class="ig-input-field" style="padding: 8px 10px; font-size: 12px; width: 100%;">
-                        <option value="{first}.{last}@{domain}" selected>{first}.{last}@domain (john.doe@...)</option>
-                        <option value="{f}{last}@{domain}">{f}{last}@domain (jdoe@...)</option>
-                        <option value="{first}@{domain}">{first}@domain (john@...)</option>
-                        <option value="{first}_{last}@{domain}">{first}_{last}@domain (john_doe@...)</option>
-                      </select>
-                      <span style="display: block; font-size: 10.5px; color: var(--slate-500); margin-top: 3px;">
-                        Corporate mail naming convention formula.
-                      </span>
-                    </div>
+                  <div id="li-tuning-panel" class="li-tuning-panel">
+                    <div class="li-tuning-grid">
+                      <div class="li-tuning-col">
+                        <label>Corporate Domain Override</label>
+                        <input type="text" id="li-domain-input" class="li-tuning-control" placeholder="e.g. google.com (auto if blank)">
+                        <span class="li-tuning-hint">
+                          Domain suffix applied to inferred corporate emails.
+                        </span>
+                      </div>
 
-                    <div>
-                      <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--slate-500); margin-bottom: 4px;">
-                        Search Index Engine
-                      </label>
-                      <select id="li-engine-select" class="ig-input-field" style="padding: 8px 10px; font-size: 12px; width: 100%;">
-                        <option value="yahoo,bing,google" selected>Multi-Engine (Yahoo, Bing, Google)</option>
-                        <option value="yahoo">Yahoo Index (Fastest, zero captcha)</option>
-                        <option value="bing">Bing Index</option>
-                        <option value="google">Google Index</option>
-                      </select>
-                      <span style="display: block; font-size: 10.5px; color: var(--slate-500); margin-top: 3px;">
-                        Public search engines utilized for profile discovery.
-                      </span>
+                      <div class="li-tuning-col">
+                        <label>Email Synthesis Pattern</label>
+                        <select id="li-pattern-select" class="li-tuning-control">
+                          <option value="{first}.{last}@{domain}" selected>{first}.{last}@domain (john.doe@...)</option>
+                          <option value="{f}{last}@{domain}">{f}{last}@domain (jdoe@...)</option>
+                          <option value="{first}@{domain}">{first}@domain (john@...)</option>
+                          <option value="{first}_{last}@{domain}">{first}_{last}@domain (john_doe@...)</option>
+                        </select>
+                        <span class="li-tuning-hint">
+                          Corporate mail naming convention formula.
+                        </span>
+                      </div>
+
+                      <div class="li-tuning-col">
+                        <label>Search Index Engine</label>
+                        <select id="li-engine-select" class="li-tuning-control">
+                          <option value="yahoo,bing,google" selected>Multi-Engine (Yahoo, Bing, Google)</option>
+                          <option value="yahoo">Yahoo Index (Fastest, zero captcha)</option>
+                          <option value="bing">Bing Index</option>
+                          <option value="google">Google Index</option>
+                        </select>
+                        <span class="li-tuning-hint">
+                          Public search engines utilized for profile discovery.
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </details>
+                </div>
               </form>
             </div>
 
@@ -2938,19 +3159,19 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                   <!-- Department Filter Pills -->
                   <div id="li-filter-bar" class="li-filter-bar" style="margin-bottom: 0;">
-                    <button type="button" class="li-filter-pill active" onclick="setLinkedInFilter('all', this)">
+                    <button type="button" class="li-filter-pill active" data-category="all" onclick="setLinkedInFilter('all', this)">
                       All Roles <span class="pill-count" id="li-pill-count-all">0</span>
                     </button>
-                    <button type="button" class="li-filter-pill" onclick="setLinkedInFilter('leadership', this)">
+                    <button type="button" class="li-filter-pill" data-category="leadership" onclick="setLinkedInFilter('leadership', this)">
                       Leadership <span class="pill-count" id="li-pill-count-leadership">0</span>
                     </button>
-                    <button type="button" class="li-filter-pill" onclick="setLinkedInFilter('engineering', this)">
+                    <button type="button" class="li-filter-pill" data-category="engineering" onclick="setLinkedInFilter('engineering', this)">
                       Engineering &amp; AI <span class="pill-count" id="li-pill-count-engineering">0</span>
                     </button>
-                    <button type="button" class="li-filter-pill" onclick="setLinkedInFilter('product', this)">
+                    <button type="button" class="li-filter-pill" data-category="product" onclick="setLinkedInFilter('product', this)">
                       Product &amp; Design <span class="pill-count" id="li-pill-count-product">0</span>
                     </button>
-                    <button type="button" class="li-filter-pill" onclick="setLinkedInFilter('operations', this)">
+                    <button type="button" class="li-filter-pill" data-category="operations" onclick="setLinkedInFilter('operations', this)">
                       Ops &amp; Legal <span class="pill-count" id="li-pill-count-operations">0</span>
                     </button>
                   </div>
@@ -3966,6 +4187,15 @@ function setLinkedInMode(mode) {
   }
 }
 
+function toggleLinkedInTuning() {
+  const btn = document.getElementById("li-tuning-toggle-btn");
+  const panel = document.getElementById("li-tuning-panel");
+  if (btn && panel) {
+    const isOpen = panel.classList.toggle("open");
+    btn.classList.toggle("active", isOpen);
+  }
+}
+
 function dismissLinkedInProgress() {
   const panel = document.getElementById("li-progress-panel");
   if (panel) panel.classList.remove("active");
@@ -4058,7 +4288,7 @@ async function startLinkedInFlash() {
         domain: domain,
         pattern: pattern,
         max_results: maxResults,
-        force: false
+        force: true
       })
     });
 
@@ -4281,10 +4511,49 @@ function handleLinkedInCompletion(data) {
   renderLinkedInPersonnel();
 }
 
+function onLinkedInRoleSelectChange() {
+  const roleEl = document.getElementById("li-role-select");
+  const val = roleEl ? (roleEl.value || "").trim().toLowerCase() : "";
+  const catMap = {
+    "": "all",
+    "engineer": "engineering",
+    "security": "engineering",
+    "executive": "leadership",
+    "director": "leadership",
+    "research": "engineering",
+    "product": "product"
+  };
+  const targetCat = catMap[val] || "all";
+  currentLinkedInFilter = targetCat;
+  document.querySelectorAll("#li-filter-bar .li-filter-pill").forEach(p => {
+    const pCat = p.getAttribute("data-category") || "";
+    if (pCat === targetCat) p.classList.add("active");
+    else p.classList.remove("active");
+  });
+  if (currentLinkedInData && currentLinkedInData.personnel) {
+    renderLinkedInPersonnel();
+  }
+}
+
+function onLinkedInCountSelectChange() {
+  if (currentLinkedInData && currentLinkedInData.personnel) {
+    renderLinkedInPersonnel();
+  }
+}
+
 function setLinkedInFilter(category, btn) {
   currentLinkedInFilter = category;
   document.querySelectorAll("#li-filter-bar .li-filter-pill").forEach(p => p.classList.remove("active"));
   if (btn) btn.classList.add("active");
+
+  const roleEl = document.getElementById("li-role-select");
+  if (roleEl) {
+    if (category === "all") roleEl.value = "";
+    else if (category === "leadership") roleEl.value = "executive";
+    else if (category === "engineering") roleEl.value = "engineer";
+    else if (category === "product") roleEl.value = "product";
+  }
+
   renderLinkedInPersonnel();
 }
 
@@ -4319,11 +4588,13 @@ function renderLinkedInPersonnel() {
   const countBadge = document.getElementById("li-personnel-badge-count");
   const searchInput = document.getElementById("li-search-input");
   const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
+  const countEl = document.getElementById("li-count-select");
+  const maxDisplay = countEl ? (parseInt(countEl.value, 10) || 1000) : 1000;
 
   const allPersonnel = currentLinkedInData.personnel || [];
   const company = currentLinkedInData.company || "Company";
 
-  const filtered = allPersonnel.filter(p => {
+  let filtered = allPersonnel.filter(p => {
     const roleInfo = classifyLinkedInRole(p.title);
     if (currentLinkedInFilter !== 'all' && roleInfo.category !== currentLinkedInFilter) {
       return false;
@@ -4334,6 +4605,10 @@ function renderLinkedInPersonnel() {
     }
     return true;
   });
+
+  if (maxDisplay && filtered.length > maxDisplay) {
+    filtered = filtered.slice(0, maxDisplay);
+  }
 
   if (countBadge) countBadge.textContent = String(filtered.length);
 
