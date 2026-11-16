@@ -65,6 +65,7 @@ async def security_and_session_middleware(request: Request, call_next):
     is_public = (
         path in PUBLIC_EXACT_PATHS
         or path.startswith("/static")
+        or path.startswith("/api/auth/")
     )
 
     # Resolve cryptographic session

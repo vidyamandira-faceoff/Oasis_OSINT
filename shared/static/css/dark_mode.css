@@ -317,11 +317,32 @@ body.dark-mode .nav-badge {
   border: 1px solid rgba(16, 185, 129, 0.25) !important;
 }
 
+html[data-theme="dark"] .nav-item.disabled,
+body.dark-mode .nav-item.disabled {
+  opacity: 0.74 !important;
+  color: var(--slate-300) !important;
+}
+
+html[data-theme="dark"] .nav-item.disabled:hover,
+body.dark-mode .nav-item.disabled:hover {
+  opacity: 1 !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: var(--slate-100) !important;
+}
+
 html[data-theme="dark"] .nav-badge-coming-soon,
 body.dark-mode .nav-badge-coming-soon {
-  background-color: #1e293b !important;
-  color: #64748b !important;
-  border: 1px solid #283548 !important;
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.45) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .nav-item.disabled:hover .nav-badge-coming-soon,
+body.dark-mode .nav-item.disabled:hover .nav-badge-coming-soon {
+  background-color: rgba(245, 158, 11, 0.20) !important;
+  border-color: rgba(245, 158, 11, 0.70) !important;
+  color: #fef08a !important;
 }
 
 html[data-theme="dark"] .sidebar-footer,

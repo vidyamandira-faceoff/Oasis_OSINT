@@ -491,47 +491,83 @@ body {
   border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
-/* Disabled & Coming Soon Nav States */
+/* Roadmap & Planned Capabilities Nav States (Formal Enterprise OSINT) */
 .nav-item.disabled {
-  opacity: 0.45;
-  cursor: not-allowed !important;
-  pointer-events: none;
-  filter: grayscale(40%);
+  opacity: 0.76;
+  cursor: default !important;
+  pointer-events: auto;
+  user-select: none;
+  transition: opacity 0.18s ease, background-color 0.18s ease, color 0.18s ease;
 }
 
 .nav-item.disabled:hover {
-  background-color: transparent !important;
-  color: var(--slate-600) !important;
+  opacity: 0.98;
+  background-color: var(--slate-50);
+  color: var(--slate-900);
   transform: none !important;
+}
+
+.nav-item.disabled svg {
+  opacity: 0.70;
+  transition: opacity 0.18s ease;
+}
+
+.nav-item.disabled:hover svg {
+  opacity: 0.95;
 }
 
 .nav-badge-coming-soon {
   margin-left: auto;
-  font-size: 9px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 8.5px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 2px 5px;
-  border-radius: var(--radius-xs);
-  background: var(--slate-100);
-  color: var(--slate-500);
-  border: 1px solid var(--border-soft);
+  letter-spacing: 0.05em;
+  padding: 2.5px 7px;
+  border-radius: 4px;
+  background-color: rgba(217, 119, 6, 0.09);
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.40);
   white-space: nowrap;
+  line-height: 1.2;
+  flex-shrink: 0;
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+}
+
+.nav-item.disabled:hover .nav-badge-coming-soon {
+  background-color: rgba(217, 119, 6, 0.16);
+  border-color: rgba(217, 119, 6, 0.65);
+  color: #92400e;
+}
+
+.dark-theme .nav-item.disabled,
+[data-theme="dark"] .nav-item.disabled {
+  opacity: 0.74;
+  color: var(--slate-300);
+}
+
+.dark-theme .nav-item.disabled:hover,
+[data-theme="dark"] .nav-item.disabled:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--slate-100);
 }
 
 .dark-theme .nav-badge-coming-soon,
 [data-theme="dark"] .nav-badge-coming-soon {
-  margin-left: auto;
-  font-size: 9px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 2px 5px;
-  border-radius: var(--radius-xs);
-  background: var(--slate-100);
-  color: var(--slate-500);
-  border: 1px solid var(--border-soft);
-  white-space: nowrap;
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  box-shadow: none;
+}
+
+.dark-theme .nav-item.disabled:hover .nav-badge-coming-soon,
+[data-theme="dark"] .nav-item.disabled:hover .nav-badge-coming-soon {
+  background-color: rgba(245, 158, 11, 0.20);
+  border-color: rgba(245, 158, 11, 0.70);
+  color: #fef08a;
 }
 
 /* Nav Badge Version in Sidebar */

@@ -48,6 +48,7 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
+                email TEXT UNIQUE,
                 password TEXT NOT NULL,
                 role_id INTEGER NOT NULL,
                 display_name TEXT NOT NULL,
@@ -59,7 +60,26 @@ def init_db() -> None:
             );
         """)
 
-        # 3. Service Executions / Test History Relational Table (Foreign Key -> users.id)
+        # Migration: ensure email column exists in existing users table
+        cursor.execute("PRAGMA table_info(users);")
+        user_cols = [r["name"] for r in cursor.fetchall()]
+        if "email" not in user_cols:
+            cursor.execute("ALTER TABLE users ADD COLUMN email TEXT;")
+
+        # 3. Email OTPs Table (For Sign-up & Forgot Password verification)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS email_otps (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT NOT NULL,
+                otp_code TEXT NOT NULL,
+                purpose TEXT NOT NULL,
+                expires_at TIMESTAMP NOT NULL,
+                verified INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+
+        # 4. Service Executions / Test History Relational Table (Foreign Key -> users.id)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS service_executions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -84,11 +104,22 @@ def init_db() -> None:
 
         # Indices for high-velocity lookups
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);")
+        cursor.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_role_id ON users(role_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_email_otps_email ON email_otps(email);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_email_otps_code ON email_otps(otp_code);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_email_otps_purpose ON email_otps(purpose);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_executions_user_id ON service_executions(user_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_executions_service_id ON service_executions(service_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_executions_created_at ON service_executions(created_at);")
 
+        conn.commit()
+
+        # Update seeded users with default emails if missing
+        cursor.execute("UPDATE users SET email = 'admin@oasis.live' WHERE username = 'admin' AND (email IS NULL OR email = '');")
+        cursor.execute("UPDATE users SET email = 'alex@oasis.live' WHERE username = 'alex' AND (email IS NULL OR email = '');")
+        cursor.execute("UPDATE users SET email = 'sam@oasis.live' WHERE username = 'sam' AND (email IS NULL OR email = '');")
+        cursor.execute("UPDATE users SET email = 'jordan@oasis.live' WHERE username = 'jordan' AND (email IS NULL OR email = '');")
         conn.commit()
 
         # 4. Seed Roles if empty
@@ -267,7 +298,7 @@ def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT u.id, u.username, u.password, u.display_name as displayName,
+            SELECT u.id, u.username, u.email, u.password, u.display_name as displayName,
                    u.avatar, u.is_active, u.created_at, u.last_login,
                    r.id as role_id, r.name as role, r.display_name as role_display_name,
                    r.can_view_telemetry, r.can_manage_services
@@ -279,6 +310,205 @@ def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
         if row:
             return dict(row)
     return None
+
+
+def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
+    """Retrieves user by verified email address."""
+    init_db()
+    clean_email = (email or "").strip().lower()
+    if not clean_email:
+        return None
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT u.id, u.username, u.email, u.password, u.display_name as displayName,
+                   u.avatar, u.is_active, u.created_at, u.last_login,
+                   r.id as role_id, r.name as role, r.display_name as role_display_name,
+                   r.can_view_telemetry, r.can_manage_services
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            WHERE LOWER(u.email) = ? AND u.is_active = 1;
+        """, (clean_email,))
+        row = cursor.fetchone()
+        if row:
+            return dict(row)
+    return None
+
+
+def get_user_by_username_or_email(identifier: str) -> Optional[Dict[str, Any]]:
+    """Retrieves user matching either username or email address."""
+    init_db()
+    clean = (identifier or "").strip().lower()
+    if not clean:
+        return None
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT u.id, u.username, u.email, u.password, u.display_name as displayName,
+                   u.avatar, u.is_active, u.created_at, u.last_login,
+                   r.id as role_id, r.name as role, r.display_name as role_display_name,
+                   r.can_view_telemetry, r.can_manage_services
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            WHERE (LOWER(u.username) = ? OR LOWER(u.email) = ?) AND u.is_active = 1;
+        """, (clean, clean))
+        row = cursor.fetchone()
+        if row:
+            return dict(row)
+    return None
+
+
+def create_user(
+    username: str,
+    email: str,
+    password: str,
+    display_name: Optional[str] = None,
+    role_name: str = "user"
+) -> Dict[str, Any]:
+    """Registers a new station user account in SQLite."""
+    init_db()
+    clean_user = username.strip().lower()
+    clean_email = email.strip().lower()
+    clean_display = (display_name or username).strip()
+    avatar = clean_display[0].upper() if clean_display else clean_user[0].upper()
+    now_iso = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM roles WHERE LOWER(name) = ?;", (role_name.lower(),))
+        role_row = cursor.fetchone()
+        role_id = role_row["id"] if role_row else 2
+
+        cursor.execute("""
+            INSERT INTO users (username, email, password, role_id, display_name, avatar, is_active, created_at, last_login)
+            VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?);
+        """, (clean_user, clean_email, password, role_id, clean_display, avatar, now_iso, now_iso))
+        conn.commit()
+
+    return get_user_by_username(clean_user)
+
+
+def update_user_password(identifier: str, new_password: str) -> bool:
+    """Updates passkey for user by username or email."""
+    init_db()
+    clean = (identifier or "").strip().lower()
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE users 
+            SET password = ? 
+            WHERE (LOWER(username) = ? OR LOWER(email) = ?) AND is_active = 1;
+        """, (new_password, clean, clean))
+        conn.commit()
+        return cursor.rowcount > 0
+
+
+# =============================================================================
+# EMAIL OTP MANAGEMENT (8-DIGIT ALPHANUMERIC, 5-MINUTE VALIDITY)
+# =============================================================================
+
+def save_email_otp(
+    email: str,
+    otp_code: str,
+    purpose: str,
+    validity_seconds: int = 300
+) -> None:
+    """Stores an 8-digit alphanumeric verification OTP valid for 5 minutes."""
+    init_db()
+    clean_email = email.strip().lower()
+    clean_code = otp_code.strip().upper()
+    now = datetime.datetime.now()
+    expires_at = now + datetime.timedelta(seconds=validity_seconds)
+    expires_at_iso = expires_at.strftime("%Y-%m-%d %H:%M:%S")
+    now_iso = now.strftime("%Y-%m-%d %H:%M:%S")
+
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        # Invalidate any existing unverified OTPs for this email and purpose
+        cursor.execute("""
+            DELETE FROM email_otps 
+            WHERE LOWER(email) = ? AND purpose = ? AND verified = 0;
+        """, (clean_email, purpose))
+
+        cursor.execute("""
+            INSERT INTO email_otps (email, otp_code, purpose, expires_at, verified, created_at)
+            VALUES (?, ?, ?, ?, 0, ?);
+        """, (clean_email, clean_code, purpose, expires_at_iso, now_iso))
+        conn.commit()
+
+
+def verify_email_otp(email: str, otp_code: str, purpose: str) -> Tuple[bool, str]:
+    """Validates an 8-digit alphanumeric OTP against database record within 5-min window."""
+    init_db()
+    clean_email = email.strip().lower()
+    clean_code = otp_code.strip().upper()
+    now_iso = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id, otp_code, expires_at, verified
+            FROM email_otps
+            WHERE LOWER(email) = ? AND purpose = ?
+            ORDER BY created_at DESC
+            LIMIT 1;
+        """, (clean_email, purpose))
+        row = cursor.fetchone()
+
+        if not row:
+            return False, "No active verification code found for this email. Please request a new code."
+
+        if row["expires_at"] < now_iso:
+            return False, "Verification code has expired. Codes are valid for 5 minutes. Please request a new code."
+
+        import hmac
+        if not hmac.compare_digest(row["otp_code"].upper(), clean_code):
+            return False, "Invalid verification code. Please check the 8-digit alphanumeric code and try again."
+
+        # Mark as verified
+        cursor.execute("UPDATE email_otps SET verified = 1 WHERE id = ?;", (row["id"],))
+        conn.commit()
+        return True, "Email successfully verified."
+
+
+def is_email_verified_for_signup(email: str, max_age_seconds: int = 900) -> bool:
+    """Verifies that the email has successfully passed OTP verification for signup within window."""
+    init_db()
+    clean_email = email.strip().lower()
+    cutoff = (datetime.datetime.now() - datetime.timedelta(seconds=max_age_seconds)).strftime("%Y-%m-%d %H:%M:%S")
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id FROM email_otps
+            WHERE LOWER(email) = ? AND purpose = 'signup' AND verified = 1 AND created_at >= ?
+            ORDER BY created_at DESC LIMIT 1;
+        """, (clean_email, cutoff))
+        return cursor.fetchone() is not None
+
+
+def is_otp_verified_for_reset(email: str, max_age_seconds: int = 900) -> bool:
+    """Verifies that the email has successfully passed OTP verification for forgot_password within window."""
+    init_db()
+    clean_email = email.strip().lower()
+    cutoff = (datetime.datetime.now() - datetime.timedelta(seconds=max_age_seconds)).strftime("%Y-%m-%d %H:%M:%S")
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id FROM email_otps
+            WHERE LOWER(email) = ? AND purpose = 'forgot_password' AND verified = 1 AND created_at >= ?
+            ORDER BY created_at DESC LIMIT 1;
+        """, (clean_email, cutoff))
+        return cursor.fetchone() is not None
+
+
+def consume_verified_otp(email: str, purpose: str) -> None:
+    """Consumes and clears verified OTP after successful registration or password reset."""
+    init_db()
+    clean_email = email.strip().lower()
+    with get_db_connection() as conn:
+        conn.execute("DELETE FROM email_otps WHERE LOWER(email) = ? AND purpose = ?;", (clean_email, purpose))
+        conn.commit()
+
 
 
 def get_all_users_with_roles() -> List[Dict[str, Any]]:
@@ -355,7 +585,16 @@ def record_execution(
             status, status_class, report_path, metadata_json, now_iso
         ))
         conn.commit()
-        return cursor.lastrowid
+        last_id = cursor.lastrowid
+
+    # Track that the user opened and actively used / executed scanning functionality in this service
+    try:
+        from roles.user.service import record_user_service_usage
+        record_user_service_usage(username_val, service_id)
+    except Exception:
+        pass
+
+    return last_id
 
 
 def get_service_history_for_user(

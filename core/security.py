@@ -435,3 +435,68 @@ def is_any_osint_scan_running() -> Tuple[bool, List[str]]:
 
     has_active = len(active_tools) > 0
     return has_active, active_tools
+
+
+# -----------------------------------------------------------------------------
+# Password Standards & Verification Ticket Helpers
+# -----------------------------------------------------------------------------
+SPECIAL_CHARACTERS = set("!@#$%^&*()_+-=[]{}|;:,.<>?/~`'\"\\")
+
+def validate_password_strength(password: str) -> Tuple[bool, List[str], Dict[str, bool]]:
+    """
+    Evaluates password compliance with standard enterprise security parameters:
+    1. Minimum 8 characters in length
+    2. At least one uppercase letter (A-Z)
+    3. At least one lowercase letter (a-z)
+    4. At least one numeric digit (0-9)
+    5. At least one special symbol (!@#$%^&*...)
+    Returns (is_valid, list_of_missing_rules, rules_dict).
+    """
+    pwd = password or ""
+    rules = {
+        "min_length": len(pwd) >= 8,
+        "uppercase": any(c.isupper() for c in pwd),
+        "lowercase": any(c.islower() for c in pwd),
+        "number": any(c.isdigit() for c in pwd),
+        "special": any(c in SPECIAL_CHARACTERS for c in pwd),
+    }
+
+    missing = []
+    if not rules["min_length"]:
+        missing.append("Minimum 8 characters in length")
+    if not rules["uppercase"]:
+        missing.append("At least one uppercase letter (A-Z)")
+    if not rules["lowercase"]:
+        missing.append("At least one lowercase letter (a-z)")
+    if not rules["number"]:
+        missing.append("At least one numeric digit (0-9)")
+    if not rules["special"]:
+        missing.append("At least one special symbol (!@#$%^&*...)")
+
+    is_valid = len(missing) == 0
+    return is_valid, missing, rules
+
+
+def create_verification_token(email: str, purpose: str, expires_in: int = 900) -> str:
+    """Creates a short-lived cryptographic ticket certifying email verification."""
+    data = {
+        "sub": email.strip().lower(),
+        "purpose": purpose,
+        "type": "email_verification_ticket",
+    }
+    return create_access_token(data, expires_in=expires_in)
+
+
+def verify_verification_token(token: str, email: str, purpose: str) -> bool:
+    """Verifies that the ticket is valid, signed, unexpired, and matches email & purpose."""
+    payload = decode_token(token, is_refresh=False)
+    if not payload:
+        return False
+    if payload.get("type") != "email_verification_ticket":
+        return False
+    if payload.get("sub") != email.strip().lower():
+        return False
+    if payload.get("purpose") != purpose:
+        return False
+    return True
+

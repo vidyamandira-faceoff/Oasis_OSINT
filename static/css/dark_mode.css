@@ -223,3 +223,36 @@ body.dark-mode .site-footer {
   border-top-color: var(--border-soft) !important;
   color: var(--slate-400) !important;
 }
+
+/* Formal Roadmap & Coming Soon Nav States (Dark Theme) */
+html[data-theme="dark"] .nav-item.disabled,
+body.dark-mode .nav-item.disabled,
+.dark-theme .nav-item.disabled {
+  opacity: 0.74 !important;
+  color: var(--slate-300) !important;
+}
+
+html[data-theme="dark"] .nav-item.disabled:hover,
+body.dark-mode .nav-item.disabled:hover,
+.dark-theme .nav-item.disabled:hover {
+  opacity: 1 !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: var(--slate-100) !important;
+}
+
+html[data-theme="dark"] .nav-badge-coming-soon,
+body.dark-mode .nav-badge-coming-soon,
+.dark-theme .nav-badge-coming-soon {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.45) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .nav-item.disabled:hover .nav-badge-coming-soon,
+body.dark-mode .nav-item.disabled:hover .nav-badge-coming-soon,
+.dark-theme .nav-item.disabled:hover .nav-badge-coming-soon {
+  background-color: rgba(245, 158, 11, 0.20) !important;
+  border-color: rgba(245, 158, 11, 0.70) !important;
+  color: #fef08a !important;
+}

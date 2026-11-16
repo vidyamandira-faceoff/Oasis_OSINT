@@ -7,7 +7,11 @@ from fastapi.templating import Jinja2Templates
 from core.config import BASE_DIR, SERVICES_DIR, GATEWAY_PORT
 from core.security import get_session_from_request
 from roles.accounts import get_user, is_admin_user
-from roles.user.service import get_user_dashboard_data
+from roles.user.service import (
+    get_user_dashboard_data,
+    record_user_service_usage,
+    get_frequently_used_services,
+)
 from services.dashboard.backend.service import get_dashboard_summary
 from services.notifications.backend.service import list_tool_notifications, get_stats
 from services.changelog.backend.service import get_all_releases, get_latest_version
@@ -58,6 +62,10 @@ async def user_dashboard_page(request: Request):
             "summary": summary,
         }
     )
+    user_metadata = get_user_dashboard_data(context["user_account"]["username"])
+    context["frequently_used"] = user_metadata["frequently_used"]
+    context["user_station_data"] = user_metadata
+
     return templates.TemplateResponse(
         request=request,
         name="roles/user/templates/role_user_dashboard.html",
@@ -229,7 +237,7 @@ async def user_changelog_page(request: Request):
 
 
 # -----------------------------------------------------------------------------
-# User API Profile Endpoint
+# User API Profile & Frequently Used Module Endpoints
 # -----------------------------------------------------------------------------
 @router.get("/api/user/profile")
 async def get_user_profile(request: Request):
@@ -242,3 +250,30 @@ async def get_user_profile(request: Request):
         "success": True,
         "profile": get_user_dashboard_data(current_user)
     }
+
+
+@router.get("/api/user/frequently-used")
+async def get_user_frequently_used(request: Request):
+    """Returns dynamic frequently used modules ranked by affinity score."""
+    session = get_session_from_request(request)
+    current_user = session["username"] if session and session.get("authenticated") else "default_user"
+    return {
+        "success": True,
+        "frequently_used": get_frequently_used_services(current_user)
+    }
+
+
+@router.post("/api/user/record-usage")
+async def post_user_record_usage(request: Request):
+    """Allows client-side actions to record usage events for services."""
+    session = get_session_from_request(request)
+    current_user = session["username"] if session and session.get("authenticated") else "default_user"
+    try:
+        body = await request.json()
+        service_id = body.get("service_id", "").strip()
+        if service_id:
+            updated = record_user_service_usage(current_user, service_id)
+            return {"success": True, "service_id": service_id, "record": updated}
+    except Exception as e:
+        pass
+    return {"success": False, "detail": "Invalid payload or service_id"}
