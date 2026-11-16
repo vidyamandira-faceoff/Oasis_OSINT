@@ -42,3 +42,40 @@ The system is structured as a decoupled full-stack application following modern 
   - `/services/recon-phone` &rarr; Phone Number Recon
   - `/services/recon-subdomains` &rarr; Hostname & Subdomains
   - `/services/recon-crypto` &rarr; Bitcoin & Crypto Addresses
+
+---
+
+## Database Setup & Migrations for Developers
+
+OASIS uses a relational SQLite database (`oasis.sqlite3`) with foreign key constraints, tracking platform roles, investigator accounts, and multi-user service test histories.
+
+### Automatic Setup
+When a developer runs the setup script, the database migrations and default accounts are set up automatically:
+```bash
+./setup_linux.sh
+```
+
+### Manual Migration CLI Commands
+Developers can manage and inspect their local database state using the migration CLI tool or master script:
+
+```bash
+# 1. Apply all pending migrations and seed default schema
+./oasis.sh migrate
+# or directly with Python:
+python migrations/migrate.py --up
+
+# 2. Check current database health, tables, row counts, and accounts
+./oasis.sh migrate --status
+# or directly:
+python migrations/migrate.py --status
+
+# 3. Clean development reset (drops and recreates all tables with seed data)
+./oasis.sh migrate --reset
+# or directly:
+python migrations/migrate.py --reset
+```
+
+### Migration Files Reference
+* [`migrations/001_initial_schema.sql`](file:///home/atig/Desktop/Oasis_OSINT/migrations/001_initial_schema.sql): DDL creating `roles`, `users`, `service_executions`, and indexes with default Admin and Analyst accounts.
+* [`migrations/002_seed_test_executions.sql`](file:///home/atig/Desktop/Oasis_OSINT/migrations/002_seed_test_executions.sql): Realistic multi-user investigation test runs across all 6 intelligence suites.
+* [`migrations/migrate.py`](file:///home/atig/Desktop/Oasis_OSINT/migrations/migrate.py): Standalone migration runner and schema manager.
