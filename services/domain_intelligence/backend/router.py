@@ -27,6 +27,7 @@ class DomainRunRequest(BaseModel):
     force: Optional[bool] = False
 
 from core.security import get_session_from_request
+from core.database import record_execution, get_service_history_for_user
 from roles.accounts import is_admin_user
 
 @router.get("/services/domain-intelligence")
@@ -49,7 +50,7 @@ async def legacy_surface_redirect():
     return RedirectResponse(url="/services/domain-intelligence", status_code=301)
 
 @router.post("/api/domain_intelligence/run")
-async def run_task(req: DomainRunRequest):
+async def run_task(req: DomainRunRequest, request: Request):
     try:
         res = execute_domain_task(
             target=req.target,
@@ -60,6 +61,25 @@ async def run_task(req: DomainRunRequest):
             wayback=bool(req.wayback),
             force=bool(req.force)
         )
+        # Record execution in relational database
+        session = get_session_from_request(request)
+        username = session.get("username", "admin") if session else "admin"
+        try:
+            record_execution(
+                username=username,
+                service_id="domain_intelligence",
+                service_name="Domain & Website Intelligence",
+                tool_name="Photon Surface Spider",
+                target=req.target,
+                duration_seconds=float(res.get("duration", 5.0)),
+                findings_count=int(res.get("findings_count", 0)),
+                findings_summary=f"Crawled {req.target} (depth={req.depth})",
+                status="Success",
+                status_class="badge-status-success",
+                report_path=f"services/domain_intelligence/reports/{req.target}.json"
+            )
+        except Exception:
+            pass
         return res
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -72,8 +92,12 @@ async def check_status(job_id: str):
     return get_domain_status(clean_id)
 
 @router.get("/api/domain_intelligence/history")
-async def search_history():
-    return {"history": get_domain_history()}
+async def search_history(request: Request):
+    session = get_session_from_request(request)
+    username = session.get("username") if session else None
+    is_admin = session.get("is_admin", False) if session else False
+    db_history = get_service_history_for_user("domain_intelligence", username=username, is_admin=is_admin)
+    return {"history": db_history}
 
 @router.get("/api/domain_intelligence/download")
 async def download_export(

@@ -68,7 +68,7 @@
         </svg>
       </div>
       <div>
-        <div class="cl-metric-value">{{ total_releases }}</div>
+        <div class="cl-metric-value">{{ total_releases | default(releases | length) }}</div>
         <div class="cl-metric-label">Documented SemVer Releases</div>
       </div>
     </div>

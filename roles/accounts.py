@@ -5,8 +5,18 @@ Normal users have standard, equal access with simple, non-title based usernames.
 """
 
 from typing import Dict, Any, Optional
-
 import hmac
+
+try:
+    from core.database import (
+        get_user_by_username,
+        update_user_last_login,
+        get_all_users_with_roles
+    )
+except ImportError:
+    get_user_by_username = None
+    update_user_last_login = None
+    get_all_users_with_roles = None
 
 # Single Admin Account
 ADMIN_ACCOUNT: Dict[str, Any] = {
@@ -58,32 +68,48 @@ ALL_USERS: Dict[str, Dict[str, Any]] = {
 
 def authenticate_user(username: str, password: Optional[str] = "") -> Optional[Dict[str, Any]]:
     """
-    Validates username and password against the accounts registry.
+    Validates username and password against the database accounts registry.
     Two roles: 'admin' and 'user'.
     """
     clean_user = (username or "").strip().lower()
-    
+
+    # Try database first
+    if get_user_by_username:
+        db_user = get_user_by_username(clean_user)
+        if db_user:
+            expected_pass = db_user.get("password", "")
+            if password and hmac.compare_digest(password, expected_pass):
+                if update_user_last_login:
+                    try:
+                        update_user_last_login(clean_user)
+                    except Exception:
+                        pass
+                return db_user
+
+    # Fallback to in-memory registry
     if clean_user in ALL_USERS:
         account = ALL_USERS[clean_user]
         expected_pass = account["password"]
-        # Constant-time comparison to protect against timing attacks
         if password and hmac.compare_digest(password, expected_pass):
             return account
         return None
 
-    # Unregistered account: reject authentication
     return None
 
 
 def get_user(username: str) -> Optional[Dict[str, Any]]:
-    """Retrieves account details by username."""
+    """Retrieves account details by username from database or fallback dictionary."""
     clean_user = (username or "").strip().lower()
+    if get_user_by_username:
+        db_user = get_user_by_username(clean_user)
+        if db_user:
+            return db_user
     return ALL_USERS.get(clean_user)
 
 
 def is_admin_user(username: str) -> bool:
     """Returns True if the user has the Admin role."""
-    clean_user = (username or "").strip().lower()
-    if clean_user in ALL_USERS:
-        return ALL_USERS[clean_user]["role"] == "admin"
+    user = get_user(username)
+    if user:
+        return user.get("role") == "admin"
     return False

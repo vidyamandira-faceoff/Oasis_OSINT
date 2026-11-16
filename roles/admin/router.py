@@ -235,6 +235,7 @@ async def admin_changelog_page(request: Request):
         extra={
             "page_title": "Admin: System Changelog — Oasis",
             "releases": releases,
+            "total_releases": len(releases),
             "latest_version": latest_version,
         }
     )

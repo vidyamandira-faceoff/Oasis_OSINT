@@ -25,6 +25,7 @@ class PhoneRunRequest(BaseModel):
     force: Optional[bool] = False
 
 from core.security import get_session_from_request
+from core.database import record_execution, get_service_history_for_user
 from roles.accounts import is_admin_user
 
 @router.get("/services/phone-intelligence")
@@ -41,7 +42,7 @@ async def page_view(request: Request, target: Optional[str] = None):
     return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/phone_intelligence/run")
-async def run_task(req: PhoneRunRequest):
+async def run_task(req: PhoneRunRequest, request: Request):
     clean_target = req.target.strip()
     if not clean_target:
         raise HTTPException(status_code=400, detail="Target phone number cannot be blank.")
@@ -52,6 +53,24 @@ async def run_task(req: PhoneRunRequest):
             default_country=req.country or "IN",
             force=bool(req.force)
         )
+        session = get_session_from_request(request)
+        username = session.get("username", "admin") if session else "admin"
+        try:
+            record_execution(
+                username=username,
+                service_id="phone_intelligence",
+                service_name="Phone Number Intelligence",
+                tool_name="Libphonenumber Carrier Engine",
+                target=clean_target,
+                duration_seconds=float(result.get("duration", 0.8)),
+                findings_count=1,
+                findings_summary=f"Carrier & format analysis on {clean_target}",
+                status="Success",
+                status_class="badge-status-success",
+                report_path=f"services/phone_intelligence/reports/report_{clean_target}_simple.json"
+            )
+        except Exception:
+            pass
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -66,8 +85,12 @@ async def check_status(target: str):
     return get_phone_status(clean_target)
 
 @router.get("/api/phone_intelligence/history")
-async def get_history():
-    return {"history": get_phone_history()}
+async def get_history(request: Request):
+    session = get_session_from_request(request)
+    username = session.get("username") if session else None
+    is_admin = session.get("is_admin", False) if session else False
+    db_history = get_service_history_for_user("phone_intelligence", username=username, is_admin=is_admin)
+    return {"history": db_history}
 
 @router.get("/api/phone_intelligence/native-endpoint")
 async def get_native_endpoint():
