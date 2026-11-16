@@ -283,3 +283,66 @@ body.dark-mode .site-footer {
   border-top-color: var(--border-soft) !important;
   color: var(--slate-400) !important;
 }
+
+/* LinkedIn Advanced Tuning Toggle & Panel in Dark Mode */
+html[data-theme="dark"] .li-tuning-toggle-btn,
+body.dark-mode .li-tuning-toggle-btn {
+  background-color: #162032 !important;
+  border-color: #1f2c42 !important;
+  color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .li-tuning-toggle-btn:hover,
+body.dark-mode .li-tuning-toggle-btn:hover {
+  background-color: #1a273b !important;
+  border-color: #0a66c2 !important;
+  color: #38bdf8 !important;
+}
+
+html[data-theme="dark"] .li-tuning-toggle-btn.active,
+body.dark-mode .li-tuning-toggle-btn.active {
+  background-color: rgba(10, 102, 194, 0.2) !important;
+  border-color: #0a66c2 !important;
+  color: #38bdf8 !important;
+}
+
+html[data-theme="dark"] .li-toggle-switch,
+body.dark-mode .li-toggle-switch {
+  background-color: #334155 !important;
+}
+
+html[data-theme="dark"] .li-tuning-toggle-btn.active .li-toggle-switch,
+body.dark-mode .li-tuning-toggle-btn.active .li-toggle-switch {
+  background-color: #0a66c2 !important;
+}
+
+html[data-theme="dark"] .li-tuning-panel,
+body.dark-mode .li-tuning-panel {
+  background-color: #111a2e !important;
+  border-color: #1f2c42 !important;
+}
+
+html[data-theme="dark"] .li-tuning-control,
+body.dark-mode .li-tuning-control {
+  background-color: #162032 !important;
+  border-color: #1f2c42 !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .li-tuning-control:focus,
+body.dark-mode .li-tuning-control:focus {
+  background-color: #1a273b !important;
+  border-color: #0a66c2 !important;
+  box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.35) !important;
+}
+
+html[data-theme="dark"] .li-tuning-control::placeholder,
+body.dark-mode .li-tuning-control::placeholder {
+  color: #64748b !important;
+}
+
+html[data-theme="dark"] select.li-tuning-control option,
+body.dark-mode select.li-tuning-control option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
