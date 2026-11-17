@@ -26,7 +26,7 @@
 
   <style>
     /* --------------------------------------------------------------------------
-       TABBED AUTH PANELS (SIGN IN / SIGN UP / FORGOT PASSKEY)
+       TABBED AUTH PANELS (SIGN IN / SIGN UP / FORGOT Password)
        -------------------------------------------------------------------------- */
     .auth-card-tabs {
       display: flex;
@@ -728,12 +728,12 @@
                 </div>
               </div>
 
-              <!-- Passkey Input -->
+              <!-- Password Input -->
               <div class="login-form-group">
                 <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                  <label class="login-form-label" for="login-password">Access Passkey / Secret</label>
+                  <label class="login-form-label" for="login-password">Access Password / Secret</label>
                   <button type="button" class="auth-switch-link" style="font-size: 11px;"
-                    onclick="switchAuthMode('forgot')">Forgot Passkey?</button>
+                    onclick="switchAuthMode('forgot')">Forgot Password?</button>
                 </div>
                 <div class="login-input-wrap">
                   <span class="login-input-icon">
@@ -743,9 +743,9 @@
                     </svg>
                   </span>
                   <input type="password" id="login-password" name="password" class="login-input"
-                    placeholder="Enter passkey (e.g. admin123 or alex123)" autocomplete="current-password">
+                    placeholder="Enter Password (e.g. admin123 or alex123)" autocomplete="current-password">
                   <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('login-password')"
-                    title="Toggle passkey visibility">
+                    title="Toggle Password visibility">
                     <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                       stroke-width="2">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -835,7 +835,7 @@
 
 
           <!-- ===================================================================
-               PANEL 2: USER SIGN UP (STAGED EMAIL OTP + CALL-SIGN & PASSKEY)
+               PANEL 2: USER SIGN UP (STAGED EMAIL OTP + CALL-SIGN & Password)
                =================================================================== -->
           <div class="auth-panel" id="auth-panel-signup">
             <div class="login-card-header">
@@ -854,7 +854,7 @@
                 </span>
               </div>
               <h2 class="login-card-title">Create Station Account</h2>
-              <p class="login-card-sub">Verify your email to configure your station analyst call-sign and passkey.</p>
+              <p class="login-card-sub">Verify your email to configure your station analyst call-sign and Password.</p>
             </div>
 
             <!-- Two-Stage Visual Progress Bar -->
@@ -866,7 +866,7 @@
               <div class="auth-step-divider"></div>
               <div class="auth-step-pill" id="signup-step-pill-2">
                 <span class="auth-step-num" id="signup-step-num-2">2</span>
-                <span>Call-sign &amp; Passkey</span>
+                <span>Call-sign &amp; Password</span>
               </div>
             </div>
 
@@ -1015,7 +1015,7 @@
 
                 <!-- Password Input -->
                 <div class="login-form-group">
-                  <label class="login-form-label" for="signup-password">Access Passkey</label>
+                  <label class="login-form-label" for="signup-password">Access Password</label>
                   <div class="login-input-wrap">
                     <span class="login-input-icon">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1024,10 +1024,10 @@
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                       </svg>
                     </span>
-                    <input type="password" id="signup-password" class="login-input" placeholder="Create secure passkey"
+                    <input type="password" id="signup-password" class="login-input" placeholder="Create secure Password"
                       required autocomplete="new-password" oninput="handlePasswordInput('signup')">
                     <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('signup-password')"
-                      title="Toggle passkey visibility">
+                      title="Toggle Password visibility">
                       <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -1039,7 +1039,7 @@
 
                 <!-- Confirm Password Input -->
                 <div class="login-form-group">
-                  <label class="login-form-label" for="signup-confirm-password">Confirm Access Passkey</label>
+                  <label class="login-form-label" for="signup-confirm-password">Confirm Access Password</label>
                   <div class="login-input-wrap">
                     <span class="login-input-icon">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1049,10 +1049,10 @@
                       </svg>
                     </span>
                     <input type="password" id="signup-confirm-password" class="login-input"
-                      placeholder="Repeat passkey exactly" required autocomplete="new-password"
+                      placeholder="Repeat Password exactly" required autocomplete="new-password"
                       oninput="handlePasswordInput('signup')">
                     <button type="button" class="btn-toggle-pwd"
-                      onclick="togglePasswordVisibility('signup-confirm-password')" title="Toggle passkey visibility">
+                      onclick="togglePasswordVisibility('signup-confirm-password')" title="Toggle Password visibility">
                       <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -1090,7 +1090,7 @@
                   </ul>
                   <div class="password-strength-container">
                     <div class="strength-label">
-                      <span>Passkey Complexity:</span>
+                      <span>Password Complexity:</span>
                       <span id="signup-strength-text">Empty</span>
                     </div>
                     <div class="password-strength-bar">
@@ -1126,7 +1126,7 @@
 
 
           <!-- ===================================================================
-               PANEL 3: FORGOT PASSWORD (EMAIL OTP VERIFICATION & PASSKEY RESET)
+               PANEL 3: FORGOT PASSWORD (EMAIL OTP VERIFICATION & Password RESET)
                =================================================================== -->
           <div class="auth-panel" id="auth-panel-forgot">
             <div class="login-card-header">
@@ -1138,15 +1138,15 @@
                     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                   </svg>
-                  Passkey Recovery
+                  Password Recovery
                 </span>
                 <span class="login-security-tag">
                   8-Digit OTP &bull; 5m Expiry
                 </span>
               </div>
-              <h2 class="login-card-title">Reset Access Passkey</h2>
+              <h2 class="login-card-title">Reset Access Password</h2>
               <p class="login-card-sub">Verify your registered email with an 8-digit OTP to configure a new access
-                passkey.</p>
+                Password.</p>
             </div>
 
             <!-- STAGE 1: ENTER REGISTERED EMAIL & DISPATCH OTP -->
@@ -1241,7 +1241,7 @@
               </div>
             </div>
 
-            <!-- STAGE 2: SET NEW PASSKEY (STRICTLY HIDDEN UNTIL AND UNLESS OTP IS VERIFIED) -->
+            <!-- STAGE 2: SET NEW Password (STRICTLY HIDDEN UNTIL AND UNLESS OTP IS VERIFIED) -->
             <div id="forgot-stage-2" style="display: none;">
               <!-- Verified Identity Banner -->
               <div class="auth-verified-badge">
@@ -1259,7 +1259,7 @@
               <form id="forgot-reset-form" onsubmit="handleForgotResetSubmit(event)">
                 <!-- New Password Input -->
                 <div class="login-form-group">
-                  <label class="login-form-label" for="forgot-new-password">New Access Passkey</label>
+                  <label class="login-form-label" for="forgot-new-password">New Access Password</label>
                   <div class="login-input-wrap">
                     <span class="login-input-icon">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1268,10 +1268,10 @@
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                       </svg>
                     </span>
-                    <input type="password" id="forgot-new-password" class="login-input" placeholder="Enter new passkey"
+                    <input type="password" id="forgot-new-password" class="login-input" placeholder="Enter new Password"
                       required autocomplete="new-password" oninput="handlePasswordInput('forgot')">
                     <button type="button" class="btn-toggle-pwd"
-                      onclick="togglePasswordVisibility('forgot-new-password')" title="Toggle passkey visibility">
+                      onclick="togglePasswordVisibility('forgot-new-password')" title="Toggle Password visibility">
                       <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -1283,7 +1283,7 @@
 
                 <!-- Confirm New Password Input -->
                 <div class="login-form-group">
-                  <label class="login-form-label" for="forgot-confirm-password">Confirm New Access Passkey</label>
+                  <label class="login-form-label" for="forgot-confirm-password">Confirm New Access Password</label>
                   <div class="login-input-wrap">
                     <span class="login-input-icon">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1293,10 +1293,10 @@
                       </svg>
                     </span>
                     <input type="password" id="forgot-confirm-password" class="login-input"
-                      placeholder="Repeat new passkey exactly" required autocomplete="new-password"
+                      placeholder="Repeat new Password exactly" required autocomplete="new-password"
                       oninput="handlePasswordInput('forgot')">
                     <button type="button" class="btn-toggle-pwd"
-                      onclick="togglePasswordVisibility('forgot-confirm-password')" title="Toggle passkey visibility">
+                      onclick="togglePasswordVisibility('forgot-confirm-password')" title="Toggle Password visibility">
                       <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -1334,7 +1334,7 @@
                   </ul>
                   <div class="password-strength-container">
                     <div class="strength-label">
-                      <span>Passkey Complexity:</span>
+                      <span>Password Complexity:</span>
                       <span id="forgot-strength-text">Empty</span>
                     </div>
                     <div class="password-strength-bar">
@@ -1346,14 +1346,14 @@
                   </div>
                 </div>
 
-                <!-- Submit New Passkey Button -->
+                <!-- Submit New Password Button -->
                 <button type="submit" class="btn-login-submit" id="btn-forgot-submit" disabled>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
                     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                     <polyline points="17 21 17 13 7 13 7 21"></polyline>
                     <polyline points="7 3 7 8 15 8"></polyline>
                   </svg>
-                  <span id="btn-forgot-submit-text">Update Passkey &amp; Return to Sign In</span>
+                  <span id="btn-forgot-submit-text">Update Password &amp; Return to Sign In</span>
                 </button>
               </form>
             </div>
@@ -1816,7 +1816,7 @@
       applyTheme(nextTheme);
     }
 
-    // Toggle Passkey Visibility for any input
+    // Toggle Password Visibility for any input
     function togglePasswordVisibility(targetId = 'login-password') {
       const pwd = document.getElementById(targetId);
       if (pwd) {
@@ -1872,7 +1872,7 @@
     }
 
     // =========================================================================
-    // AUTHENTICATION MODE SWITCHER (SIGN IN / SIGN UP / FORGOT PASSKEY)
+    // AUTHENTICATION MODE SWITCHER (SIGN IN / SIGN UP / FORGOT Password)
     // =========================================================================
     function switchAuthMode(mode, event) {
       if (event) event.preventDefault();
@@ -2303,7 +2303,7 @@
           }
           if (pill2) pill2.className = "auth-step-pill active";
 
-          // HIDE Stage 1 and UNVEIL Stage 2 (Username and Passkey entry fields)
+          // HIDE Stage 1 and UNVEIL Stage 2 (Username and Password entry fields)
           const stage1 = document.getElementById('signup-stage-1');
           const stage2 = document.getElementById('signup-stage-2');
           if (stage1) stage1.style.display = "none";
@@ -2312,7 +2312,7 @@
           const verifiedLabel = document.getElementById('signup-verified-email-label');
           if (verifiedLabel) verifiedLabel.textContent = _signupState.email;
 
-          showFeedback("Email successfully verified! Please complete your call-sign and access passkey.", "success");
+          showFeedback("Email successfully verified! Please complete your call-sign and access Password.", "success");
 
           const nameEl = document.getElementById('signup-name');
           if (nameEl) nameEl.focus();
@@ -2401,7 +2401,7 @@
     }
 
     // =========================================================================
-    // FORGOT PASSWORD WORKFLOW: EMAIL OTP & PASSKEY RESET
+    // FORGOT PASSWORD WORKFLOW: EMAIL OTP & Password RESET
     // =========================================================================
     let _forgotState = {
       email: "",
@@ -2535,7 +2535,7 @@
       if (otpBox) otpBox.style.display = "none";
     }
 
-    // Verify recovery OTP and unveil Passkey Reset Stage
+    // Verify recovery OTP and unveil Password Reset Stage
     async function handleForgotVerifyOtp(event) {
       if (event) event.preventDefault();
       clearFeedback();
@@ -2571,7 +2571,7 @@
           stopOtpTimer('forgot');
           _forgotState.verification_ticket = data.verification_ticket;
 
-          // HIDE Stage 1 and UNVEIL Stage 2 (New Passkey Form)
+          // HIDE Stage 1 and UNVEIL Stage 2 (New Password Form)
           const stage1 = document.getElementById('forgot-stage-1');
           const stage2 = document.getElementById('forgot-stage-2');
           if (stage1) stage1.style.display = "none";
@@ -2580,7 +2580,7 @@
           const verifiedLabel = document.getElementById('forgot-verified-email-label');
           if (verifiedLabel) verifiedLabel.textContent = _forgotState.email;
 
-          showFeedback("Identity verified! You may now configure your new access passkey.", "success");
+          showFeedback("Identity verified! You may now configure your new access Password.", "success");
 
           const newPwdEl = document.getElementById('forgot-new-password');
           if (newPwdEl) newPwdEl.focus();
@@ -2596,7 +2596,7 @@
       }
     }
 
-    // Submit New Passkey Reset
+    // Submit New Password Reset
     async function handleForgotResetSubmit(event) {
       if (event) event.preventDefault();
       clearFeedback();
@@ -2616,7 +2616,7 @@
       }
 
       if (submitBtn) submitBtn.disabled = true;
-      if (submitText) submitText.innerText = "Updating Passkey...";
+      if (submitText) submitText.innerText = "Updating Password...";
 
       try {
         const res = await fetch("/api/auth/forgot-password/reset", {
@@ -2633,7 +2633,7 @@
         const data = await res.json();
 
         if (data.success) {
-          showFeedback(data.message || "Passkey updated successfully! Returning to Sign In...", "success");
+          showFeedback(data.message || "Password updated successfully! Returning to Sign In...", "success");
           setTimeout(() => {
             switchAuthMode('login');
             const loginUserEl = document.getElementById('login-username');
@@ -2643,17 +2643,17 @@
               loginPwdEl.value = "";
               loginPwdEl.focus();
             }
-            showFeedback("Passkey updated. Please authenticate with your new passkey.", "success");
+            showFeedback("Password updated. Please authenticate with your new Password.", "success");
           }, 1200);
         } else {
-          showFeedback(data.message || "Failed to update passkey.", "error");
+          showFeedback(data.message || "Failed to update Password.", "error");
           if (submitBtn) submitBtn.disabled = false;
-          if (submitText) submitText.innerText = "Update Passkey & Return to Sign In";
+          if (submitText) submitText.innerText = "Update Password & Return to Sign In";
         }
       } catch (e) {
-        showFeedback("Network error: Unable to update passkey.", "error");
+        showFeedback("Network error: Unable to update Password.", "error");
         if (submitBtn) submitBtn.disabled = false;
-        if (submitText) submitText.innerText = "Update Passkey & Return to Sign In";
+        if (submitText) submitText.innerText = "Update Password & Return to Sign In";
       }
     }
 
