@@ -594,20 +594,53 @@ body.dark-mode .nav-badge {
 }
 
 html[data-theme="dark"] .nav-item.disabled,
-body.dark-mode .nav-item.disabled {
-  opacity: 0.74 !important;
-  color: var(--slate-300) !important;
+html.dark-theme .nav-item.disabled,
+body.dark-mode .nav-item.disabled,
+body.dark-theme .nav-item.disabled,
+.dark-theme .nav-item.disabled,
+[data-theme="dark"] .nav-item.disabled {
+  opacity: 0.85 !important;
+  color: #94a3b8 !important;
+  background-color: transparent !important;
+}
+
+html[data-theme="dark"] .nav-item.disabled svg,
+html.dark-theme .nav-item.disabled svg,
+body.dark-mode .nav-item.disabled svg,
+body.dark-theme .nav-item.disabled svg,
+.dark-theme .nav-item.disabled svg,
+[data-theme="dark"] .nav-item.disabled svg {
+  color: #64748b !important;
+  opacity: 0.85 !important;
 }
 
 html[data-theme="dark"] .nav-item.disabled:hover,
-body.dark-mode .nav-item.disabled:hover {
+html.dark-theme .nav-item.disabled:hover,
+body.dark-mode .nav-item.disabled:hover,
+body.dark-theme .nav-item.disabled:hover,
+.dark-theme .nav-item.disabled:hover,
+[data-theme="dark"] .nav-item.disabled:hover {
   opacity: 1 !important;
-  background-color: rgba(255, 255, 255, 0.04) !important;
-  color: var(--slate-100) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .nav-item.disabled:hover svg,
+html.dark-theme .nav-item.disabled:hover svg,
+body.dark-mode .nav-item.disabled:hover svg,
+body.dark-theme .nav-item.disabled:hover svg,
+.dark-theme .nav-item.disabled:hover svg,
+[data-theme="dark"] .nav-item.disabled:hover svg {
+  color: #cbd5e1 !important;
+  opacity: 1 !important;
 }
 
 html[data-theme="dark"] .nav-badge-coming-soon,
-body.dark-mode .nav-badge-coming-soon {
+html.dark-theme .nav-badge-coming-soon,
+body.dark-mode .nav-badge-coming-soon,
+body.dark-theme .nav-badge-coming-soon,
+.dark-theme .nav-badge-coming-soon,
+[data-theme="dark"] .nav-badge-coming-soon {
   background-color: rgba(245, 158, 11, 0.12) !important;
   color: #fbbf24 !important;
   border: 1px solid rgba(245, 158, 11, 0.45) !important;
@@ -615,8 +648,12 @@ body.dark-mode .nav-badge-coming-soon {
 }
 
 html[data-theme="dark"] .nav-item.disabled:hover .nav-badge-coming-soon,
-body.dark-mode .nav-item.disabled:hover .nav-badge-coming-soon {
-  background-color: rgba(245, 158, 11, 0.20) !important;
+html.dark-theme .nav-item.disabled:hover .nav-badge-coming-soon,
+body.dark-mode .nav-item.disabled:hover .nav-badge-coming-soon,
+body.dark-theme .nav-item.disabled:hover .nav-badge-coming-soon,
+.dark-theme .nav-item.disabled:hover .nav-badge-coming-soon,
+[data-theme="dark"] .nav-item.disabled:hover .nav-badge-coming-soon {
+  background-color: rgba(245, 158, 11, 0.22) !important;
   border-color: rgba(245, 158, 11, 0.70) !important;
   color: #fef08a !important;
 }

@@ -493,11 +493,23 @@ body {
 
 /* Roadmap & Planned Capabilities Nav States (Formal Enterprise OSINT) */
 .nav-item.disabled {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.35;
   opacity: 0.76;
   cursor: default !important;
   pointer-events: auto;
   user-select: none;
   transition: opacity 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+.nav-item.disabled span:first-of-type {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.3;
 }
 
 .nav-item.disabled:hover {
@@ -544,15 +556,27 @@ body {
 
 .dark-theme .nav-item.disabled,
 [data-theme="dark"] .nav-item.disabled {
-  opacity: 0.74;
-  color: var(--slate-300);
+  opacity: 0.85;
+  color: #94a3b8;
+}
+
+.dark-theme .nav-item.disabled svg,
+[data-theme="dark"] .nav-item.disabled svg {
+  color: #64748b;
+  opacity: 0.85;
 }
 
 .dark-theme .nav-item.disabled:hover,
 [data-theme="dark"] .nav-item.disabled:hover {
   opacity: 1;
-  background-color: rgba(255, 255, 255, 0.04);
-  color: var(--slate-100);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+}
+
+.dark-theme .nav-item.disabled:hover svg,
+[data-theme="dark"] .nav-item.disabled:hover svg {
+  color: #cbd5e1;
+  opacity: 1;
 }
 
 .dark-theme .nav-badge-coming-soon,
@@ -565,7 +589,7 @@ body {
 
 .dark-theme .nav-item.disabled:hover .nav-badge-coming-soon,
 [data-theme="dark"] .nav-item.disabled:hover .nav-badge-coming-soon {
-  background-color: rgba(245, 158, 11, 0.20);
+  background-color: rgba(245, 158, 11, 0.22);
   border-color: rgba(245, 158, 11, 0.70);
   color: #fef08a;
 }
