@@ -42,7 +42,11 @@ if ! $PY_BIN -c "import fastapi, uvicorn, jinja2, requests" >/dev/null 2>&1; the
     }
 fi
 
-# 4. Open default browser
+# 4. Verify & apply relational database migrations
+echo "[*] Checking database migrations..."
+$PY_BIN "$DIR/migrations/migrate.py" --up >/dev/null 2>&1 || true
+
+# 5. Open default browser
 PORT=${OASIS_PORT:-5050}
 URL="http://127.0.0.1:${PORT}"
 echo "[*] Launching browser at: $URL"

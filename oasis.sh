@@ -150,6 +150,9 @@ cmd_setup() {
     "$py_bin" -m pip install --upgrade pip --quiet
     "$py_bin" -m pip install -r "$SCRIPT_DIR/requirements.txt" --quiet
 
+    echo "[*] Applying database migrations..."
+    "$py_bin" "$SCRIPT_DIR/migrations/migrate.py" --up
+
     echo "[✓] Setup complete."
 }
 
@@ -174,6 +177,9 @@ cmd_start() {
         cmd_setup
         py_bin=$(get_python)
     fi
+
+    # Ensure schema migrations are up to date
+    "$py_bin" "$SCRIPT_DIR/migrations/migrate.py" --up >/dev/null 2>&1 || true
 
     echo "[*] Starting OASIS on $OASIS_HOST:$OASIS_PORT (Daemon Mode)..."
 
@@ -249,6 +255,9 @@ cmd_dev() {
         cmd_setup
         py_bin=$(get_python)
     fi
+
+    # Ensure schema migrations are up to date
+    "$py_bin" "$SCRIPT_DIR/migrations/migrate.py" --up >/dev/null 2>&1 || true
 
     echo "[*] Starting OASIS in Foreground Dev Mode (Live Reload Enabled)..."
     echo "    Listening at: http://$OASIS_HOST:$OASIS_PORT"
@@ -412,6 +421,7 @@ cmd_help() {
     echo "  logs        Stream real-time log output"
     echo "  port        Show configured port and port usage"
     echo "  setup       Setup/verify Python virtual environment & dependencies"
+    echo "  migrate     Run database migrations (options: --status, --reset, --seed)"
     echo "  help        Display this help message"
     echo ""
     echo "Environment Variables (or .env file):"
@@ -446,6 +456,10 @@ case "${1:-status}" in
         ;;
     setup)
         cmd_setup
+        ;;
+    migrate)
+        PY="$(get_python)"
+        "$PY" "$SCRIPT_DIR/migrations/migrate.py" "${@:2}"
         ;;
     help|--help|-h)
         cmd_help

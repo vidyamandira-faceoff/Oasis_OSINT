@@ -1,35 +1,37 @@
 /* ==========================================================================
-   OASIS MODERN OSINT SUITE - COMFORTABLE & SMOOTH DESIGN SYSTEM
-   Theme: Warm Ember & Soft Slate
-   Characteristics: Relaxed whitespace, generous rounded curves, smooth shadows
+   OASIS INTELLIGENCE SUITE - PROFESSIONAL OPERATIONS DESIGN SYSTEM
+   Formal Analyst Console & Enterprise OSINT Architecture
+   Characteristics: High density, crisp borders, disciplined radii, sharp telemetry
    ========================================================================== */
 
 :root {
   /* Surfaces & Canvas */
-  --bg-app: #f6f8fb;
+  --bg-app: #f8fafc;
   --bg-surface: #ffffff;
-  --bg-card-subtle: #fbfcfe;
-  --bg-pill: #f1f4f9;
+  --bg-card-subtle: #f8fafc;
+  --bg-pill: #f1f5f9;
 
   /* Borders & Dividers */
-  --border-ultra-soft: #f1f4f8;
-  --border-soft: #e9eef5;
-  --border-main: #dfe5ef;
-  --border-focus: #f97316;
+  --border-ultra-soft: #f1f5f9;
+  --border-soft: #e2e8f0;
+  --border-main: #cbd5e1;
+  --border-strong: #94a3b8;
+  --border-focus: #d97706;
 
-  /* Warm Ember & Amber Accents */
-  --ember-50: #fff8f3;
-  --ember-100: #fff0e5;
-  --ember-200: #fedcc5;
-  --ember-300: #fdb995;
-  --ember-400: #fb923c;
-  --ember-500: #f97316;
-  --ember-600: #ea580c;
-  --ember-700: #c2410c;
-  --ember-glow: rgba(249, 115, 22, 0.16);
-  --ember-glow-strong: rgba(234, 88, 12, 0.28);
+  /* Oasis Signature Amber & Slate Accents */
+  --ember-50: #fffbeb;
+  --ember-100: #fef3c7;
+  --ember-200: #fde68a;
+  --ember-300: #fcd34d;
+  --ember-400: #fbbf24;
+  --ember-500: #f59e0b;
+  --ember-600: #d97706;
+  --ember-700: #b45309;
+  --ember-800: #92400e;
+  --ember-glow: rgba(217, 119, 6, 0.12);
+  --ember-glow-strong: rgba(217, 119, 6, 0.22);
 
-  /* Comfort Slate Neutrals */
+  /* Comfort Slate Neutrals (Executive Scale) */
   --slate-900: #0f172a;
   --slate-850: #172033;
   --slate-800: #1e293b;
@@ -57,26 +59,26 @@
   --indigo-border: #c7d2fe;
 
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, Monaco, Consolas, monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, Monaco, Consolas, monospace;
 
-  /* Comfortable Radii (Smooth & Round) */
-  --radius-xs: 8px;
-  --radius-sm: 12px;
-  --radius-md: 18px;
-  --radius-lg: 24px;
-  --radius-xl: 30px;
+  /* Disciplined Architectural Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
   --radius-pill: 9999px;
 
   /* Dimensions */
-  --header-height: 70px;
-  --sidebar-width: 320px;
+  --header-height: 60px;
+  --sidebar-width: 280px;
 
-  /* Silky Soft Elevation Shadows */
-  --shadow-subtle: 0 2px 6px rgba(15, 23, 42, 0.02), 0 1px 2px rgba(15, 23, 42, 0.02);
-  --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.035), 0 1px 3px rgba(15, 23, 42, 0.02);
-  --shadow-float: 0 14px 34px -4px rgba(15, 23, 42, 0.07), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
-  --shadow-pill: 0 2px 8px rgba(15, 23, 42, 0.04);
+  /* Restrained, Realistic Elevation Shadows */
+  --shadow-subtle: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-float: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-pill: 0 1px 3px rgba(15, 23, 42, 0.05);
 }
 
 * {
@@ -88,9 +90,6 @@
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-app);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(249, 115, 22, 0.035) 0px, transparent 45%),
-    radial-gradient(at 100% 100%, rgba(2, 132, 199, 0.025) 0px, transparent 45%);
   color: var(--slate-800);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -98,7 +97,7 @@ body {
 }
 
 /* ==========================================================================
-   STATIC TOP HEADER BAR (Smooth & Rounded Floating Style)
+   STATIC TOP HEADER BAR (Formal Command Header)
    ========================================================================== */
 .header-bar {
   position: fixed;
@@ -106,16 +105,16 @@ body {
   left: 0;
   right: 0;
   height: var(--header-height);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border-soft);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 24px;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+  box-shadow: var(--shadow-subtle);
 }
 
 .header-left {
@@ -126,23 +125,20 @@ body {
 }
 
 .brand-emblem {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--slate-900);
+  border: 1px solid var(--slate-800);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--ember-400);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-subtle);
   flex-shrink: 0;
 }
 
-.brand-emblem:hover {
-  transform: rotate(5deg) scale(1.04);
-}
+
 
 .brand-emblem svg {
   width: 24px;
@@ -156,18 +152,18 @@ body {
 }
 
 .brand-title {
-  font-size: 23px;
-  font-weight: 850;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--slate-900);
-  letter-spacing: -0.6px;
+  letter-spacing: 0.04em;
   line-height: 1.1;
 }
 
 .brand-tag {
   font-size: 10px;
-  font-weight: 700;
-  color: var(--ember-600);
-  letter-spacing: 0.3px;
+  font-weight: 600;
+  color: var(--slate-500);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -262,9 +258,9 @@ body {
 }
 
 .header-icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
   background-color: #ffffff;
   border: 1px solid var(--border-soft);
   color: var(--slate-600);
@@ -272,7 +268,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.18s ease;
   position: relative;
   box-shadow: var(--shadow-subtle);
 }
@@ -458,23 +454,11 @@ body {
 
 /* Comfortable Active State */
 .nav-item.active {
-  background: linear-gradient(90deg, #fff3ea 0%, #ffeedf 100%);
-  color: var(--ember-700);
-  font-weight: 700;
+  background: var(--slate-100);
+  color: var(--slate-900);
+  font-weight: 600;
   border-radius: var(--radius-sm);
-  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.07);
-}
-
-.nav-item.active::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 18%;
-  bottom: 18%;
-  width: 4px;
-  border-radius: 0 4px 4px 0;
-  background-color: var(--ember-500);
-  box-shadow: 0 0 10px var(--ember-glow-strong);
+  border-left: 3px solid var(--ember-600);
 }
 
 .nav-item.active svg {
@@ -483,55 +467,107 @@ body {
 
 .nav-badge {
   margin-left: auto;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 2.5px 8px;
-  border-radius: var(--radius-pill);
-  background-color: #ffffff;
-  color: var(--slate-600);
-  border: 1px solid var(--border-soft);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background-color: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .nav-item.active .nav-badge {
-  background-color: var(--ember-500);
-  color: #ffffff;
-  border-color: var(--ember-600);
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background-color: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
-/* Disabled & Coming Soon Nav States */
+/* Roadmap & Planned Capabilities Nav States (Formal Enterprise OSINT) */
 .nav-item.disabled {
-  opacity: 0.45;
-  cursor: not-allowed !important;
-  pointer-events: none;
-  filter: grayscale(40%);
+  opacity: 0.76;
+  cursor: default !important;
+  pointer-events: auto;
+  user-select: none;
+  transition: opacity 0.18s ease, background-color 0.18s ease, color 0.18s ease;
 }
 
 .nav-item.disabled:hover {
-  background-color: transparent !important;
-  color: var(--slate-600) !important;
+  opacity: 0.98;
+  background-color: var(--slate-50);
+  color: var(--slate-900);
   transform: none !important;
+}
+
+.nav-item.disabled svg {
+  opacity: 0.70;
+  transition: opacity 0.18s ease;
+}
+
+.nav-item.disabled:hover svg {
+  opacity: 0.95;
 }
 
 .nav-badge-coming-soon {
   margin-left: auto;
-  font-size: 9.5px;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 8.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
-  padding: 2px 7px;
-  border-radius: var(--radius-pill);
-  background: var(--slate-200);
-  color: var(--slate-600);
-  border: 1px solid var(--border-soft);
+  letter-spacing: 0.05em;
+  padding: 2.5px 7px;
+  border-radius: 4px;
+  background-color: rgba(217, 119, 6, 0.09);
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.40);
   white-space: nowrap;
+  line-height: 1.2;
+  flex-shrink: 0;
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+}
+
+.nav-item.disabled:hover .nav-badge-coming-soon {
+  background-color: rgba(217, 119, 6, 0.16);
+  border-color: rgba(217, 119, 6, 0.65);
+  color: #92400e;
+}
+
+.dark-theme .nav-item.disabled,
+[data-theme="dark"] .nav-item.disabled {
+  opacity: 0.74;
+  color: var(--slate-300);
+}
+
+.dark-theme .nav-item.disabled:hover,
+[data-theme="dark"] .nav-item.disabled:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--slate-100);
 }
 
 .dark-theme .nav-badge-coming-soon,
 [data-theme="dark"] .nav-badge-coming-soon {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--slate-400);
-  border-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  box-shadow: none;
+}
+
+.dark-theme .nav-item.disabled:hover .nav-badge-coming-soon,
+[data-theme="dark"] .nav-item.disabled:hover .nav-badge-coming-soon {
+  background-color: rgba(245, 158, 11, 0.20);
+  border-color: rgba(245, 158, 11, 0.70);
+  color: #fef08a;
 }
 
 /* Nav Badge Version in Sidebar */
@@ -698,12 +734,32 @@ body {
 .main-wrapper {
   margin-left: var(--sidebar-width);
   margin-top: var(--header-height);
-  padding: 30px 40px 70px 40px;
+  padding: 30px 40px 0 40px;
   min-height: calc(100vh - var(--header-height));
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.main-wrapper > :first-child {
+  flex: 1 0 auto;
 }
 
 .view-page {
   animation: smoothFade 0.25s ease-out;
+}
+
+.site-footer {
+  margin-top: auto;
+  padding: 8px 0 6px 0;
+  border-top: 1px solid var(--border-soft);
+  text-align: center;
+  font-size: 12px;
+  color: var(--slate-500);
+  font-weight: 500;
+  width: 100%;
+  flex-shrink: 0;
+  line-height: 1.4;
 }
 
 @keyframes smoothFade {
@@ -736,7 +792,7 @@ body {
   right: 0;
   height: 4px;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  background: linear-gradient(90deg, var(--ember-400), var(--ember-500), var(--sky-500));
+  background: var(--ember-600);
 }
 
 .welcome-banner-left {
@@ -937,10 +993,19 @@ body {
   height: 3.5px;
 }
 
-.metric-card:nth-child(1)::before { background: linear-gradient(90deg, var(--sky-500), #38bdf8); }
-.metric-card:nth-child(2)::before { background: linear-gradient(90deg, var(--ember-500), #fb923c); }
-.metric-card:nth-child(3)::before { background: linear-gradient(90deg, var(--emerald-500), #34d399); }
-.metric-card:nth-child(4)::before { background: linear-gradient(90deg, var(--indigo-500), #818cf8); }
+.metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border-soft);
+  transition: background 0.18s ease;
+}
+.metric-card:hover::before {
+  background: var(--ember-600);
+}
 
 .metric-header {
   display: flex;
@@ -1440,7 +1505,7 @@ body {
   right: 0;
   height: 4px;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  background: linear-gradient(90deg, var(--ember-400), var(--sky-500));
+  background: var(--ember-600);
 }
 
 .tool-header-left {
@@ -2409,4 +2474,212 @@ body {
   .banner-stat-card {
     flex: 1;
   }
+}
+
+/* =========================================================================
+   ADMIN EXCLUSIVE: OSINT TOOL ARCHITECTURE & ENGINE TELEMETRY
+   Visible strictly to Admin role across all service frontend views
+   ========================================================================= */
+.admin-tools-spec-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--ember-600);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow-subtle);
+  position: relative;
+  overflow: hidden;
+}
+.admin-tools-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.admin-tools-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-badge-pill {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--ember-700);
+  border: 1px solid rgba(217, 119, 6, 0.28);
+}
+.admin-tools-title h4 {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--slate-900);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+.admin-tool-item-card {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.18s ease;
+}
+.admin-tool-item-card:hover {
+  border-color: var(--border-main);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.admin-tool-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.admin-tool-name-group {
+  display: flex;
+  flex-direction: column;
+}
+.admin-tool-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--slate-900);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-tool-version {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--slate-500);
+  margin-top: 2px;
+}
+.admin-tool-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  white-space: nowrap;
+}
+.admin-tool-role-desc {
+  font-size: 12px;
+  color: var(--slate-600);
+  line-height: 1.45;
+}
+.admin-tool-specs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-soft);
+}
+.admin-tool-chip {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  color: var(--slate-700);
+}
+.admin-tool-chip.accent {
+  background: rgba(2, 132, 199, 0.08);
+  border-color: rgba(2, 132, 199, 0.2);
+  color: #0284c7;
+}
+
+/* Sidebar Admin Tool Widget */
+.admin-sidebar-tools-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-top: 3px solid var(--ember-600);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.admin-sidebar-tools-header {
+  padding: 12px 16px;
+  background: var(--bg-card-subtle);
+  border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.admin-sidebar-tools-list {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin-sidebar-tool-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+}
+
+/* Dark mode overrides */
+html[data-theme="dark"] .admin-tools-spec-panel,
+body.dark-mode .admin-tools-spec-panel {
+  background: #111827;
+  border-color: #1e293b;
+  border-left-color: var(--ember-500);
+}
+html[data-theme="dark"] .admin-tool-item-card,
+body.dark-mode .admin-tool-item-card {
+  background: #162032;
+  border-color: #1e293b;
+}
+html[data-theme="dark"] .admin-tools-title h4,
+body.dark-mode .admin-tools-title h4,
+html[data-theme="dark"] .admin-tool-name,
+body.dark-mode .admin-tool-name {
+  color: #ffffff;
+}
+html[data-theme="dark"] .admin-tool-role-desc,
+body.dark-mode .admin-tool-role-desc {
+  color: #94a3b8;
+}
+html[data-theme="dark"] .admin-tool-chip,
+body.dark-mode .admin-tool-chip {
+  background: #0f172a;
+  border-color: #1e293b;
+  color: #cbd5e1;
+}
+html[data-theme="dark"] .admin-sidebar-tools-card,
+body.dark-mode .admin-sidebar-tools-card {
+  background: #111827;
+  border-color: #1e293b;
+}
+html[data-theme="dark"] .admin-sidebar-tools-header,
+body.dark-mode .admin-sidebar-tools-header,
+html[data-theme="dark"] .admin-sidebar-tool-row,
+body.dark-mode .admin-sidebar-tool-row {
+  background: #162032;
+  border-color: #1e293b;
 }

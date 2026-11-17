@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any
@@ -34,22 +34,24 @@ class SocialRunRequest(BaseModel):
     platform: Optional[str] = "all"   # "all", "instagram", "facebook", "twitter", "linkedin"
     force: Optional[bool] = False
 
-@router.get("/services/social-media-intelligence", response_class=HTMLResponse)
+from core.security import get_session_from_request
+from core.database import record_execution, get_service_history_for_user
+from roles.accounts import is_admin_user
+
+@router.get("/services/social-media-intelligence")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/social_media_intelligence/frontend/templates/social_media_intelligence.html",
-        context={
-            "page_title": "Social Media Intelligence & Account Analysis — Oasis",
-            "active_view": "social_media_intelligence",
-            "initial_target": initial_target,
-            "native_endpoints": NATIVE_SCRAPER_ENDPOINTS
-        }
-    )
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        return RedirectResponse(url="/login", status_code=302)
+    target_prefix = "/role_admin" if session.get("is_admin") else "/role_user"
+    url = f"{target_prefix}/services/social-media-intelligence"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/social_media_intelligence/run")
-async def run_task(req: SocialRunRequest):
+async def run_task(req: SocialRunRequest, request: Request):
     target = req.target.strip()
     if not target:
         raise HTTPException(status_code=400, detail="Target handle or identifier cannot be blank.")
@@ -64,6 +66,26 @@ async def run_task(req: SocialRunRequest):
         platform=req.platform or "all",
         force=bool(req.force)
     )
+
+    session = get_session_from_request(request)
+    username = session.get("username", "admin") if session else "admin"
+    try:
+        record_execution(
+            username=username,
+            service_id="social_media_intelligence",
+            service_name="Social Media Intelligence",
+            tool_name="Multi-Platform Social Engine",
+            target=target,
+            duration_seconds=float(result.get("duration", 3.5)),
+            findings_count=len(result.get("profiles", [])),
+            findings_summary=f"Footprint across {req.platform or 'all'} platforms",
+            status="Success",
+            status_class="badge-status-success",
+            report_path=f"services/social_media_intelligence/reports/report_{target}_simple.json"
+        )
+    except Exception:
+        pass
+
     return result
 
 @router.get("/api/social_media_intelligence/status")
@@ -74,8 +96,12 @@ async def check_status(target: str):
     return get_social_status(clean_target)
 
 @router.get("/api/social_media_intelligence/history")
-async def get_history():
-    return {"history": get_social_history()}
+async def get_history(request: Request):
+    session = get_session_from_request(request)
+    username = session.get("username") if session else None
+    is_admin = session.get("is_admin", False) if session else False
+    db_history = get_service_history_for_user("social_media_intelligence", username=username, is_admin=is_admin)
+    return {"history": db_history}
 
 @router.get("/api/social_media_intelligence/native-endpoints")
 async def get_native_endpoints():
@@ -124,7 +150,7 @@ class InstagramRunRequest(BaseModel):
     force: Optional[bool] = False
 
 @router.post("/api/social_media_intelligence/instagram/run")
-async def run_instagram_task(req: InstagramRunRequest):
+async def run_instagram_task(req: InstagramRunRequest, request: Request):
     target = req.target.strip()
     if not target:
         raise HTTPException(status_code=400, detail="Target Instagram handle or URL cannot be blank.")
@@ -140,6 +166,25 @@ async def run_instagram_task(req: InstagramRunRequest):
         download_zip=bool(req.download_zip),
         force=bool(req.force)
     )
+
+    session = get_session_from_request(request)
+    username = session.get("username", "admin") if session else "admin"
+    try:
+        record_execution(
+            username=username,
+            service_id="social_media_intelligence",
+            service_name="Social Media Intelligence",
+            tool_name="Instagram Flash Recon",
+            target=target,
+            duration_seconds=float(result.get("duration", 2.8)),
+            findings_count=len(result.get("posts", [])),
+            findings_summary=f"Instagram profile & media indexed for @{target}",
+            status="Success",
+            status_class="badge-status-success"
+        )
+    except Exception:
+        pass
+
     return result
 
 @router.get("/api/social_media_intelligence/instagram/status")
@@ -199,7 +244,7 @@ class TwitterRunRequest(BaseModel):
     links_only: Optional[bool] = False
 
 @router.post("/api/social_media_intelligence/twitter/run")
-async def run_twitter_task(req: TwitterRunRequest):
+async def run_twitter_task(req: TwitterRunRequest, request: Request):
     target = req.target.strip()
     if not target:
         raise HTTPException(status_code=400, detail="Target X / Twitter handle, query, or URL cannot be blank.")
@@ -220,6 +265,25 @@ async def run_twitter_task(req: TwitterRunRequest):
         media_only=bool(req.media_only),
         links_only=bool(req.links_only)
     )
+
+    session = get_session_from_request(request)
+    username = session.get("username", "admin") if session else "admin"
+    try:
+        record_execution(
+            username=username,
+            service_id="social_media_intelligence",
+            service_name="Social Media Intelligence",
+            tool_name="X / Twitter Flash Engine",
+            target=target,
+            duration_seconds=float(result.get("duration", 3.2)),
+            findings_count=len(result.get("tweets", [])),
+            findings_summary=f"Parsed {len(result.get('tweets', []))} tweets for @{target}",
+            status="Success",
+            status_class="badge-status-success"
+        )
+    except Exception:
+        pass
+
     return result
 
 @router.get("/api/social_media_intelligence/twitter/status")
@@ -274,7 +338,7 @@ class LinkedInRunRequest(BaseModel):
     force: Optional[bool] = False
 
 @router.post("/api/social_media_intelligence/linkedin/run")
-async def run_linkedin_task(req: LinkedInRunRequest):
+async def run_linkedin_task(req: LinkedInRunRequest, request: Request):
     company = req.company.strip()
     if not company:
         raise HTTPException(status_code=400, detail="Target company name cannot be blank.")
@@ -292,6 +356,25 @@ async def run_linkedin_task(req: LinkedInRunRequest):
         proxy=req.proxy or "",
         force=bool(req.force)
     )
+
+    session = get_session_from_request(request)
+    username = session.get("username", "admin") if session else "admin"
+    try:
+        record_execution(
+            username=username,
+            service_id="social_media_intelligence",
+            service_name="Social Media Intelligence",
+            tool_name="LinkedIn Workforce Scanner",
+            target=company,
+            duration_seconds=float(result.get("duration", 4.1)),
+            findings_count=len(result.get("employees", [])),
+            findings_summary=f"Discovered {len(result.get('employees', []))} personnel at {company}",
+            status="Success",
+            status_class="badge-status-success"
+        )
+    except Exception:
+        pass
+
     return result
 
 @router.get("/api/social_media_intelligence/linkedin/status")

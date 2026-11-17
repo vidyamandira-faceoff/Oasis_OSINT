@@ -1,0 +1,90 @@
+/* ==========================================================================
+   OASIS DOMAIN INTELLIGENCE - DEDICATED DARK MODE STYLESHEET
+   Module: Domain & DNS Reconnaissance
+   Path: services/domain_intelligence/frontend/static/css/dark_mode.css
+   ========================================================================== */
+
+/* Layout & Panels */
+html[data-theme="dark"] .domain-capabilities-card,
+html.dark-theme .domain-capabilities-card,
+body.dark-mode .domain-capabilities-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .domain-capabilities-header,
+html.dark-theme .domain-capabilities-header,
+body.dark-mode .domain-capabilities-header {
+  background: #162032 !important;
+  border-bottom: 1px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .domain-cap-tile,
+html.dark-theme .domain-cap-tile,
+body.dark-mode .domain-cap-tile {
+  background: #162032 !important;
+  border: 1px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .domain-cap-tile:hover,
+html.dark-theme .domain-cap-tile:hover,
+body.dark-mode .domain-cap-tile:hover {
+  background: #1e293b !important;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+}
+
+html[data-theme="dark"] .domain-cap-icon,
+html.dark-theme .domain-cap-icon,
+body.dark-mode .domain-cap-icon {
+  background: rgba(2, 132, 199, 0.2) !important;
+  color: #38bdf8 !important;
+}
+
+html[data-theme="dark"] .input-panel,
+html.dark-theme .input-panel,
+body.dark-mode .input-panel {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Results & Tables */
+html[data-theme="dark"] .recon-result-card,
+html[data-theme="dark"] .dns-record-card,
+html[data-theme="dark"] .whois-record-card,
+body.dark-mode .recon-result-card,
+body.dark-mode .dns-record-card,
+body.dark-mode .whois-record-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-theme="dark"] .subdomain-item,
+body.dark-mode .subdomain-item {
+  background: #162032 !important;
+  border: 1px solid #1f2c42 !important;
+  color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .subdomain-item:hover,
+body.dark-mode .subdomain-item:hover {
+  background: #1e293b !important;
+  border-color: #2b3952 !important;
+}
+
+html[data-theme="dark"] .badge-dns-type,
+body.dark-mode .badge-dns-type {
+  background: rgba(14, 165, 233, 0.18) !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+}
+
+html[data-theme="dark"] .badge-secure-ssl,
+body.dark-mode .badge-secure-ssl {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+}
+

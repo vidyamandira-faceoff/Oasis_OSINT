@@ -43,13 +43,20 @@ echo "[*] Installing Python packages from requirements.txt..."
 pip install --upgrade pip --quiet
 pip install -r "$DIR/requirements.txt" --quiet
 
-# 4. Make scripts executable
+# 4. Run Relational Database Migrations
+echo "[*] Setting up relational database (oasis.sqlite3)..."
+python3 "$DIR/migrations/migrate.py" --up
+
+# 5. Make scripts executable
 chmod +x "$DIR/run_oasis.sh" || true
 chmod +x "$DIR/setup_linux.sh" || true
+chmod +x "$DIR/oasis.sh" || true
+chmod +x "$DIR/migrations/migrate.py" || true
 
 echo ""
 echo "==================================================="
 echo "  Setup Complete! Oasis is ready on Linux."
+echo "  Database migrated & seeded with default accounts."
 echo "  Run: ./run_oasis.sh"
 echo "==================================================="
 

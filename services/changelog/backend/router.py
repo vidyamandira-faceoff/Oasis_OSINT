@@ -4,8 +4,10 @@ Changelog API & Web Router for OASIS
 
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
 from core.config import BASE_DIR
+from core.security import get_session_from_request
+from roles.accounts import is_admin_user
 from services.changelog.backend.service import (
     get_all_releases,
     get_latest_version,
@@ -18,21 +20,12 @@ templates = Jinja2Templates(directory=str(BASE_DIR))
 
 @router.get("/changelog")
 async def changelog_page(request: Request):
-    """Renders the OASIS interactive release history and semantic changelog portal."""
-    releases = get_all_releases()
-    latest_version = get_latest_version()
-    
-    return templates.TemplateResponse(
-        request=request,
-        name="services/changelog/frontend/templates/changelog.html",
-        context={
-            "page_title": "Platform Changelog & Releases — Oasis",
-            "active_view": "changelog",
-            "releases": releases,
-            "latest_version": latest_version,
-            "total_releases": len(releases),
-        }
-    )
+    """Redirects to role-specific changelog view."""
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        return RedirectResponse(url="/login", status_code=302)
+    target_prefix = "/role_admin" if session.get("is_admin") else "/role_user"
+    return RedirectResponse(url=f"{target_prefix}/changelog", status_code=302)
 
 @router.get("/api/changelog")
 async def get_changelog_api():

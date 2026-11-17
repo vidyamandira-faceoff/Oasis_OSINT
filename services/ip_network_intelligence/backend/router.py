@@ -7,7 +7,7 @@ Strictly isolated under OASIS branding.
 
 from pathlib import Path
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -32,21 +32,24 @@ class IPRunRequest(BaseModel):
     timeout: Optional[float] = Field(default=1.5, ge=0.5, le=5.0)
     force: Optional[bool] = False
 
-@router.get("/services/ip-network-intelligence", response_class=HTMLResponse)
+from core.security import get_session_from_request
+from core.database import record_execution, get_service_history_for_user
+from roles.accounts import is_admin_user
+
+@router.get("/services/ip-network-intelligence")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/ip_network_intelligence/frontend/templates/ip_network_intelligence.html",
-        context={
-            "page_title": "IP & Network Intelligence — Oasis",
-            "active_view": "ip_network_intelligence",
-            "initial_target": initial_target
-        }
-    )
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        return RedirectResponse(url="/login", status_code=302)
+    target_prefix = "/role_admin" if session.get("is_admin") else "/role_user"
+    url = f"{target_prefix}/services/ip-network-intelligence"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/ip_network_intelligence/run")
-async def run_task(req: IPRunRequest):
+async def run_task(req: IPRunRequest, request: Request):
     try:
         res = execute_ip_task(
             target=req.target,
@@ -56,6 +59,28 @@ async def run_task(req: IPRunRequest):
             timeout=req.timeout or 1.5,
             force=bool(req.force)
         )
+        session = get_session_from_request(request)
+        username = session.get("username", "admin") if session else "admin"
+        try:
+            geoip = res.get("geoip", {})
+            asn_str = geoip.get("asn", "")
+            org_str = geoip.get("organization", "")
+            summary = f"{asn_str} {org_str}, {res.get('open_ports_count', 0)} open ports"
+            record_execution(
+                username=username,
+                service_id="ip_network_intelligence",
+                service_name="IP & Network Intelligence",
+                tool_name="Tactical Port & ASN Triage",
+                target=req.target,
+                duration_seconds=float(res.get("duration", 1.5)),
+                findings_count=int(res.get("open_ports_count", 0)),
+                findings_summary=summary.strip() or f"Triage on host {req.target}",
+                status="Success",
+                status_class="badge-status-success",
+                report_path=f"services/ip_network_intelligence/reports/ip_{req.target}.json"
+            )
+        except Exception:
+            pass
         return res
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -70,8 +95,12 @@ async def check_status(target: str):
     return get_ip_status(clean_target)
 
 @router.get("/api/ip_network_intelligence/history")
-async def get_history():
-    return {"history": get_ip_history()}
+async def get_history(request: Request):
+    session = get_session_from_request(request)
+    username = session.get("username") if session else None
+    is_admin = session.get("is_admin", False) if session else False
+    db_history = get_service_history_for_user("ip_network_intelligence", username=username, is_admin=is_admin)
+    return {"history": db_history}
 
 @router.get("/api/ip_network_intelligence/download")
 async def download_report(

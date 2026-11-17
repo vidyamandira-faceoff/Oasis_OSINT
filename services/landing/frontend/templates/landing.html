@@ -1,0 +1,2783 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title | default("OASIS — Strategic OSINT Platform & Login") }}</title>
+
+  <!-- Global Oasis Design System Styles -->
+  <link rel="stylesheet" href="/static/css/style.css?v=1.6.1">
+  <link rel="stylesheet" href="/static/css/dark_mode.css" id="shared-dark-mode">
+  <link rel="stylesheet" href="/static/css/mobile.css" id="shared-mobile-responsive">
+  <link rel="stylesheet" href="/static/services/landing/css/landing.css?v=1.6.1">
+
+  <!-- Early Theme Setter to Prevent Flash of Unstyled Content -->
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('oasis_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+        document.body && document.body.classList.add('dark-theme', 'dark-mode');
+      }
+    })();
+  </script>
+
+  <style>
+    /* --------------------------------------------------------------------------
+       TABBED AUTH PANELS (SIGN IN / SIGN UP / FORGOT Password)
+       -------------------------------------------------------------------------- */
+    .auth-card-tabs {
+      display: flex;
+      align-items: center;
+      background: var(--bg-card-subtle, #f8fafc);
+      border: 1px solid var(--border-soft, #e2e8f0);
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 20px;
+      gap: 4px;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--slate-600, #475569);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .auth-tab-btn:hover {
+      color: var(--slate-900, #0f172a);
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .auth-tab-btn.active {
+      color: var(--ember-700, #c2410c);
+      background: var(--bg-surface, #ffffff);
+      border-color: var(--border-soft, #e2e8f0);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      font-weight: 700;
+    }
+
+    /* Strict panel separation: only active panel is displayed */
+    .auth-panel {
+      display: none !important;
+    }
+
+    .auth-panel.active {
+      display: block !important;
+      animation: oasisFadeIn 0.2s ease-out;
+    }
+
+    /* --------------------------------------------------------------------------
+       OASIS MODAL & DIALOG ARCHITECTURE
+       -------------------------------------------------------------------------- */
+    .oasis-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .oasis-modal.active {
+      display: flex !important;
+    }
+
+    .oasis-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 10000;
+      animation: oasisFadeIn 0.2s ease-out;
+    }
+
+    .oasis-modal-dialog {
+      position: relative;
+      z-index: 10001;
+      width: 100%;
+      max-width: 520px;
+      max-height: 92vh;
+      overflow-y: auto;
+      background: var(--bg-surface, #ffffff);
+      border: 1px solid var(--border-main, #cbd5e1);
+      border-radius: 14px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      padding: 30px 28px;
+      box-sizing: border-box;
+      animation: oasisSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .oasis-modal-dialog::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ea580c, #f97316, #fb923c);
+      border-top-left-radius: 14px;
+      border-top-right-radius: 14px;
+    }
+
+    .oasis-modal-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft, #e2e8f0);
+      background: var(--bg-card-subtle, #f8fafc);
+      color: var(--slate-500, #64748b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .oasis-modal-close:hover {
+      background: #fee2e2;
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+
+    /* Modal Dark Mode */
+    html[data-theme="dark"] .oasis-modal-dialog,
+    body.dark-mode .oasis-modal-dialog {
+      background: #0f172a !important;
+      border-color: #334155 !important;
+      color: #f1f5f9 !important;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    html[data-theme="dark"] .oasis-modal-close,
+    body.dark-mode .oasis-modal-close {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+      color: #94a3b8 !important;
+    }
+
+    html[data-theme="dark"] .oasis-modal-close:hover,
+    body.dark-mode .oasis-modal-close:hover {
+      background: rgba(220, 38, 38, 0.25) !important;
+      color: #f87171 !important;
+    }
+
+    /* Step Progress Indicator */
+    .auth-step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 10px 14px;
+      background: var(--bg-card-subtle, #f8fafc);
+      border: 1px solid var(--border-soft, #e2e8f0);
+      border-radius: 8px;
+    }
+
+    .auth-step-pill {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--slate-400, #94a3b8);
+    }
+
+    .auth-step-pill.active {
+      color: #ea580c !important;
+      font-weight: 700;
+    }
+
+    .auth-step-pill.completed {
+      color: #10b981 !important;
+      font-weight: 700;
+    }
+
+    .auth-step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--border-soft, #e2e8f0);
+      color: var(--slate-600, #475569);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .auth-step-pill.active .auth-step-num {
+      background: #ea580c !important;
+      color: #ffffff !important;
+    }
+
+    .auth-step-pill.completed .auth-step-num {
+      background: #10b981 !important;
+      color: #ffffff !important;
+    }
+
+    .auth-step-divider {
+      width: 20px;
+      height: 1px;
+      background: var(--border-soft, #cbd5e1);
+    }
+
+    /* OTP Monospace Field */
+    .otp-input-field {
+      font-family: var(--font-mono, "JetBrains Mono", Consolas, Courier, monospace) !important;
+      font-size: 18px !important;
+      font-weight: 700 !important;
+      letter-spacing: 4px !important;
+      text-transform: uppercase !important;
+      text-align: center !important;
+    }
+
+    /* Countdown Timer */
+    .auth-timer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 11.5px;
+    }
+
+    .auth-countdown-clock {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono, monospace);
+      font-weight: 600;
+      color: var(--slate-600, #475569);
+    }
+
+    .auth-countdown-clock.warning {
+      color: #ef4444 !important;
+      font-weight: 700;
+      animation: pulseWarning 1s infinite;
+    }
+
+    .auth-resend-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 11.5px;
+      color: #ea580c;
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .auth-resend-btn:disabled {
+      color: var(--slate-400, #94a3b8);
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+
+    /* Verified Badge */
+    .auth-verified-badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      color: #065f46;
+      font-size: 12.5px;
+    }
+
+    html[data-theme="dark"] .auth-verified-badge,
+    body.dark-mode .auth-verified-badge {
+      background: rgba(16, 185, 129, 0.15) !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+      color: #34d399 !important;
+    }
+
+    .auth-verified-badge-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    /* Dev OTP Helper */
+    .dev-otp-helper {
+      background: rgba(14, 165, 233, 0.08);
+      border: 1px dashed rgba(14, 165, 233, 0.4);
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 14px;
+      font-size: 11.5px;
+      color: #0369a1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    html[data-theme="dark"] .dev-otp-helper,
+    body.dark-mode .dev-otp-helper {
+      background: rgba(14, 165, 233, 0.12) !important;
+      border-color: rgba(14, 165, 233, 0.4) !important;
+      color: #38bdf8 !important;
+    }
+
+    .dev-otp-code-pill {
+      font-family: var(--font-mono, monospace);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: #ffffff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #bae6fd;
+      color: #0284c7;
+      cursor: pointer;
+    }
+
+    html[data-theme="dark"] .dev-otp-code-pill,
+    body.dark-mode .dev-otp-code-pill {
+      background: #0f172a !important;
+      border-color: #0284c7 !important;
+      color: #38bdf8 !important;
+    }
+
+    /* Password Rules Box */
+    .password-rules-box {
+      background: var(--bg-card-subtle, #f8fafc);
+      border: 1px solid var(--border-soft, #e2e8f0);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      margin-bottom: 14px;
+    }
+
+    html[data-theme="dark"] .password-rules-box,
+    body.dark-mode .password-rules-box,
+    html[data-theme="dark"] .auth-step-indicator,
+    body.dark-mode .auth-step-indicator {
+      background: rgba(15, 23, 42, 0.5) !important;
+      border-color: #334155 !important;
+    }
+
+    .password-rules-header {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--slate-700, #334155);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .password-rules-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .pwd-rule-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--slate-500, #64748b);
+      transition: color 0.15s ease;
+    }
+
+    .pwd-rule-item.valid {
+      color: #10b981 !important;
+      font-weight: 600;
+    }
+
+    .pwd-rule-item.invalid {
+      color: var(--slate-400, #94a3b8);
+    }
+
+    .pwd-rule-icon {
+      width: 12px;
+      height: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Strength Bar */
+    .password-strength-container {
+      margin-top: 8px;
+    }
+
+    .password-strength-bar {
+      display: flex;
+      gap: 4px;
+      height: 4px;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .strength-segment {
+      flex: 1;
+      height: 100%;
+      background: var(--border-soft, #e2e8f0);
+      transition: background-color 0.2s ease;
+    }
+
+    .strength-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--slate-500, #64748b);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @keyframes oasisFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes oasisSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes pulseWarning {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body class="oasis-landing-body">
+
+  <div class="landing-canvas">
+    <div class="landing-grid-bg"></div>
+
+    <!-- =========================================================================
+         1. TOP STICKY NAVIGATION BAR
+         ========================================================================= -->
+    <header class="landing-nav-bar">
+      <a href="/" class="landing-brand">
+        <div class="landing-brand-logo" title="OASIS Intelligence Terminal">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <circle cx="12" cy="12" r="4"></circle>
+            <line x1="12" y1="3" x2="12" y2="7"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+            <line x1="3" y1="12" x2="7" y2="12"></line>
+            <line x1="17" y1="12" x2="21" y2="12"></line>
+          </svg>
+        </div>
+        <div class="landing-brand-text">
+          <div class="landing-brand-title">
+            OASIS
+          </div>
+          <div class="landing-brand-sub">
+            OSINT Aggregation &amp; Strategic Intelligence System
+          </div>
+        </div>
+      </a>
+
+      <nav class="landing-nav-links">
+        <a href="#overview" class="landing-nav-link">Overview</a>
+        <a href="#suites" class="landing-nav-link">Intelligence Suites</a>
+        <a href="#architecture" class="landing-nav-link">Architecture</a>
+      </nav>
+
+      <div class="landing-nav-right">
+        <!-- Theme Toggle Button -->
+        <button class="header-icon-btn" id="theme-toggle-btn" title="Toggle Dark / Light Mode" aria-label="Toggle Theme"
+          onclick="toggleOasisTheme()"
+          style="width: 36px; height: 36px; border-radius: 6px; border: 1px solid var(--border-soft); background: var(--bg-card-subtle); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--slate-700);">
+          <svg class="theme-toggle-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="theme-toggle-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" style="display: none;">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <!-- Direct Auth Jump Buttons -->
+        <a href="#login-box" class="btn-nav-terminal" onclick="switchAuthMode('login', event)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          <span>Login</span>
+        </a>
+        <a href="#login-box" class="btn-nav-terminal"
+          style="background: var(--ember-600); color: #ffffff; border-color: var(--ember-500);"
+          onclick="switchAuthMode('signup', event)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>
+          <span>Sign Up</span>
+        </a>
+      </div>
+    </header>
+
+
+    <!-- =========================================================================
+         2. HERO SECTION & INTEGRATED LOGIN BOX CARD
+         ========================================================================= -->
+    <section class="landing-hero-container" id="overview">
+      <div class="landing-hero-grid">
+
+        <!-- Left: Value Proposition & Strategic Vision -->
+        <div>
+          <div class="hero-tag-capsule">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span>Strategic OSINT Platform &bull; Incubated at RKMVM</span>
+          </div>
+
+          <h1 class="hero-main-title">
+            Unified Open-Source <br>
+            <span class="gradient-text">Strategic Intelligence</span> Terminal
+          </h1>
+
+          <p class="hero-lead-text">
+            Autonomous multi-vector entity reconnaissance, web surface topology crawling, telecom network tracking, and
+            leaked identity footprint correlation designed for forensic-grade investigations.
+          </p>
+
+          <!-- Capability Pills -->
+          <div class="hero-capability-strip">
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Username Matrix
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+              </svg>
+              Domain Crawling
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+              </svg>
+              Social Scrapers
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                </path>
+              </svg>
+              Telecom Carrier
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              </svg>
+              Email Footprint
+            </span>
+            <span class="hero-cap-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+              </svg>
+              IP &amp; Perimeter
+            </span>
+          </div>
+        </div>
+
+
+        <!-- Right: THE OASIS UNIFIED TERMINAL AUTHENTICATION CARD -->
+        <div class="oasis-login-card" id="login-box">
+
+          <!-- ===================================================================
+               PANEL 1: SIGN IN (STATION TERMINAL AUTHENTICATION)
+               =================================================================== -->
+          <div class="auth-panel active" id="auth-panel-login">
+            <div class="login-card-header">
+              <div class="login-badge-row">
+                <span class="login-station-tag">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                  </svg>
+                  Station Terminal
+                </span>
+                <span class="login-security-tag">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                  Encrypted
+                </span>
+              </div>
+              <h2 class="login-card-title">Terminal Authentication</h2>
+              <p class="login-card-sub">Authenticate your call-sign to initialize the analyst workspace.</p>
+            </div>
+
+            <!-- Active Session Notice (Shown if user is already authenticated) -->
+            <div class="active-session-banner" id="active-session-banner">
+              <div class="session-user-row">
+                <div class="session-avatar" id="active-session-avatar">A</div>
+                <div class="session-details">
+                  <div class="session-name" id="active-session-name">Session Active</div>
+                  <div class="session-role" id="active-session-role">Authenticated</div>
+                </div>
+              </div>
+              <div class="session-actions">
+                <a href="/dashboard" class="btn-session-resume">
+                  <span>Continue to Dashboard</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+                <button type="button" class="btn-session-switch" onclick="handleSwitchStation()">
+                  Switch User
+                </button>
+              </div>
+            </div>
+
+            <!-- Authentication Form -->
+            <form id="oasis-login-form" onsubmit="handleLoginSubmit(event)">
+              <!-- Username or Email Input -->
+              <div class="login-form-group">
+                <label class="login-form-label" for="login-username">Username or Registered Email</label>
+                <div class="login-input-wrap">
+                  <span class="login-input-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </span>
+                  <input type="text" id="login-username" name="username" class="login-input"
+                    placeholder="Enter call-sign or email (e.g. alex or alex@oasis.live)"
+                    value="{{ current_user | default('') }}" required autocomplete="username">
+                </div>
+              </div>
+
+              <!-- Password Input -->
+              <div class="login-form-group">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                  <label class="login-form-label" for="login-password">Access Password / Secret</label>
+                  <button type="button" class="auth-switch-link" style="font-size: 11px;"
+                    onclick="switchAuthMode('forgot')">Forgot Password?</button>
+                </div>
+                <div class="login-input-wrap">
+                  <span class="login-input-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </span>
+                  <input type="password" id="login-password" name="password" class="login-input"
+                    placeholder="Enter Password" autocomplete="current-password">
+                  <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('login-password')"
+                    title="Toggle Password visibility">
+                    <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Remember Me & Policy -->
+              <div class="login-options-row">
+                <label class="login-checkbox-label">
+                  <input type="checkbox" id="login-remember" checked>
+                  <span>Remember session on this device</span>
+                </label>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="btn-login-submit" id="btn-login-submit">
+                <svg id="btn-submit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                  <polyline points="10 17 15 12 10 7"></polyline>
+                  <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+                <span id="btn-submit-text">Authenticate &amp; Enter Dashboard</span>
+              </button>
+            </form>
+
+            <!-- Quick Presets for Demo Reviewers (rendered only when OASIS_DEV_MODE is enabled) -->
+            {% if show_demo_credentials %}
+            <div class="quick-presets-box">
+              <div class="quick-presets-title">
+                <span>Seeded Role Presets:</span>
+                <span style="font-size: 10px; color: var(--slate-400); font-weight: normal;">Click to Auto-Fill &bull;
+                  Two Roles</span>
+              </div>
+              <div class="quick-preset-chips">
+                <button type="button" class="preset-chip"
+                  style="border-color: #fca5a5; background: rgba(220, 38, 38, 0.06); color: #dc2626;"
+                  onclick="applyPreset('admin', 'admin123')">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                  <strong>Admin</strong> (admin)
+                </button>
+                <button type="button" class="preset-chip" onclick="applyPreset('alex', 'alex123')">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  User: alex
+                </button>
+                <button type="button" class="preset-chip" onclick="applyPreset('sam', 'sam123')">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 14 14"></polyline>
+                  </svg>
+                  User: sam
+                </button>
+                <button type="button" class="preset-chip" onclick="applyPreset('jordan', 'jordan123')">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon
+                      points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                    </polygon>
+                  </svg>
+                  User: jordan
+                </button>
+              </div>
+
+              <div
+                style="margin-top: 10px; font-size: 11px; color: var(--slate-500); background: var(--bg-card-subtle); padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border-soft); line-height: 1.5;">
+                <strong style="color: var(--slate-700);">Access Credentials Reference:</strong><br>
+                &bull; <strong style="color: #dc2626;">Admin:</strong> <code>admin</code> / <code>admin123</code> &rarr;
+                <em>Accesses full Tool Mapping &amp; Health Radar (/role_admin/dashboard)</em><br>
+                &bull; <strong style="color: var(--ember-600);">User:</strong> <code>alex</code> &bull; <code>sam</code>
+                &bull; <code>jordan</code> (pass: <code>name123</code>) &rarr; <em>Accesses standard user dashboard</em>
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Switch to Sign Up -->
+            <div class="auth-switch-row">
+              <span>New analyst without workstation access? </span>
+              <button type="button" class="auth-switch-link" onclick="switchAuthMode('signup')">Request Sign Up
+                &rarr;</button>
+            </div>
+          </div>
+
+
+          <!-- ===================================================================
+               PANEL 2: USER SIGN UP (STAGED EMAIL OTP + CALL-SIGN & Password)
+               =================================================================== -->
+          <div class="auth-panel" id="auth-panel-signup">
+            <div class="login-card-header">
+              <div class="login-badge-row">
+                <span class="login-station-tag"
+                  style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #059669;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <polyline points="17 11 19 13 23 9"></polyline>
+                  </svg>
+                  Analyst Registration
+                </span>
+                <span class="login-security-tag">
+                  8-Digit OTP &bull; 5m Expiry
+                </span>
+              </div>
+              <h2 class="login-card-title">Create Station Account</h2>
+              <p class="login-card-sub">Verify your email to configure your station analyst call-sign and Password.</p>
+            </div>
+
+            <!-- Two-Stage Visual Progress Bar -->
+            <div class="auth-step-indicator">
+              <div class="auth-step-pill active" id="signup-step-pill-1">
+                <span class="auth-step-num" id="signup-step-num-1">1</span>
+                <span>Email &amp; 8-Digit OTP</span>
+              </div>
+              <div class="auth-step-divider"></div>
+              <div class="auth-step-pill" id="signup-step-pill-2">
+                <span class="auth-step-num" id="signup-step-num-2">2</span>
+                <span>Call-sign &amp; Password</span>
+              </div>
+            </div>
+
+            <!-- STAGE 1: EMAIL ENTRY & 8-DIGIT OTP VERIFICATION -->
+            <div id="signup-stage-1">
+              <form id="signup-email-form" onsubmit="handleSignupSendOtp(event)">
+                <div class="login-form-group">
+                  <label class="login-form-label" for="signup-email">Analyst Email Address</label>
+                  <div class="login-input-wrap">
+                    <span class="login-input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </span>
+                    <input type="email" id="signup-email" name="email" class="login-input"
+                      placeholder="analyst@domain.com" required autocomplete="email">
+                  </div>
+                  <div style="font-size: 11px; color: var(--slate-500); margin-top: 5px;">
+                    We will send an 8-digit alphanumeric verification code valid for 5 minutes.
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-login-submit" id="btn-signup-send-otp">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                  <span id="btn-signup-send-otp-text">Send 8-Digit Verification Code</span>
+                </button>
+              </form>
+
+              <!-- OTP Input Box (Revealed once OTP is generated) -->
+              <div id="signup-otp-box"
+                style="display: none; margin-top: 20px; padding-top: 18px; border-top: 1px dashed var(--border-soft);">
+                <!-- Dev Preview Helper for seamless testing -->
+                <div class="dev-otp-helper" id="signup-dev-otp-helper" style="display: none;">
+                  <div>
+                    <strong>[Dev Preview]</strong> Verification Code:
+                  </div>
+                  <span class="dev-otp-code-pill" id="signup-dev-otp-pill" onclick="autoFillSignupOtp()"
+                    title="Click to auto-fill"></span>
+                </div>
+
+                <form id="signup-otp-form" onsubmit="handleSignupVerifyOtp(event)">
+                  <div class="login-form-group">
+                    <label class="login-form-label" for="signup-otp">Enter 8-Digit Alphanumeric Code</label>
+                    <div class="login-input-wrap">
+                      <span class="login-input-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <circle cx="12" cy="16" r="1.5"></circle>
+                        </svg>
+                      </span>
+                      <input type="text" id="signup-otp" class="login-input otp-input-field" placeholder="XXXXXXXX"
+                        maxlength="8" required autocomplete="one-time-code"
+                        oninput="this.value = this.value.toUpperCase()">
+                    </div>
+
+                    <!-- Countdown Timer & Resend Option -->
+                    <div class="auth-timer-row">
+                      <div class="auth-countdown-clock" id="signup-timer-clock-wrap">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2.5">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span>Valid for: <strong id="signup-timer-clock">05:00</strong></span>
+                      </div>
+                      <button type="button" class="auth-resend-btn" id="btn-signup-resend"
+                        onclick="handleResendSignupOtp()" disabled>
+                        Resend Code
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn-login-submit" id="btn-signup-verify-otp" style="flex: 2;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      <span id="btn-signup-verify-text">Verify 8-Digit Code</span>
+                    </button>
+                    <button type="button" class="btn-session-switch" style="flex: 1;"
+                      onclick="handleResetSignupEmail()">
+                      Change Email
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- STAGE 2: CREDENTIALS SETUP (STRICTLY HIDDEN UNTIL AND UNLESS EMAIL IS VERIFIED) -->
+            <div id="signup-stage-2" style="display: none;">
+              <!-- Verified Email Confirmation Badge -->
+              <div class="auth-verified-badge">
+                <div class="auth-verified-badge-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  <span>Email Verified: <strong id="signup-verified-email-label"></strong></span>
+                </div>
+                <span
+                  style="font-size: 10px; font-weight: 700; background: #10b981; color: #ffffff; padding: 2px 6px; border-radius: 4px;">VERIFIED</span>
+              </div>
+
+              <form id="signup-complete-form" onsubmit="handleSignupCompleteSubmit(event)">
+                <!-- Full Name / Display Name -->
+                <div class="login-form-group">
+                  <label class="login-form-label" for="signup-name">Display Name / Agent Alias</label>
+                  <div class="login-input-wrap">
+                    <span class="login-input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                    </span>
+                    <input type="text" id="signup-name" class="login-input" placeholder="e.g. Robin Banks" required>
+                  </div>
+                </div>
+
+                <!-- Desired Username / Call-sign -->
+                <div class="login-form-group">
+                  <label class="login-form-label" for="signup-username">Call-Sign / Username</label>
+                  <div class="login-input-wrap">
+                    <span class="login-input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <line x1="12" y1="2" x2="12" y2="4"></line>
+                        <line x1="12" y1="20" x2="12" y2="22"></line>
+                        <line x1="2" y1="12" x2="4" y2="12"></line>
+                        <line x1="20" y1="12" x2="22" y2="12"></line>
+                      </svg>
+                    </span>
+                    <input type="text" id="signup-username" class="login-input" placeholder="e.g. robin_b" required
+                      autocomplete="username" oninput="handleCheckUsernameLive()">
+                  </div>
+                  <div id="signup-username-feedback" style="font-size: 11px; margin-top: 4px;"></div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="login-form-group">
+                  <label class="login-form-label" for="signup-password">Access Password</label>
+                  <div class="login-input-wrap">
+                    <span class="login-input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                    </span>
+                    <input type="password" id="signup-password" class="login-input" placeholder="Create secure Password"
+                      required autocomplete="new-password" oninput="handlePasswordInput('signup')">
+                    <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('signup-password')"
+                      title="Toggle Password visibility">
+                      <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Confirm Password Input -->
+                <div class="login-form-group">
+                  <label class="login-form-label" for="signup-confirm-password">Confirm Access Password</label>
+                  <div class="login-input-wrap">
+                    <span class="login-input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                    </span>
+                    <input type="password" id="signup-confirm-password" class="login-input"
+                      placeholder="Repeat Password exactly" required autocomplete="new-password"
+                      oninput="handlePasswordInput('signup')">
+                    <button type="button" class="btn-toggle-pwd"
+                      onclick="togglePasswordVisibility('signup-confirm-password')" title="Toggle Password visibility">
+                      <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Standard Password Entry Rules Checklist & Parameters -->
+                <div class="password-rules-box">
+                  <div class="password-rules-header">
+                    <span>Standard Security Parameters:</span>
+                    <span id="signup-pwd-match-badge" style="font-size: 10px;"></span>
+                  </div>
+                  <ul class="password-rules-list">
+                    <li class="pwd-rule-item" id="rule-signup-min_length">
+                      <span class="pwd-rule-icon">○</span> At least 8 characters
+                    </li>
+                    <li class="pwd-rule-item" id="rule-signup-uppercase">
+                      <span class="pwd-rule-icon">○</span> One uppercase letter (A-Z)
+                    </li>
+                    <li class="pwd-rule-item" id="rule-signup-lowercase">
+                      <span class="pwd-rule-icon">○</span> One lowercase letter (a-z)
+                    </li>
+                    <li class="pwd-rule-item" id="rule-signup-number">
+                      <span class="pwd-rule-icon">○</span> One numeric digit (0-9)
+                    </li>
+                    <li class="pwd-rule-item" id="rule-signup-special">
+                      <span class="pwd-rule-icon">○</span> One symbol (!@#$%^&*)
+                    </li>
+                    <li class="pwd-rule-item" id="rule-signup-match">
+                      <span class="pwd-rule-icon">○</span> Passwords match
+                    </li>
+                  </ul>
+                  <div class="password-strength-container">
+                    <div class="strength-label">
+                      <span>Password Complexity:</span>
+                      <span id="signup-strength-text">Empty</span>
+                    </div>
+                    <div class="password-strength-bar">
+                      <div class="strength-segment" id="signup-strength-1"></div>
+                      <div class="strength-segment" id="signup-strength-2"></div>
+                      <div class="strength-segment" id="signup-strength-3"></div>
+                      <div class="strength-segment" id="signup-strength-4"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Complete Registration Button -->
+                <button type="submit" class="btn-login-submit" id="btn-signup-submit" disabled>
+                  <svg id="btn-signup-submit-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.4">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                  </svg>
+                  <span id="btn-signup-submit-text">Complete Registration &amp; Enter Station</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Switch to Login -->
+            <div class="auth-switch-row">
+              <span>Already registered as a station analyst? </span>
+              <button type="button" class="auth-switch-link" onclick="switchAuthMode('login')">Return to Sign In
+                &rarr;</button>
+            </div>
+          </div>
+
+
+          <!-- ===================================================================
+               PANEL 3: FORGOT PASSWORD (EMAIL OTP VERIFICATION & Password RESET)
+               =================================================================== -->
+          <div class="auth-panel" id="auth-panel-forgot">
+            <div class="login-card-header">
+              <div class="login-badge-row">
+                <span class="login-station-tag"
+                  style="background: rgba(2, 132, 199, 0.1); border-color: rgba(2, 132, 199, 0.3); color: #0284c7;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  Password Recovery
+                </span>
+                <span class="login-security-tag">
+                  8-Digit OTP &bull; 5m Expiry
+                </span>
+              </div>
+              <h2 class="login-card-title">Reset Access Password</h2>
+              <p class="login-card-sub">Verify your registered email with an 8-digit OTP to configure a new access
+                Password.</p>
+            </div>
+
+            <!-- STAGE 1: ENTER REGISTERED EMAIL & DISPATCH OTP -->
+            <div id="forgot-stage-1">
+              <form id="forgot-email-form" onsubmit="handleForgotSendOtp(event)">
+                <div class="login-form-group">
+                  <label class="login-form-label" for="forgot-email">Registered Email Address</label>
+                  <div class="login-input-wrap">
+                    <span class="login-input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                    </span>
+                    <input type="email" id="forgot-email" name="email" class="login-input"
+                      placeholder="registered@oasis.live (e.g. alex@oasis.live)" required autocomplete="email">
+                  </div>
+                  <div style="font-size: 11px; color: var(--slate-500); margin-top: 5px;">
+                    Enter the email registered with your station account.
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-login-submit" id="btn-forgot-send-otp">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                  <span id="btn-forgot-send-otp-text">Send 8-Digit Recovery Code</span>
+                </button>
+              </form>
+
+              <!-- OTP Input Box (Revealed once OTP is generated) -->
+              <div id="forgot-otp-box"
+                style="display: none; margin-top: 20px; padding-top: 18px; border-top: 1px dashed var(--border-soft);">
+                <!-- Dev Preview Helper for testing -->
+                <div class="dev-otp-helper" id="forgot-dev-otp-helper" style="display: none;">
+                  <div>
+                    <strong>[Dev Preview]</strong> Recovery Code:
+                  </div>
+                  <span class="dev-otp-code-pill" id="forgot-dev-otp-pill" onclick="autoFillForgotOtp()"
+                    title="Click to auto-fill"></span>
+                </div>
+
+                <form id="forgot-otp-form" onsubmit="handleForgotVerifyOtp(event)">
+                  <div class="login-form-group">
+                    <label class="login-form-label" for="forgot-otp">Enter 8-Digit Recovery Code</label>
+                    <div class="login-input-wrap">
+                      <span class="login-input-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <circle cx="12" cy="16" r="1.5"></circle>
+                        </svg>
+                      </span>
+                      <input type="text" id="forgot-otp" class="login-input otp-input-field" placeholder="XXXXXXXX"
+                        maxlength="8" required autocomplete="one-time-code"
+                        oninput="this.value = this.value.toUpperCase()">
+                    </div>
+
+                    <!-- Countdown Timer & Resend Option -->
+                    <div class="auth-timer-row">
+                      <div class="auth-countdown-clock" id="forgot-timer-clock-wrap">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2.5">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span>Valid for: <strong id="forgot-timer-clock">05:00</strong></span>
+                      </div>
+                      <button type="button" class="auth-resend-btn" id="btn-forgot-resend"
+                        onclick="handleResendForgotOtp()" disabled>
+                        Resend Code
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn-login-submit" id="btn-forgot-verify-otp" style="flex: 2;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      <span id="btn-forgot-verify-text">Verify Recovery Code</span>
+                    </button>
+                    <button type="button" class="btn-session-switch" style="flex: 1;"
+                      onclick="handleResetForgotEmail()">
+                      Change Email
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- STAGE 2: SET NEW Password (STRICTLY HIDDEN UNTIL AND UNLESS OTP IS VERIFIED) -->
+            <div id="forgot-stage-2" style="display: none;">
+              <!-- Verified Identity Banner -->
+              <div class="auth-verified-badge">
+                <div class="auth-verified-badge-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  <span>Identity Confirmed: <strong id="forgot-verified-email-label"></strong></span>
+                </div>
+                <span
+                  style="font-size: 10px; font-weight: 700; background: #10b981; color: #ffffff; padding: 2px 6px; border-radius: 4px;">VERIFIED</span>
+              </div>
+
+              <form id="forgot-reset-form" onsubmit="handleForgotResetSubmit(event)">
+                <!-- New Password Input -->
+                <div class="login-form-group">
+                  <label class="login-form-label" for="forgot-new-password">New Access Password</label>
+                  <div class="login-input-wrap">
+                    <span class="login-input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                    </span>
+                    <input type="password" id="forgot-new-password" class="login-input" placeholder="Enter new Password"
+                      required autocomplete="new-password" oninput="handlePasswordInput('forgot')">
+                    <button type="button" class="btn-toggle-pwd"
+                      onclick="togglePasswordVisibility('forgot-new-password')" title="Toggle Password visibility">
+                      <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Confirm New Password Input -->
+                <div class="login-form-group">
+                  <label class="login-form-label" for="forgot-confirm-password">Confirm New Access Password</label>
+                  <div class="login-input-wrap">
+                    <span class="login-input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                    </span>
+                    <input type="password" id="forgot-confirm-password" class="login-input"
+                      placeholder="Repeat new Password exactly" required autocomplete="new-password"
+                      oninput="handlePasswordInput('forgot')">
+                    <button type="button" class="btn-toggle-pwd"
+                      onclick="togglePasswordVisibility('forgot-confirm-password')" title="Toggle Password visibility">
+                      <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Standard Password Rules Checklist & Parameters -->
+                <div class="password-rules-box">
+                  <div class="password-rules-header">
+                    <span>Standard Security Parameters:</span>
+                    <span id="forgot-pwd-match-badge" style="font-size: 10px;"></span>
+                  </div>
+                  <ul class="password-rules-list">
+                    <li class="pwd-rule-item" id="rule-forgot-min_length">
+                      <span class="pwd-rule-icon">○</span> At least 8 characters
+                    </li>
+                    <li class="pwd-rule-item" id="rule-forgot-uppercase">
+                      <span class="pwd-rule-icon">○</span> One uppercase letter (A-Z)
+                    </li>
+                    <li class="pwd-rule-item" id="rule-forgot-lowercase">
+                      <span class="pwd-rule-icon">○</span> One lowercase letter (a-z)
+                    </li>
+                    <li class="pwd-rule-item" id="rule-forgot-number">
+                      <span class="pwd-rule-icon">○</span> One numeric digit (0-9)
+                    </li>
+                    <li class="pwd-rule-item" id="rule-forgot-special">
+                      <span class="pwd-rule-icon">○</span> One symbol (!@#$%^&*)
+                    </li>
+                    <li class="pwd-rule-item" id="rule-forgot-match">
+                      <span class="pwd-rule-icon">○</span> Passwords match
+                    </li>
+                  </ul>
+                  <div class="password-strength-container">
+                    <div class="strength-label">
+                      <span>Password Complexity:</span>
+                      <span id="forgot-strength-text">Empty</span>
+                    </div>
+                    <div class="password-strength-bar">
+                      <div class="strength-segment" id="forgot-strength-1"></div>
+                      <div class="strength-segment" id="forgot-strength-2"></div>
+                      <div class="strength-segment" id="forgot-strength-3"></div>
+                      <div class="strength-segment" id="forgot-strength-4"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit New Password Button -->
+                <button type="submit" class="btn-login-submit" id="btn-forgot-submit" disabled>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
+                  <span id="btn-forgot-submit-text">Update Password &amp; Return to Sign In</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Switch to Login -->
+            <div class="auth-switch-row">
+              <span>Remembered your access credentials? </span>
+              <button type="button" class="auth-switch-link" onclick="switchAuthMode('login')">Return to Sign In
+                &rarr;</button>
+            </div>
+          </div>
+
+          <!-- Real-Time Feedback Alert (Shared across panels) -->
+          <div class="login-feedback" id="login-feedback"></div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         3. INTELLIGENCE SUITES SHOWCASE GRID
+         ========================================================================= -->
+    <section class="landing-section landing-section-alt" id="suites">
+      <div class="section-inner-container">
+        <div class="section-head-center">
+          <div class="section-pill-tag">Tactical Capabilities</div>
+          <h2 class="section-title">Six Specialized Intelligence Suites</h2>
+          <p class="section-subtitle">
+            Engineered as autonomous decoupled microservices with dedicated scraping daemons, anti-blocking measures,
+            and structured data output pipelines.
+          </p>
+        </div>
+
+        <div class="suites-showcase-grid">
+
+          <!-- Suite 1: Username Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #ea580c; border-color: rgba(234, 88, 12, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+                <span class="suite-status-badge">Entity Profiler</span>
+              </div>
+              <h3 class="suite-card-title">Username &amp; Handle Intelligence</h3>
+              <p class="suite-card-desc">
+                High-precision recursive entity verification across 3,000+ global services with bio extraction, profile
+                picture correlation, and cross-platform linking.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  Verified Platform Engines
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  Natural Stacking Evidence Table
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer" style="justify-content: flex-end;">
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 2: Domain & Website Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #0284c7; border-color: rgba(2, 132, 199, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path
+                      d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                    </path>
+                  </svg>
+                </div>
+                <span class="suite-status-badge"
+                  style="background: rgba(2, 132, 199, 0.1); color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">Surface
+                  Crawler</span>
+              </div>
+              <h3 class="suite-card-title">Domain &amp; Website Intelligence</h3>
+              <p class="suite-card-desc">
+                Deep recursive surface crawler for URL endpoints, subdomains, exposed cryptographic API secrets, and
+                historical archive seed resolution.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  Multi-Threaded Endpoint Spider
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  DNS Topology &amp; Key Extraction
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer" style="justify-content: flex-end;">
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 3: Social Media Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #ec4899; border-color: rgba(236, 72, 153, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                  </svg>
+                </div>
+                <span class="suite-status-badge"
+                  style="background: rgba(236, 72, 153, 0.1); color: #ec4899; border-color: rgba(236, 72, 153, 0.3);">Flash
+                  &amp; Pro Modes</span>
+              </div>
+              <h3 class="suite-card-title">Social Media Intelligence</h3>
+              <p class="suite-card-desc">
+                Dual-tier social harvesting: native Flash headless scraping for Instagram &amp; Twitter, coupled with
+                dedicated clusters for Facebook and LinkedIn profiling.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  Timeline &amp; Media Post Archival
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  Zero Login Requirement
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer" style="justify-content: flex-end;">
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 4: Phone Number Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #059669; border-color: rgba(5, 150, 105, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                    </path>
+                  </svg>
+                </div>
+                <span class="suite-status-badge">Carrier Engine</span>
+              </div>
+              <h3 class="suite-card-title">Phone Number Intelligence</h3>
+              <p class="suite-card-desc">
+                Carrier network resolution, geographic telecom circle tracking, line type validation (Mobile / Landline
+                / VoIP), and multi-source public footprints.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  State Circle &amp; Operator Identification
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  HLR Lookup &amp; Portability Triage
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer" style="justify-content: flex-end;">
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 5: Email Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #6366f1; border-color: rgba(99, 102, 241, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                </div>
+                <span class="suite-status-badge"
+                  style="background: rgba(99, 102, 241, 0.1); color: #6366f1; border-color: rgba(99, 102, 241, 0.3);">Reverse
+                  Footprint</span>
+              </div>
+              <h3 class="suite-card-title">Email Intelligence &amp; Footprint</h3>
+              <p class="suite-card-desc">
+                26-provider mailbox discovery by username prefix alongside 124-platform reverse account footprinting
+                with masked phone and recovery email harvesting.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  Platform Password Reset Probes
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  Leaked Credential Hint Extraction
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer" style="justify-content: flex-end;">
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Suite 6: IP & Network Intelligence -->
+          <div class="suite-card">
+            <div>
+              <div class="suite-card-top">
+                <div class="suite-icon-box" style="color: #0284c7; border-color: rgba(2, 132, 199, 0.25);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                    <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                    <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                  </svg>
+                </div>
+                <span class="suite-status-badge"
+                  style="background: rgba(2, 132, 199, 0.1); color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">Perimeter
+                  Triage</span>
+              </div>
+              <h3 class="suite-card-title">IP &amp; Network Intelligence</h3>
+              <p class="suite-card-desc">
+                Physical GeoIP coordinates, autonomous system (ASN) route origin lookup, reverse DNS (PTR), 16-port
+                passive socket triage, and TLS certificate decoding.
+              </p>
+              <ul class="suite-specs-list">
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  BGP Route &amp; Autonomous System (ASN)
+                </li>
+                <li class="suite-specs-item">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  TLS X.509 Subject Alt Name Decoding
+                </li>
+              </ul>
+            </div>
+            <div class="suite-card-footer" style="justify-content: flex-end;">
+              <a href="#login-box" class="suite-access-link" onclick="focusLoginInput(event)">
+                Launch Suite &rarr;
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         4. PLATFORM ARCHITECTURE & DEFENSE PILLARS
+         ========================================================================= -->
+    <section class="landing-section" id="architecture">
+      <div class="section-inner-container">
+        <div class="section-head-center">
+          <div class="section-pill-tag">Operational Architecture</div>
+          <h2 class="section-title">Built for Tactical Reliability &amp; Provenance</h2>
+          <p class="section-subtitle">
+            Every reconnaissance vector is decoupled from browser lifecycle, maintaining forensic data isolation and
+            zero operational footprint.
+          </p>
+        </div>
+
+        <div class="pillars-row">
+          <div class="pillar-card">
+            <div class="pillar-icon-ring">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <polyline points="9 12 11 14 15 10"></polyline>
+              </svg>
+            </div>
+            <h3>Passive &amp; Zero-Footprint Reconnaissance</h3>
+            <p>
+              Designed for zero-trace discovery with automated user-agent rotation, proxy cycling, and rate-limit
+              evasion measures across public surface targets.
+            </p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-ring"
+              style="background: rgba(249, 115, 22, 0.1); border-color: rgba(249, 115, 22, 0.25); color: #ea580c;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <h3>Asynchronous Subprocess Daemons</h3>
+            <p>
+              Background workers run independently of active browser sessions, ensuring that long-running deep surface
+              crawls persist and resume flawlessly.
+            </p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-ring"
+              style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.25); color: #6366f1;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <h3>Forensic-Grade Evidence Artifacts</h3>
+            <p>
+              Automated structured exports in CSV, JSON, Markdown, and TXT formats equipped with cryptographic
+              provenance hashes ready for legal and intelligence audits.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         5. ACADEMIC & INCUBATOR CREDIT FOOTER
+         ========================================================================= -->
+    <footer class="landing-footer">
+      <div class="landing-footer-grid">
+        <div>
+          <div class="landing-brand" style="margin-bottom: 14px;">
+            <div class="landing-brand-logo" style="width: 32px; height: 32px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="9"></circle>
+                <circle cx="12" cy="12" r="4"></circle>
+              </svg>
+            </div>
+            <span class="landing-brand-title" style="font-size: 15px;">OASIS</span>
+          </div>
+          <p class="footer-col-desc">
+            Open-source Intelligence Aggregation and Strategic Intelligence System. Designed for researchers,
+            cybersecurity investigators, and tactical analysts.
+          </p>
+          <div style="margin-top: 14px; font-size: 12px; color: var(--slate-500);">
+            Incubated at Ramakrishna Mission Vidyamandira &bull; Belur Math
+          </div>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Intelligence Vectors</div>
+          <ul class="footer-links-list">
+            <li><a href="#suites">Username Intelligence</a></li>
+            <li><a href="#suites">Domain Spidering</a></li>
+            <li><a href="#suites">Social Footprints</a></li>
+            <li><a href="#suites">Phone Telecom</a></li>
+            <li><a href="#suites">Email Discovery</a></li>
+            <li><a href="#suites">IP &amp; Network</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Terminal &amp; Ops</div>
+          <ul class="footer-links-list">
+            <li><a href="#login-box" onclick="focusLoginInput(event)">Analyst Login</a></li>
+            <li><a href="/dashboard">Mission Dashboard</a></li>
+            <li><a href="/notifications">Event Notifications</a></li>
+            <li><a href="/changelog">System Changelog</a></li>
+            <li><a href="/settings">Station Settings</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Academic Provenance</div>
+          <p class="footer-col-desc" style="font-size: 12.5px;">
+            Developed as an open-source academic intelligence research platform within the Department of Computer
+            Science &amp; Engineering at Ramakrishna Mission Vidyamandira.
+          </p>
+          <div style="margin-top: 12px;">
+            <a href="#login-box" class="btn-nav-terminal" style="font-size: 12px; padding: 6px 12px;"
+              onclick="focusLoginInput(event)">
+              Initialize Workstation &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-bar">
+        <div>
+          <span>&copy; 2026 OASIS &mdash; OSINT Aggregation and Strategic Intelligence System</span>
+        </div>
+        <div class="footer-incubator-note">
+          Incubated at Ramakrishna Mission Vidyamandira
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--slate-400);">
+          Secure Protocol
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- =========================================================================
+       6. INTERACTIVE AUTHENTICATION & LANDING CONTROLLER SCRIPT
+       ========================================================================= -->
+  <script>
+    // Theme Management
+    function applyTheme(theme) {
+      const isDark = theme === 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      if (isDark) {
+        document.documentElement.classList.add('dark-theme');
+        document.body.classList.add('dark-theme', 'dark-mode');
+      } else {
+        document.documentElement.classList.remove('dark-theme');
+        document.body.classList.remove('dark-theme', 'dark-mode');
+      }
+      const moon = document.querySelector('.theme-toggle-moon');
+      const sun = document.querySelector('.theme-toggle-sun');
+      if (moon && sun) {
+        moon.style.display = isDark ? 'none' : 'block';
+        sun.style.display = isDark ? 'block' : 'none';
+      }
+    }
+
+    function toggleOasisTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const nextTheme = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('oasis_theme', nextTheme);
+      applyTheme(nextTheme);
+    }
+
+    // Toggle Password Visibility for any input
+    function togglePasswordVisibility(targetId = 'login-password') {
+      const pwd = document.getElementById(targetId);
+      if (pwd) {
+        pwd.type = pwd.type === 'password' ? 'text' : 'password';
+      }
+    }
+
+    // Auto-fill Quick Call-Sign Presets (Login Panel)
+    function applyPreset(username, password) {
+      switchAuthMode('login');
+      const userEl = document.getElementById('login-username');
+      const pwdEl = document.getElementById('login-password');
+      if (userEl) userEl.value = username;
+      if (pwdEl) pwdEl.value = password;
+      userEl && userEl.focus();
+    }
+
+    // Focus Login Box
+    function focusLoginInput(e) {
+      if (e) e.preventDefault();
+      switchAuthMode('login');
+      const loginBox = document.getElementById('login-box');
+      if (loginBox) {
+        loginBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const userEl = document.getElementById('login-username');
+        if (userEl) setTimeout(() => userEl.focus(), 350);
+      }
+    }
+
+    // Display Feedback Alert
+    function showFeedback(msg, type = "error") {
+      const fb = document.getElementById('login-feedback');
+      if (!fb) return;
+      fb.className = `login-feedback ${type}`;
+      fb.style.display = "flex";
+      fb.innerHTML = `
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink: 0;">
+          ${type === 'success'
+          ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>'
+          : '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'}
+        </svg>
+        <span>${msg}</span>
+      `;
+    }
+
+    function clearFeedback() {
+      const fb = document.getElementById('login-feedback');
+      if (fb) {
+        fb.className = "login-feedback";
+        fb.style.display = "none";
+        fb.innerHTML = "";
+      }
+    }
+
+    // =========================================================================
+    // AUTHENTICATION MODE SWITCHER (SIGN IN / SIGN UP / FORGOT Password)
+    // =========================================================================
+    function switchAuthMode(mode, event) {
+      if (event) event.preventDefault();
+      clearFeedback();
+
+      const modes = ['login', 'signup', 'forgot'];
+      modes.forEach(m => {
+        const btn = document.getElementById(`tab-btn-${m}`);
+        const panel = document.getElementById(`auth-panel-${m}`);
+        if (btn) btn.classList.toggle('active', m === mode);
+        if (panel) panel.classList.toggle('active', m === mode);
+      });
+
+      const loginBox = document.getElementById('login-box');
+      if (loginBox && event) {
+        loginBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Auto-focus primary input of selected mode
+      setTimeout(() => {
+        if (mode === 'login') {
+          const el = document.getElementById('login-username');
+          if (el) el.focus();
+        } else if (mode === 'signup') {
+          const el = document.getElementById('signup-email');
+          if (el && !el.disabled) el.focus();
+        } else if (mode === 'forgot') {
+          const el = document.getElementById('forgot-email');
+          if (el) el.focus();
+        }
+      }, 200);
+    }
+
+    // =========================================================================
+    // COUNTDOWN TIMERS (8-DIGIT ALPHANUMERIC OTP & 5-MIN EXPIRATION)
+    // =========================================================================
+    const _timerIntervals = { signup: null, forgot: null };
+
+    function startOtpTimer(type, durationSeconds = 300) {
+      if (_timerIntervals[type]) {
+        clearInterval(_timerIntervals[type]);
+      }
+
+      let remaining = durationSeconds;
+      const clockEl = document.getElementById(`${type}-timer-clock`);
+      const clockWrap = document.getElementById(`${type}-timer-clock-wrap`);
+      const resendBtn = document.getElementById(`btn-${type}-resend`);
+      const verifyBtn = document.getElementById(`btn-${type}-verify-otp`);
+
+      if (resendBtn) resendBtn.disabled = true;
+      if (verifyBtn) verifyBtn.disabled = false;
+
+      function updateDisplay() {
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        if (clockEl) clockEl.textContent = formatted;
+
+        if (clockWrap) {
+          clockWrap.classList.toggle('warning', remaining <= 60);
+        }
+
+        if (remaining <= 0) {
+          clearInterval(_timerIntervals[type]);
+          if (clockEl) clockEl.textContent = "Expired (5m elapsed)";
+          if (resendBtn) resendBtn.disabled = false;
+          if (verifyBtn) verifyBtn.disabled = true;
+          showFeedback("The 8-digit verification code has expired. Please request a new code.", "error");
+        } else {
+          remaining--;
+          // Enable resend after 30 seconds
+          if (durationSeconds - remaining >= 30 && resendBtn) {
+            resendBtn.disabled = false;
+          }
+        }
+      }
+
+      updateDisplay();
+      _timerIntervals[type] = setInterval(updateDisplay, 1000);
+    }
+
+    function stopOtpTimer(type) {
+      if (_timerIntervals[type]) {
+        clearInterval(_timerIntervals[type]);
+        _timerIntervals[type] = null;
+      }
+    }
+
+    // =========================================================================
+    // PASSWORD RULES EVALUATION & DYNAMIC FEEDBACK
+    // =========================================================================
+    const SPECIAL_SYMBOLS = "!@#$%^&*()_+-=[]{}|;:,.<>?/~`'\"\\";
+
+    function evaluatePassword(pwd, confirmPwd) {
+      const p = pwd || "";
+      const c = confirmPwd || "";
+      const rules = {
+        min_length: p.length >= 8,
+        uppercase: /[A-Z]/.test(p),
+        lowercase: /[a-z]/.test(p),
+        number: /[0-9]/.test(p),
+        special: Array.from(p).some(ch => SPECIAL_SYMBOLS.includes(ch)),
+        match: p.length > 0 && p === c,
+      };
+
+      const satisfiedCount = [
+        rules.min_length,
+        rules.uppercase,
+        rules.lowercase,
+        rules.number,
+        rules.special,
+      ].filter(Boolean).length;
+
+      let score = 0;
+      if (p.length === 0) score = 0;
+      else if (satisfiedCount <= 2) score = 1; // Weak
+      else if (satisfiedCount === 3) score = 2; // Fair
+      else if (satisfiedCount === 4) score = 3; // Good
+      else if (satisfiedCount === 5) score = 4; // Strong
+
+      const allValid = Object.values(rules).every(Boolean);
+      return { rules, score, allValid };
+    }
+
+    function handlePasswordInput(prefix) {
+      const pwdEl = document.getElementById(`${prefix}-password`) || document.getElementById(`${prefix}-new-password`);
+      const confirmEl = document.getElementById(`${prefix}-confirm-password`);
+      const submitBtn = document.getElementById(`btn-${prefix}-submit`);
+
+      const pwd = pwdEl ? pwdEl.value : "";
+      const confirm = confirmEl ? confirmEl.value : "";
+
+      const { rules, score, allValid } = evaluatePassword(pwd, confirm);
+
+      // Update Checklist UI
+      const ruleKeys = ['min_length', 'uppercase', 'lowercase', 'number', 'special', 'match'];
+      ruleKeys.forEach(k => {
+        const item = document.getElementById(`rule-${prefix}-${k}`);
+        if (!item) return;
+        const icon = item.querySelector('.pwd-rule-icon');
+        const passed = rules[k];
+        item.classList.toggle('valid', passed);
+        item.classList.toggle('invalid', !passed);
+        if (icon) icon.textContent = passed ? '✓' : '○';
+      });
+
+      // Match badge
+      const matchBadge = document.getElementById(`${prefix}-pwd-match-badge`);
+      if (matchBadge) {
+        if (!confirm) {
+          matchBadge.textContent = "";
+        } else if (rules.match) {
+          matchBadge.textContent = "✓ Passwords Match";
+          matchBadge.style.color = "#10b981";
+        } else {
+          matchBadge.textContent = "✗ Passwords Do Not Match";
+          matchBadge.style.color = "#ef4444";
+        }
+      }
+
+      // Strength Meter Bar & Label
+      const strengthLabel = document.getElementById(`${prefix}-strength-text`);
+      const colors = ['#cbd5e1', '#ef4444', '#f97316', '#eab308', '#10b981'];
+      const labels = ['Empty', 'Weak', 'Fair', 'Good', 'Strong'];
+
+      if (strengthLabel) {
+        strengthLabel.textContent = labels[score];
+        strengthLabel.style.color = colors[score];
+      }
+
+      for (let i = 1; i <= 4; i++) {
+        const seg = document.getElementById(`${prefix}-strength-${i}`);
+        if (seg) {
+          if (score >= i) {
+            seg.style.backgroundColor = colors[score];
+          } else {
+            seg.style.backgroundColor = "var(--border-soft, #e2e8f0)";
+          }
+        }
+      }
+
+      // Check if username is also valid for signup
+      if (prefix === 'signup') {
+        const userEl = document.getElementById('signup-username');
+        const usernameValid = userEl && userEl.value.trim().length >= 3 && !_usernameTaken;
+        if (submitBtn) submitBtn.disabled = !(allValid && usernameValid);
+      } else {
+        if (submitBtn) submitBtn.disabled = !allValid;
+      }
+    }
+
+    // =========================================================================
+    // LIVE USERNAME AVAILABILITY CHECK
+    // =========================================================================
+    let _usernameDebounce = null;
+    let _usernameTaken = false;
+
+    function handleCheckUsernameLive() {
+      const userEl = document.getElementById('signup-username');
+      const feedback = document.getElementById('signup-username-feedback');
+      if (!userEl || !feedback) return;
+
+      const val = userEl.value.trim();
+      clearTimeout(_usernameDebounce);
+
+      if (!val) {
+        feedback.innerHTML = "";
+        _usernameTaken = false;
+        handlePasswordInput('signup');
+        return;
+      }
+
+      if (val.length < 3) {
+        feedback.innerHTML = `<span style="color: #ef4444;">Call-sign must be at least 3 characters.</span>`;
+        _usernameTaken = true;
+        handlePasswordInput('signup');
+        return;
+      }
+
+      if (!/^[a-zA-Z0-9_.]+$/.test(val)) {
+        feedback.innerHTML = `<span style="color: #ef4444;">Only letters, numbers, periods, and underscores allowed.</span>`;
+        _usernameTaken = true;
+        handlePasswordInput('signup');
+        return;
+      }
+
+      feedback.innerHTML = `<span style="color: var(--slate-400);">Checking availability...</span>`;
+
+      _usernameDebounce = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(val)}`);
+          const data = await res.json();
+          if (data.available) {
+            feedback.innerHTML = `<span style="color: #10b981; font-weight: 600;">✓ Call-sign '${val}' is available</span>`;
+            _usernameTaken = false;
+          } else {
+            feedback.innerHTML = `<span style="color: #ef4444; font-weight: 600;">✗ ${data.message}</span>`;
+            _usernameTaken = true;
+          }
+          handlePasswordInput('signup');
+        } catch (e) {
+          feedback.innerHTML = "";
+        }
+      }, 300);
+    }
+
+    // =========================================================================
+    // SIGN UP WORKFLOW: 8-DIGIT OTP & UNLOCKING CREDENTIALS
+    // =========================================================================
+    let _signupState = {
+      email: "",
+      verification_ticket: "",
+      dev_otp: "",
+    };
+
+    async function handleSignupSendOtp(event) {
+      if (event) event.preventDefault();
+      clearFeedback();
+
+      const emailEl = document.getElementById('signup-email');
+      const sendBtn = document.getElementById('btn-signup-send-otp');
+      const sendText = document.getElementById('btn-signup-send-otp-text');
+
+      const email = emailEl ? emailEl.value.trim().toLowerCase() : "";
+      if (!email || !email.includes('@')) {
+        showFeedback("Please provide a valid analyst email address.", "error");
+        if (emailEl) emailEl.focus();
+        return;
+      }
+
+      if (sendBtn) sendBtn.disabled = true;
+      if (sendText) sendText.innerText = "Dispatching 8-digit OTP...";
+
+      try {
+        const res = await fetch("/api/auth/signup/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          _signupState.email = email;
+          _signupState.dev_otp = data.dev_otp || "";
+
+          // Lock email input
+          if (emailEl) emailEl.disabled = true;
+          if (sendBtn) sendBtn.style.display = "none";
+
+          // Reveal OTP Box
+          const otpBox = document.getElementById('signup-otp-box');
+          if (otpBox) otpBox.style.display = "block";
+
+          // If dev mode OTP preview is available
+          if (data.dev_otp) {
+            const devBox = document.getElementById('signup-dev-otp-helper');
+            const devPill = document.getElementById('signup-dev-otp-pill');
+            if (devBox && devPill) {
+              devPill.textContent = data.dev_otp;
+              devBox.style.display = "flex";
+            }
+          }
+
+          startOtpTimer('signup', data.expires_in || 300);
+          showFeedback(data.message || "8-digit verification code dispatched. Valid for 5 minutes.", "success");
+
+          const otpInput = document.getElementById('signup-otp');
+          if (otpInput) {
+            otpInput.value = "";
+            otpInput.focus();
+          }
+        } else {
+          showFeedback(data.message || "Failed to issue verification code.", "error");
+          if (sendBtn) sendBtn.disabled = false;
+          if (sendText) sendText.innerText = "Send 8-Digit Verification Code";
+        }
+      } catch (err) {
+        showFeedback("Network error: Unable to contact station auth server.", "error");
+        if (sendBtn) sendBtn.disabled = false;
+        if (sendText) sendText.innerText = "Send 8-Digit Verification Code";
+      }
+    }
+
+    function autoFillSignupOtp() {
+      if (_signupState.dev_otp) {
+        const otpInput = document.getElementById('signup-otp');
+        if (otpInput) {
+          otpInput.value = _signupState.dev_otp;
+          otpInput.focus();
+        }
+      }
+    }
+
+    async function handleResendSignupOtp() {
+      if (!_signupState.email) return;
+      const resendBtn = document.getElementById('btn-signup-resend');
+      if (resendBtn) resendBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/auth/signup/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: _signupState.email })
+        });
+        const data = await res.json();
+        if (data.success) {
+          _signupState.dev_otp = data.dev_otp || "";
+          if (data.dev_otp) {
+            const devPill = document.getElementById('signup-dev-otp-pill');
+            if (devPill) devPill.textContent = data.dev_otp;
+          }
+          startOtpTimer('signup', 300);
+          showFeedback("A fresh 8-digit verification code has been dispatched. Valid for 5 minutes.", "success");
+        } else {
+          showFeedback(data.message || "Failed to resend verification code.", "error");
+          if (resendBtn) resendBtn.disabled = false;
+        }
+      } catch (e) {
+        showFeedback("Network error while requesting code resend.", "error");
+        if (resendBtn) resendBtn.disabled = false;
+      }
+    }
+
+    function handleResetSignupEmail() {
+      stopOtpTimer('signup');
+      clearFeedback();
+      const emailEl = document.getElementById('signup-email');
+      const sendBtn = document.getElementById('btn-signup-send-otp');
+      const sendText = document.getElementById('btn-signup-send-otp-text');
+      const otpBox = document.getElementById('signup-otp-box');
+
+      if (emailEl) {
+        emailEl.disabled = false;
+        emailEl.focus();
+      }
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.style.display = "inline-flex";
+      }
+      if (sendText) sendText.innerText = "Send 8-Digit Verification Code";
+      if (otpBox) otpBox.style.display = "none";
+    }
+
+    // Verify 8-digit OTP and unveil Credentials Phase
+    async function handleSignupVerifyOtp(event) {
+      if (event) event.preventDefault();
+      clearFeedback();
+
+      const otpInput = document.getElementById('signup-otp');
+      const verifyBtn = document.getElementById('btn-signup-verify-otp');
+      const verifyText = document.getElementById('btn-signup-verify-text');
+
+      const otpCode = otpInput ? otpInput.value.trim().toUpperCase() : "";
+
+      if (otpCode.length !== 8) {
+        showFeedback("Please enter the full 8-digit alphanumeric verification code.", "error");
+        if (otpInput) otpInput.focus();
+        return;
+      }
+
+      if (verifyBtn) verifyBtn.disabled = true;
+      if (verifyText) verifyText.innerText = "Verifying Code...";
+
+      try {
+        const res = await fetch("/api/auth/signup/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: _signupState.email,
+            otp_code: otpCode
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          stopOtpTimer('signup');
+          _signupState.verification_ticket = data.verification_ticket;
+
+          // Transition Step Indicators: Step 1 completed, Step 2 active
+          const pill1 = document.getElementById('signup-step-pill-1');
+          const pill2 = document.getElementById('signup-step-pill-2');
+          const num1 = document.getElementById('signup-step-num-1');
+          if (pill1) {
+            pill1.className = "auth-step-pill completed";
+            if (num1) num1.textContent = "✓";
+          }
+          if (pill2) pill2.className = "auth-step-pill active";
+
+          // HIDE Stage 1 and UNVEIL Stage 2 (Username and Password entry fields)
+          const stage1 = document.getElementById('signup-stage-1');
+          const stage2 = document.getElementById('signup-stage-2');
+          if (stage1) stage1.style.display = "none";
+          if (stage2) stage2.style.display = "block";
+
+          const verifiedLabel = document.getElementById('signup-verified-email-label');
+          if (verifiedLabel) verifiedLabel.textContent = _signupState.email;
+
+          showFeedback("Email successfully verified! Please complete your call-sign and access Password.", "success");
+
+          const nameEl = document.getElementById('signup-name');
+          if (nameEl) nameEl.focus();
+        } else {
+          showFeedback(data.message || "Invalid or expired verification code.", "error");
+          if (verifyBtn) verifyBtn.disabled = false;
+          if (verifyText) verifyText.innerText = "Verify 8-Digit Code";
+        }
+      } catch (err) {
+        showFeedback("Network error: Unable to verify code with station.", "error");
+        if (verifyBtn) verifyBtn.disabled = false;
+        if (verifyText) verifyText.innerText = "Verify 8-Digit Code";
+      }
+    }
+
+    // Complete Sign-Up Submission
+    async function handleSignupCompleteSubmit(event) {
+      if (event) event.preventDefault();
+      clearFeedback();
+
+      const nameEl = document.getElementById('signup-name');
+      const userEl = document.getElementById('signup-username');
+      const pwdEl = document.getElementById('signup-password');
+      const confirmEl = document.getElementById('signup-confirm-password');
+      const submitBtn = document.getElementById('btn-signup-submit');
+      const submitText = document.getElementById('btn-signup-submit-text');
+
+      const name = nameEl ? nameEl.value.trim() : "";
+      const username = userEl ? userEl.value.trim().toLowerCase() : "";
+      const password = pwdEl ? pwdEl.value : "";
+      const confirmPassword = confirmEl ? confirmEl.value : "";
+
+      const { allValid } = evaluatePassword(password, confirmPassword);
+      if (!allValid) {
+        showFeedback("Please satisfy all standard password parameters before completing registration.", "error");
+        return;
+      }
+
+      if (_usernameTaken) {
+        showFeedback("Please select an available call-sign.", "error");
+        if (userEl) userEl.focus();
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+      if (submitText) submitText.innerText = "Initializing Station Analyst Account...";
+
+      try {
+        const res = await fetch("/api/auth/signup/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: _signupState.email,
+            username: username,
+            display_name: name || username.toUpperCase(),
+            password: password,
+            confirm_password: confirmPassword,
+            verification_ticket: _signupState.verification_ticket
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          const userObj = data.user || {
+            username: username,
+            displayName: name || username.toUpperCase(),
+            role: "user",
+            avatar: username.charAt(0).toUpperCase()
+          };
+          localStorage.setItem("oasis_user", JSON.stringify(userObj));
+          showFeedback("Station account initialized! Launching analyst workspace...", "success");
+          setTimeout(() => {
+            window.location.href = data.redirect || "/role_user/dashboard";
+          }, 600);
+        } else {
+          showFeedback(data.message || "Failed to complete registration.", "error");
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitText) submitText.innerText = "Complete Registration & Enter Station";
+        }
+      } catch (err) {
+        showFeedback("Network error: Unable to complete account setup.", "error");
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitText) submitText.innerText = "Complete Registration & Enter Station";
+      }
+    }
+
+    // =========================================================================
+    // FORGOT PASSWORD WORKFLOW: EMAIL OTP & Password RESET
+    // =========================================================================
+    let _forgotState = {
+      email: "",
+      verification_ticket: "",
+      dev_otp: "",
+    };
+
+    async function handleForgotSendOtp(event) {
+      if (event) event.preventDefault();
+      clearFeedback();
+
+      const emailEl = document.getElementById('forgot-email');
+      const sendBtn = document.getElementById('btn-forgot-send-otp');
+      const sendText = document.getElementById('btn-forgot-send-otp-text');
+
+      const email = emailEl ? emailEl.value.trim().toLowerCase() : "";
+      if (!email || !email.includes('@')) {
+        showFeedback("Please enter your registered station email address.", "error");
+        if (emailEl) emailEl.focus();
+        return;
+      }
+
+      if (sendBtn) sendBtn.disabled = true;
+      if (sendText) sendText.innerText = "Dispatching 8-digit Recovery Code...";
+
+      try {
+        const res = await fetch("/api/auth/forgot-password/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          _forgotState.email = email;
+          _forgotState.dev_otp = data.dev_otp || "";
+
+          if (emailEl) emailEl.disabled = true;
+          if (sendBtn) sendBtn.style.display = "none";
+
+          const otpBox = document.getElementById('forgot-otp-box');
+          if (otpBox) otpBox.style.display = "block";
+
+          if (data.dev_otp) {
+            const devBox = document.getElementById('forgot-dev-otp-helper');
+            const devPill = document.getElementById('forgot-dev-otp-pill');
+            if (devBox && devPill) {
+              devPill.textContent = data.dev_otp;
+              devBox.style.display = "flex";
+            }
+          }
+
+          startOtpTimer('forgot', data.expires_in || 300);
+          showFeedback(data.message || "8-digit recovery code dispatched. Valid for 5 minutes.", "success");
+
+          const otpInput = document.getElementById('forgot-otp');
+          if (otpInput) {
+            otpInput.value = "";
+            otpInput.focus();
+          }
+        } else {
+          showFeedback(data.message || "Account email not recognized.", "error");
+          if (sendBtn) sendBtn.disabled = false;
+          if (sendText) sendText.innerText = "Send 8-Digit Recovery Code";
+        }
+      } catch (e) {
+        showFeedback("Network error: Unable to reach security gateway.", "error");
+        if (sendBtn) sendBtn.disabled = false;
+        if (sendText) sendText.innerText = "Send 8-Digit Recovery Code";
+      }
+    }
+
+    function autoFillForgotOtp() {
+      if (_forgotState.dev_otp) {
+        const otpInput = document.getElementById('forgot-otp');
+        if (otpInput) {
+          otpInput.value = _forgotState.dev_otp;
+          otpInput.focus();
+        }
+      }
+    }
+
+    async function handleResendForgotOtp() {
+      if (!_forgotState.email) return;
+      const resendBtn = document.getElementById('btn-forgot-resend');
+      if (resendBtn) resendBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/auth/forgot-password/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: _forgotState.email })
+        });
+        const data = await res.json();
+        if (data.success) {
+          _forgotState.dev_otp = data.dev_otp || "";
+          if (data.dev_otp) {
+            const devPill = document.getElementById('forgot-dev-otp-pill');
+            if (devPill) devPill.textContent = data.dev_otp;
+          }
+          startOtpTimer('forgot', 300);
+          showFeedback("A fresh 8-digit recovery code has been sent. Valid for 5 minutes.", "success");
+        } else {
+          showFeedback(data.message || "Failed to resend recovery code.", "error");
+          if (resendBtn) resendBtn.disabled = false;
+        }
+      } catch (e) {
+        showFeedback("Network error while requesting code resend.", "error");
+        if (resendBtn) resendBtn.disabled = false;
+      }
+    }
+
+    function handleResetForgotEmail() {
+      stopOtpTimer('forgot');
+      clearFeedback();
+      const emailEl = document.getElementById('forgot-email');
+      const sendBtn = document.getElementById('btn-forgot-send-otp');
+      const sendText = document.getElementById('btn-forgot-send-otp-text');
+      const otpBox = document.getElementById('forgot-otp-box');
+
+      if (emailEl) {
+        emailEl.disabled = false;
+        emailEl.focus();
+      }
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.style.display = "inline-flex";
+      }
+      if (sendText) sendText.innerText = "Send 8-Digit Recovery Code";
+      if (otpBox) otpBox.style.display = "none";
+    }
+
+    // Verify recovery OTP and unveil Password Reset Stage
+    async function handleForgotVerifyOtp(event) {
+      if (event) event.preventDefault();
+      clearFeedback();
+
+      const otpInput = document.getElementById('forgot-otp');
+      const verifyBtn = document.getElementById('btn-forgot-verify-otp');
+      const verifyText = document.getElementById('btn-forgot-verify-text');
+
+      const otpCode = otpInput ? otpInput.value.trim().toUpperCase() : "";
+
+      if (otpCode.length !== 8) {
+        showFeedback("Please enter the full 8-digit alphanumeric recovery code.", "error");
+        if (otpInput) otpInput.focus();
+        return;
+      }
+
+      if (verifyBtn) verifyBtn.disabled = true;
+      if (verifyText) verifyText.innerText = "Verifying Recovery Code...";
+
+      try {
+        const res = await fetch("/api/auth/forgot-password/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: _forgotState.email,
+            otp_code: otpCode
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          stopOtpTimer('forgot');
+          _forgotState.verification_ticket = data.verification_ticket;
+
+          // HIDE Stage 1 and UNVEIL Stage 2 (New Password Form)
+          const stage1 = document.getElementById('forgot-stage-1');
+          const stage2 = document.getElementById('forgot-stage-2');
+          if (stage1) stage1.style.display = "none";
+          if (stage2) stage2.style.display = "block";
+
+          const verifiedLabel = document.getElementById('forgot-verified-email-label');
+          if (verifiedLabel) verifiedLabel.textContent = _forgotState.email;
+
+          showFeedback("Identity verified! You may now configure your new access Password.", "success");
+
+          const newPwdEl = document.getElementById('forgot-new-password');
+          if (newPwdEl) newPwdEl.focus();
+        } else {
+          showFeedback(data.message || "Invalid or expired recovery code.", "error");
+          if (verifyBtn) verifyBtn.disabled = false;
+          if (verifyText) verifyText.innerText = "Verify Recovery Code";
+        }
+      } catch (err) {
+        showFeedback("Network error: Unable to verify recovery code.", "error");
+        if (verifyBtn) verifyBtn.disabled = false;
+        if (verifyText) verifyText.innerText = "Verify Recovery Code";
+      }
+    }
+
+    // Submit New Password Reset
+    async function handleForgotResetSubmit(event) {
+      if (event) event.preventDefault();
+      clearFeedback();
+
+      const newPwdEl = document.getElementById('forgot-new-password');
+      const confirmEl = document.getElementById('forgot-confirm-password');
+      const submitBtn = document.getElementById('btn-forgot-submit');
+      const submitText = document.getElementById('btn-forgot-submit-text');
+
+      const password = newPwdEl ? newPwdEl.value : "";
+      const confirmPassword = confirmEl ? confirmEl.value : "";
+
+      const { allValid } = evaluatePassword(password, confirmPassword);
+      if (!allValid) {
+        showFeedback("Please satisfy all standard password parameters before submitting.", "error");
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+      if (submitText) submitText.innerText = "Updating Password...";
+
+      try {
+        const res = await fetch("/api/auth/forgot-password/reset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: _forgotState.email,
+            password: password,
+            confirm_password: confirmPassword,
+            verification_ticket: _forgotState.verification_ticket
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showFeedback(data.message || "Password updated successfully! Returning to Sign In...", "success");
+          setTimeout(() => {
+            switchAuthMode('login');
+            const loginUserEl = document.getElementById('login-username');
+            const loginPwdEl = document.getElementById('login-password');
+            if (loginUserEl) loginUserEl.value = _forgotState.email;
+            if (loginPwdEl) {
+              loginPwdEl.value = "";
+              loginPwdEl.focus();
+            }
+            showFeedback("Password updated. Please authenticate with your new Password.", "success");
+          }, 1200);
+        } else {
+          showFeedback(data.message || "Failed to update Password.", "error");
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitText) submitText.innerText = "Update Password & Return to Sign In";
+        }
+      } catch (e) {
+        showFeedback("Network error: Unable to update Password.", "error");
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitText) submitText.innerText = "Update Password & Return to Sign In";
+      }
+    }
+
+    // =========================================================================
+    // LOGIN SUBMISSION (SIGN IN)
+    // =========================================================================
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      clearFeedback();
+
+      const usernameInput = document.getElementById('login-username');
+      const passwordInput = document.getElementById('login-password');
+      const rememberCheckbox = document.getElementById('login-remember');
+      const submitBtn = document.getElementById('btn-login-submit');
+      const submitText = document.getElementById('btn-submit-text');
+
+      const username = usernameInput ? usernameInput.value.trim() : '';
+      const password = passwordInput ? passwordInput.value : '';
+      const remember = rememberCheckbox ? rememberCheckbox.checked : true;
+
+      if (!username) {
+        showFeedback("Please provide a valid call-sign or email address.", "error");
+        if (usernameInput) usernameInput.focus();
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+      if (submitText) submitText.innerText = "Authenticating Station...";
+
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+            remember: remember
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const userObj = data.user || {
+            username: username,
+            displayName: username.toUpperCase(),
+            role: data.is_admin ? "admin" : "user",
+            avatar: username.charAt(0).toUpperCase()
+          };
+
+          localStorage.setItem("oasis_user", JSON.stringify(userObj));
+          window.location.href = data.redirect || "/dashboard";
+        } else {
+          showFeedback(data.message || "Authentication rejected. Check credentials.", "error");
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitText) submitText.innerText = "Authenticate & Enter Dashboard";
+        }
+      } catch (err) {
+        showFeedback("Network error: Unable to reach authentication server.", "error");
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitText) submitText.innerText = "Authenticate & Enter Dashboard";
+      }
+    }
+
+    // Switch Station User
+    async function handleSwitchStation() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (_) { }
+      const banner = document.getElementById('active-session-banner');
+      if (banner) banner.classList.remove('visible');
+      const userEl = document.getElementById('login-username');
+      if (userEl) {
+        userEl.value = "";
+        userEl.focus();
+      }
+      const passEl = document.getElementById('login-password');
+      if (passEl) passEl.value = "";
+    }
+
+    // Hydrate Active Session on Page Load via backend session verification
+    async function checkActiveSession() {
+      try {
+        const res = await fetch('/api/auth/session');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.authenticated && data.user) {
+            const u = data.user;
+            const banner = document.getElementById('active-session-banner');
+            const nameEl = document.getElementById('active-session-name');
+            const roleEl = document.getElementById('active-session-role');
+            const avatarEl = document.getElementById('active-session-avatar');
+
+            if (banner && nameEl) {
+              nameEl.textContent = `${u.displayName || u.username}`;
+              if (roleEl) roleEl.textContent = `${(u.role || 'user').toUpperCase()} ACCESS`;
+              if (avatarEl) avatarEl.textContent = (u.avatar || u.username.charAt(0) || 'U').toUpperCase();
+              banner.classList.add('visible');
+
+              const userEl = document.getElementById('login-username');
+              if (userEl && !userEl.value) userEl.value = u.username;
+            }
+            return;
+          }
+        }
+        localStorage.removeItem('oasis_user');
+        const banner = document.getElementById('active-session-banner');
+        if (banner) banner.classList.remove('visible');
+      } catch (e) {
+        console.warn("Session check error:", e);
+      }
+    }
+
+    // Initialization
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentTheme = localStorage.getItem('oasis_theme') || 'light';
+      applyTheme(currentTheme);
+      checkActiveSession();
+    });
+  </script>
+</body>
+
+</html>

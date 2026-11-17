@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from typing import Optional, List
@@ -33,21 +33,24 @@ class MailboxRunRequest(BaseModel):
     force: Optional[bool] = False
     timeout: Optional[int] = 10
 
-@router.get("/services/email-intelligence", response_class=HTMLResponse)
+from core.security import get_session_from_request
+from core.database import record_execution, get_service_history_for_user
+from roles.accounts import is_admin_user
+
+@router.get("/services/email-intelligence")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/email_intelligence/frontend/templates/email_intelligence.html",
-        context={
-            "page_title": "Email Intelligence & Account Footprint — Oasis",
-            "active_view": "email_intelligence",
-            "initial_target": initial_target
-        }
-    )
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        return RedirectResponse(url="/login", status_code=302)
+    target_prefix = "/role_admin" if session.get("is_admin") else "/role_user"
+    url = f"{target_prefix}/services/email-intelligence"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/email_intelligence/run")
-async def run_email_task(req: EmailRunRequest):
+async def run_email_task(req: EmailRunRequest, request: Request):
     raw_target = req.target.strip()
     if not raw_target:
         raise HTTPException(status_code=400, detail="Target email address cannot be blank.")
@@ -55,6 +58,9 @@ async def run_email_task(req: EmailRunRequest):
     parsed = parse_target_emails(raw_target)
     if not parsed:
         raise HTTPException(status_code=400, detail="No valid email address found in input.")
+
+    session = get_session_from_request(request)
+    username = session.get("username", "admin") if session else "admin"
 
     # Single target
     if len(parsed) == 1:
@@ -68,6 +74,26 @@ async def run_email_task(req: EmailRunRequest):
             )
             result["batch"] = False
             result["parsed_targets"] = parsed
+
+            # Record in relational database
+            try:
+                findings_cnt = len(result.get("findings", []))
+                record_execution(
+                    username=username,
+                    service_id="email_intelligence",
+                    service_name="Email Intelligence",
+                    tool_name="Holehe 124 Platform Footprint",
+                    target=target,
+                    duration_seconds=float(result.get("duration", 8.0)),
+                    findings_count=findings_cnt,
+                    findings_summary=f"{findings_cnt} verified platforms identified",
+                    status="Success",
+                    status_class="badge-status-success",
+                    report_path=f"services/email_intelligence/reports/email_{target}.json"
+                )
+            except Exception:
+                pass
+
             return result
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
@@ -75,7 +101,6 @@ async def run_email_task(req: EmailRunRequest):
             raise HTTPException(status_code=500, detail=f"Failed dispatching email intelligence task: {e}")
 
     # Multiple targets (Batch Mode)
-    # Start the first email, and return the queue of targets to the client to orchestrate cleanly
     try:
         first_target = parsed[0]
         first_result = execute_email_recon(
@@ -84,6 +109,23 @@ async def run_email_task(req: EmailRunRequest):
             timeout=req.timeout or 10,
             no_password_recovery=bool(req.no_password_recovery)
         )
+
+        try:
+            record_execution(
+                username=username,
+                service_id="email_intelligence",
+                service_name="Email Intelligence",
+                tool_name="Holehe Batch Footprint",
+                target=f"{first_target} (+{len(parsed)-1} queued)",
+                duration_seconds=float(first_result.get("duration", 8.0)),
+                findings_count=len(first_result.get("findings", [])),
+                findings_summary=f"Batch execution: {len(parsed)} targets queued",
+                status="Success",
+                status_class="badge-status-success"
+            )
+        except Exception:
+            pass
+
         return {
             "status": "BATCH_DISPATCHED",
             "batch": True,
@@ -105,8 +147,12 @@ async def check_email_status(target: str):
     return get_email_status(clean_target)
 
 @router.get("/api/email_intelligence/history")
-async def fetch_email_history():
-    return {"history": get_recent_email_scans()}
+async def fetch_email_history(request: Request):
+    session = get_session_from_request(request)
+    username = session.get("username") if session else None
+    is_admin = session.get("is_admin", False) if session else False
+    db_history = get_service_history_for_user("email_intelligence", username=username, is_admin=is_admin)
+    return {"history": db_history}
 
 @router.get("/api/email_intelligence/download")
 async def download_email_report(target: str, format: str = "json"):
@@ -142,7 +188,7 @@ async def download_email_report(target: str, format: str = "json"):
 # ============================================================================
 
 @router.post("/api/email_intelligence/mailbox/run")
-async def run_mailbox_task(req: MailboxRunRequest):
+async def run_mailbox_task(req: MailboxRunRequest, request: Request):
     raw_user = req.username.strip()
     if not raw_user:
         raise HTTPException(status_code=400, detail="Target username/handle cannot be blank.")
@@ -153,6 +199,24 @@ async def run_mailbox_task(req: MailboxRunRequest):
             force=bool(req.force),
             timeout=req.timeout or 10
         )
+        session = get_session_from_request(request)
+        username = session.get("username", "admin") if session else "admin"
+        try:
+            record_execution(
+                username=username,
+                service_id="email_intelligence",
+                service_name="Email Intelligence",
+                tool_name="Mailbox Deliverability Engine",
+                target=raw_user,
+                duration_seconds=float(result.get("duration", 4.5)),
+                findings_count=len(result.get("findings", [])),
+                findings_summary=f"Checked 26 providers for handle '{raw_user}'",
+                status="Success",
+                status_class="badge-status-success",
+                report_path=f"services/email_intelligence/reports/mailbox_{raw_user}.json"
+            )
+        except Exception:
+            pass
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -167,7 +231,13 @@ async def check_mailbox_status(username: str):
     return get_mailbox_status(clean_user)
 
 @router.get("/api/email_intelligence/mailbox/history")
-async def fetch_mailbox_history():
+async def fetch_mailbox_history(request: Request):
+    session = get_session_from_request(request)
+    username = session.get("username") if session else None
+    is_admin = session.get("is_admin", False) if session else False
+    db_history = get_service_history_for_user("email_intelligence", username=username, is_admin=is_admin)
+    if db_history:
+        return {"history": db_history}
     return {"history": get_recent_mailbox_scans()}
 
 @router.get("/api/email_intelligence/mailbox/download")

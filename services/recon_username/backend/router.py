@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from typing import List, Optional
@@ -31,21 +31,24 @@ class ReconRunRequest(BaseModel):
     recursive: Optional[bool] = False
     tor: Optional[bool] = False
 
-@router.get("/services/recon-username", response_class=HTMLResponse)
+from core.security import get_session_from_request
+from core.database import record_execution, get_service_history_for_user
+from roles.accounts import is_admin_user
+
+@router.get("/services/recon-username")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/recon_username/frontend/templates/recon_username.html",
-        context={
-            "page_title": "Username Intelligence & Identity Reconnaissance — Oasis",
-            "active_view": "recon_username",
-            "initial_target": initial_target
-        }
-    )
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        return RedirectResponse(url="/login", status_code=302)
+    target_prefix = "/role_admin" if session.get("is_admin") else "/role_user"
+    url = f"{target_prefix}/services/recon-username"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/recon_username/run")
-async def run_task(req: ReconRunRequest):
+async def run_task(req: ReconRunRequest, request: Request):
     target = req.target.strip()
     if not target:
         raise HTTPException(status_code=400, detail="Target identifier cannot be blank.")
@@ -66,6 +69,27 @@ async def run_task(req: ReconRunRequest):
         recursive=bool(req.recursive if req.recursive is not None else True),
         tor=bool(req.tor)
     )
+
+    # Record execution in relational database
+    session = get_session_from_request(request)
+    username = session.get("username", "admin") if session else "admin"
+    try:
+        record_execution(
+            username=username,
+            service_id="recon_username",
+            service_name="Username Intelligence",
+            tool_name="Maigret Async Engine",
+            target=target,
+            duration_seconds=float(result.get("duration", 4.2)),
+            findings_count=int(result.get("count", 0)),
+            findings_summary=f"Surveyed target '{target}' across public registries",
+            status="Success",
+            status_class="badge-status-success",
+            report_path=f"services/recon_username/reports/report_{target}.json"
+        )
+    except Exception:
+        pass
+
     return result
 
 @router.get("/api/recon_username/status")
@@ -82,8 +106,12 @@ async def get_results(target: Optional[str] = None):
     return {"target": clean_target, "findings": findings}
 
 @router.get("/api/recon_username/history")
-async def get_history():
-    return {"history": get_search_history()}
+async def get_history(request: Request):
+    session = get_session_from_request(request)
+    username = session.get("username") if session else None
+    is_admin = session.get("is_admin", False) if session else False
+    db_history = get_service_history_for_user("recon_username", username=username, is_admin=is_admin)
+    return {"history": db_history}
 
 @router.get("/api/recon_username/download")
 async def download_report(target: str, format: str = "json"):

@@ -42,3 +42,55 @@ The system is structured as a decoupled full-stack application following modern 
   - `/services/recon-phone` &rarr; Phone Number Recon
   - `/services/recon-subdomains` &rarr; Hostname & Subdomains
   - `/services/recon-crypto` &rarr; Bitcoin & Crypto Addresses
+
+---
+
+## Database Setup & Migrations for Developers
+
+OASIS uses a relational SQLite database (`oasis.sqlite3`) with foreign key constraints, tracking platform roles, investigator accounts, and multi-user service test histories.
+
+### Automatic Setup
+When a developer runs the setup script, the database migrations and default accounts are set up automatically:
+```bash
+./setup_linux.sh
+```
+
+### Manual Migration CLI Commands
+Developers can manage and inspect their local database state using the migration CLI tool or master script:
+
+```bash
+# 1. Apply all pending migrations and seed default schema
+./oasis.sh migrate
+# or directly with Python:
+python migrations/migrate.py --up
+
+# 2. Check current database health, tables, row counts, and accounts
+./oasis.sh migrate --status
+# or directly:
+python migrations/migrate.py --status
+
+# 3. Clean development reset (drops and recreates all tables with seed data)
+./oasis.sh migrate --reset
+# or directly:
+python migrations/migrate.py --reset
+```
+
+### Migration Files Reference
+* [`migrations/001_initial_schema.sql`](migrations/001_initial_schema.sql): DDL creating `roles`, `users`, `service_executions`, and indexes with default Admin and Analyst accounts.
+* [`migrations/002_seed_test_executions.sql`](migrations/002_seed_test_executions.sql): Realistic multi-user investigation test runs across all 6 intelligence suites.
+* [`migrations/003_add_user_email_and_otp.sql`](migrations/003_add_user_email_and_otp.sql): Adds `users.email` and the `email_otps` table used by sign-up and password recovery.
+* [`migrations/migrate.py`](migrations/migrate.py): Standalone migration runner and schema manager. Seed passwords are hashed (PBKDF2-HMAC-SHA256) automatically after migrations run.
+
+---
+
+## Authentication Configuration
+
+| Variable | Purpose |
+| :--- | :--- |
+| `OASIS_SMTP_HOST`, `OASIS_SMTP_PORT`, `OASIS_SMTP_USER`, `OASIS_SMTP_PASS`, `OASIS_SMTP_FROM`, `OASIS_SMTP_SSL` | Real email delivery for sign-up and password-recovery OTPs. |
+| `OASIS_DEV_MODE=1` | **Local development only.** Shows the seeded-account presets on the login page and, when SMTP is *not* configured, returns the OTP in the API response so it can be auto-filled. |
+| `OASIS_JWT_SECRET`, `OASIS_REFRESH_SECRET` | Optional token signing secrets (otherwise generated once and stored in `.oasis_secret`). |
+
+> ⚠️ Never enable `OASIS_DEV_MODE` on a shared or production deployment. Without it, OTPs are only delivered by email (or printed to the local server console when SMTP is not configured).
+
+Default seeded accounts (`admin` / `admin123`, `alex` / `alex123`, …) exist for local development. **Change the admin password via _Forgot Password_ before exposing an instance to anyone else.** Once changed, the old default no longer works, and the reset signs out all existing sessions for that account.

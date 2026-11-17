@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -24,23 +24,25 @@ class PhoneRunRequest(BaseModel):
     country: Optional[str] = "IN"
     force: Optional[bool] = False
 
-@router.get("/services/phone-intelligence", response_class=HTMLResponse)
-@router.get("/services/recon-phone", response_class=HTMLResponse)
+from core.security import get_session_from_request
+from core.database import record_execution, get_service_history_for_user
+from roles.accounts import is_admin_user
+
+@router.get("/services/phone-intelligence")
+@router.get("/services/recon-phone")
 async def page_view(request: Request, target: Optional[str] = None):
-    initial_target = target.strip() if target else ""
-    return templates.TemplateResponse(
-        request=request,
-        name="services/phone_intelligence/frontend/templates/phone_intelligence.html",
-        context={
-            "page_title": "Phone Number Intelligence & Carrier Profiler — Oasis",
-            "active_view": "phone_intelligence",
-            "initial_target": initial_target,
-            "native_endpoint": NATIVE_PHONE_ENDPOINT
-        }
-    )
+    session = get_session_from_request(request)
+    if not session or not session.get("authenticated"):
+        return RedirectResponse(url="/login", status_code=302)
+    target_prefix = "/role_admin" if session.get("is_admin") else "/role_user"
+    url = f"{target_prefix}/services/phone-intelligence"
+    if target:
+        import urllib.parse
+        url += f"?target={urllib.parse.quote_plus(target)}"
+    return RedirectResponse(url=url, status_code=302)
 
 @router.post("/api/phone_intelligence/run")
-async def run_task(req: PhoneRunRequest):
+async def run_task(req: PhoneRunRequest, request: Request):
     clean_target = req.target.strip()
     if not clean_target:
         raise HTTPException(status_code=400, detail="Target phone number cannot be blank.")
@@ -51,6 +53,24 @@ async def run_task(req: PhoneRunRequest):
             default_country=req.country or "IN",
             force=bool(req.force)
         )
+        session = get_session_from_request(request)
+        username = session.get("username", "admin") if session else "admin"
+        try:
+            record_execution(
+                username=username,
+                service_id="phone_intelligence",
+                service_name="Phone Number Intelligence",
+                tool_name="Libphonenumber Carrier Engine",
+                target=clean_target,
+                duration_seconds=float(result.get("duration", 0.8)),
+                findings_count=1,
+                findings_summary=f"Carrier & format analysis on {clean_target}",
+                status="Success",
+                status_class="badge-status-success",
+                report_path=f"services/phone_intelligence/reports/report_{clean_target}_simple.json"
+            )
+        except Exception:
+            pass
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -65,8 +85,12 @@ async def check_status(target: str):
     return get_phone_status(clean_target)
 
 @router.get("/api/phone_intelligence/history")
-async def get_history():
-    return {"history": get_phone_history()}
+async def get_history(request: Request):
+    session = get_session_from_request(request)
+    username = session.get("username") if session else None
+    is_admin = session.get("is_admin", False) if session else False
+    db_history = get_service_history_for_user("phone_intelligence", username=username, is_admin=is_admin)
+    return {"history": db_history}
 
 @router.get("/api/phone_intelligence/native-endpoint")
 async def get_native_endpoint():
