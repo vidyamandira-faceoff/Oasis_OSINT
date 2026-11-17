@@ -75,6 +75,22 @@ def run_migrations(db_path: Path = DB_PATH, include_seed: bool = True) -> int:
         print(f" -> Applying migration: {file_path.name} ...", end=" ", flush=True)
         try:
             sql_content = file_path.read_text(encoding="utf-8")
+            # If migration attempts to add an existing column, bypass duplicate column error
+            if "ADD COLUMN" in sql_content:
+                cur = conn.cursor()
+                cur.execute("PRAGMA table_info(users);")
+                existing_cols = {r["name"] for r in cur.fetchall()}
+                filtered_lines = []
+                for line in sql_content.splitlines():
+                    if "ADD COLUMN" in line:
+                        parts = line.strip().split()
+                        col_idx = parts.index("COLUMN") + 1 if "COLUMN" in parts else -1
+                        col_name = parts[col_idx] if col_idx != -1 and col_idx < len(parts) else ""
+                        if col_name and col_name in existing_cols:
+                            continue
+                    filtered_lines.append(line)
+                sql_content = "\n".join(filtered_lines)
+
             conn.executescript(sql_content)
             conn.execute(
                 "INSERT INTO schema_migrations (version, filename) VALUES (?, ?);",

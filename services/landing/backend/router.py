@@ -96,6 +96,9 @@ async def landing_page(request: Request):
 
     current_username = request.cookies.get("oasis_user") or ""
     current_user_obj = get_user(current_username) if current_username else None
+    safe_current_user_obj = {k: v for k, v in current_user_obj.items() if k != "password"} if current_user_obj else None
+    safe_admin_account = {k: v for k, v in ADMIN_ACCOUNT.items() if k != "password"}
+    safe_seed_users = [{k: v for k, v in u.items() if k != "password"} for u in SEED_USER_ACCOUNTS.values()]
 
     return templates.TemplateResponse(
         request=request,
@@ -105,9 +108,9 @@ async def landing_page(request: Request):
             "app_name": APP_NAME,
             "app_version": APP_VERSION,
             "current_user": current_username,
-            "current_user_obj": current_user_obj,
-            "admin_account": ADMIN_ACCOUNT,
-            "seed_users": list(SEED_USER_ACCOUNTS.values()),
+            "current_user_obj": safe_current_user_obj,
+            "admin_account": safe_admin_account,
+            "seed_users": safe_seed_users,
         }
     )
 
@@ -149,11 +152,13 @@ async def api_auth_login(payload: LoginPayload, request: Request, response: Resp
     record_login_success(request, payload.username)
     is_admin = user_account.get("role") == "admin"
     redirect_target = "/role_admin/dashboard" if is_admin else "/role_user/dashboard"
+    safe_user_account = {k: v for k, v in user_account.items() if k != "password"}
     
     res = JSONResponse(content={
         "success": True,
         "message": f"Authorized as {user_account['displayName']} ({user_account['role'].upper()}).",
-        "user": user_account,
+        "user": safe_user_account,
+        "role": user_account.get("role", "user"),
         "is_admin": is_admin,
         "redirect": redirect_target,
         "expires_in": ACCESS_TOKEN_EXPIRE_SECONDS,
@@ -234,9 +239,11 @@ async def api_auth_session(request: Request):
             "role": session.get("role", "user"),
             "avatar": session.get("avatar", "U"),
         }
+        safe_user_account = {k: v for k, v in user_account.items() if k != "password"}
         return {
             "authenticated": True,
-            "user": user_account,
+            "user": safe_user_account,
+            "role": safe_user_account.get("role", "user"),
             "is_admin": session.get("is_admin", False),
         }
     return {"authenticated": False, "user": None, "is_admin": False}

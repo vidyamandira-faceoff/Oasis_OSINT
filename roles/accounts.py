@@ -6,6 +6,7 @@ Normal users have standard, equal access with simple, non-title based usernames.
 
 from typing import Dict, Any, Optional
 import hmac
+from core.security import verify_password
 
 try:
     from core.database import (
@@ -86,7 +87,7 @@ def authenticate_user(username_or_email: str, password: Optional[str] = "") -> O
         db_user = get_user_by_username_or_email(clean_identifier)
         if db_user:
             expected_pass = db_user.get("password", "")
-            if password and hmac.compare_digest(password, expected_pass):
+            if password and verify_password(password, expected_pass):
                 if update_user_last_login:
                     try:
                         update_user_last_login(db_user["username"])
@@ -98,7 +99,7 @@ def authenticate_user(username_or_email: str, password: Optional[str] = "") -> O
     for account in ALL_USERS.values():
         if account["username"].lower() == clean_identifier or account.get("email", "").lower() == clean_identifier:
             expected_pass = account["password"]
-            if password and hmac.compare_digest(password, expected_pass):
+            if password and verify_password(password, expected_pass):
                 return account
 
     return None

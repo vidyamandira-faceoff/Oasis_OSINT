@@ -114,20 +114,20 @@ def send_email_otp(
             add_log("Mailer", f"SMTP delivery failed: {smtp_error}. Falling back to terminal log.", "warning")
 
     # Log to system audit trail
-    log_msg = f"[AUTH OTP] {action_title} for {clean_email}: [{clean_code}] (Expires in {validity_minutes}m)"
-    print(log_msg)
-    add_log("SecurityGateway", log_msg, "info")
+    print(f"[AUTH OTP] {action_title} for {clean_email}: [{clean_code}] (Expires in {validity_minutes}m)")
+    masked_code = clean_code[:2] + "••••" + clean_code[-2:]
+    add_log("SecurityGateway", f"[AUTH OTP] {action_title} for {clean_email} ({masked_code}, expires in {validity_minutes}m)", "info")
 
-    # Add to internal notifications registry
+    # Add sanitized notification to internal registry without exposing plain OTP
     try:
         from core.notifications import add_recon_notification
         add_recon_notification(
             tool="Security Gateway",
             status="FINISHED",
             title=f"Verification OTP Generated",
-            details=f"8-digit code issued for {clean_email} ({purpose}). Code: {clean_code} (Valid {validity_minutes}m).",
+            details=f"Single-use verification code generated for {clean_email} ({purpose}). Valid for {validity_minutes} minutes.",
             target=clean_email,
-            metrics=f"OTP: {clean_code} • {validity_minutes}m Expiry",
+            metrics=f"{masked_code} • {validity_minutes}m Expiry",
             action_url="/login",
             action_label="Login Box"
         )

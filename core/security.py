@@ -62,6 +62,46 @@ LOCKOUT_WINDOW_SECONDS = 300  # 5 minutes window
 
 
 # -----------------------------------------------------------------------------
+# Cryptographic Password Hashing & Verification (PBKDF2-HMAC-SHA256)
+# -----------------------------------------------------------------------------
+PBKDF2_ITERATIONS = 100_000
+
+
+def hash_password(password: str) -> str:
+    """Hashes a password with PBKDF2-HMAC-SHA256 and a 16-byte random salt."""
+    salt = secrets.token_hex(16)
+    dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), PBKDF2_ITERATIONS)
+    return f"pbkdf2_sha256${PBKDF2_ITERATIONS}${salt}${dk.hex()}"
+
+
+def verify_password(plain_password: str, stored_hash: str) -> bool:
+    """
+    Verifies a plain-text password against a PBKDF2 hash or legacy plaintext
+    with constant-time comparison to prevent timing side-channel attacks.
+    """
+    if not plain_password or not stored_hash:
+        return False
+    try:
+        if stored_hash.startswith("pbkdf2_sha256$"):
+            parts = stored_hash.split("$")
+            if len(parts) == 4:
+                _, iter_str, salt, expected_hash = parts
+                iterations = int(iter_str)
+                dk = hashlib.pbkdf2_hmac(
+                    "sha256",
+                    plain_password.encode("utf-8"),
+                    salt.encode("utf-8"),
+                    iterations
+                )
+                return hmac.compare_digest(dk.hex(), expected_hash)
+        # Constant-time fallback for legacy plain-text entries
+        return hmac.compare_digest(plain_password, stored_hash)
+    except Exception:
+        return False
+
+
+
+# -----------------------------------------------------------------------------
 # Base64URL Helpers
 # -----------------------------------------------------------------------------
 def _b64url_encode(data: bytes) -> str:

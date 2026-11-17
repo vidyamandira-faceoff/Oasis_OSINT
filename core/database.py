@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
 from core.config import BASE_DIR
+from core.security import hash_password
 
 DB_PATH = BASE_DIR / "oasis.sqlite3"
 
@@ -149,12 +150,20 @@ def init_db() -> None:
                 INSERT INTO users (username, password, role_id, display_name, avatar, is_active, last_login)
                 VALUES (?, ?, ?, ?, ?, ?, ?);
             """, [
-                ("admin", "admin123", admin_role_id, "Admin", "A", 1, now_iso),
-                ("alex", "alex123", user_role_id, "Alex", "A", 1, now_iso),
-                ("sam", "sam123", user_role_id, "Sam", "S", 1, now_iso),
-                ("jordan", "jordan123", user_role_id, "Jordan", "J", 1, now_iso),
+                ("admin", hash_password("admin123"), admin_role_id, "Admin", "A", 1, now_iso),
+                ("alex", hash_password("alex123"), user_role_id, "Alex", "A", 1, now_iso),
+                ("sam", hash_password("sam123"), user_role_id, "Sam", "S", 1, now_iso),
+                ("jordan", hash_password("jordan123"), user_role_id, "Jordan", "J", 1, now_iso),
             ])
             conn.commit()
+
+        # Upgrade any legacy plain-text passwords in database to PBKDF2
+        cursor.execute("SELECT id, password FROM users;")
+        for u_row in cursor.fetchall():
+            raw_pwd = u_row["password"]
+            if raw_pwd and not raw_pwd.startswith("pbkdf2_sha256$"):
+                cursor.execute("UPDATE users SET password = ? WHERE id = ?;", (hash_password(raw_pwd), u_row["id"]))
+        conn.commit()
 
         # Retrieve User Map: username -> {id, role_name}
         cursor.execute("""
@@ -382,14 +391,14 @@ def create_user(
         cursor.execute("""
             INSERT INTO users (username, email, password, role_id, display_name, avatar, is_active, created_at, last_login)
             VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?);
-        """, (clean_user, clean_email, password, role_id, clean_display, avatar, now_iso, now_iso))
+        """, (clean_user, clean_email, hash_password(password), role_id, clean_display, avatar, now_iso, now_iso))
         conn.commit()
 
     return get_user_by_username(clean_user)
 
 
 def update_user_password(identifier: str, new_password: str) -> bool:
-    """Updates passkey for user by username or email."""
+    """Updates passkey for user by username or email with PBKDF2 hashing."""
     init_db()
     clean = (identifier or "").strip().lower()
     with get_db_connection() as conn:
@@ -398,7 +407,7 @@ def update_user_password(identifier: str, new_password: str) -> bool:
             UPDATE users 
             SET password = ? 
             WHERE (LOWER(username) = ? OR LOWER(email) = ?) AND is_active = 1;
-        """, (new_password, clean, clean))
+        """, (hash_password(new_password), clean, clean))
         conn.commit()
         return cursor.rowcount > 0
 
