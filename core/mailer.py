@@ -24,6 +24,25 @@ def generate_alphanumeric_otp(length: int = 8) -> str:
     return "".join(secrets.choice(OTP_CHARSET) for _ in range(length))
 
 
+def is_smtp_configured() -> bool:
+    """True when SMTP host and credentials are present in the environment."""
+    host = os.getenv("OASIS_SMTP_HOST") or os.getenv("SMTP_HOST")
+    user = os.getenv("OASIS_SMTP_USER") or os.getenv("SMTP_USER")
+    pwd = os.getenv("OASIS_SMTP_PASS") or os.getenv("SMTP_PASS")
+    return bool(host and user and pwd)
+
+
+def should_expose_dev_otp() -> bool:
+    """
+    The OTP may be echoed back to the browser ONLY for local development:
+    OASIS_DEV_MODE must be explicitly enabled AND no real mail transport may be
+    configured. Returning the OTP otherwise lets anyone who knows an email
+    address bypass verification and take over the account.
+    """
+    from core.security import is_dev_mode
+    return is_dev_mode() and not is_smtp_configured()
+
+
 def send_email_otp(
     recipient_email: str,
     otp_code: str,
@@ -114,8 +133,11 @@ def send_email_otp(
             add_log("Mailer", f"SMTP delivery failed: {smtp_error}. Falling back to terminal log.", "warning")
 
     # Log to system audit trail
-    print(f"[AUTH OTP] {action_title} for {clean_email}: [{clean_code}] (Expires in {validity_minutes}m)")
     masked_code = clean_code[:2] + "••••" + clean_code[-2:]
+    # Full code goes to the local console only when no email was delivered
+    # (development without SMTP); otherwise only the masked form is printed.
+    console_code = masked_code if sent_via_smtp else clean_code
+    print(f"[AUTH OTP] {action_title} for {clean_email}: [{console_code}] (Expires in {validity_minutes}m)")
     add_log("SecurityGateway", f"[AUTH OTP] {action_title} for {clean_email} ({masked_code}, expires in {validity_minutes}m)", "info")
 
     # Add sanitized notification to internal registry without exposing plain OTP

@@ -76,6 +76,21 @@ python migrations/migrate.py --reset
 ```
 
 ### Migration Files Reference
-* [`migrations/001_initial_schema.sql`](file:///home/atig/Desktop/Oasis_OSINT/migrations/001_initial_schema.sql): DDL creating `roles`, `users`, `service_executions`, and indexes with default Admin and Analyst accounts.
-* [`migrations/002_seed_test_executions.sql`](file:///home/atig/Desktop/Oasis_OSINT/migrations/002_seed_test_executions.sql): Realistic multi-user investigation test runs across all 6 intelligence suites.
-* [`migrations/migrate.py`](file:///home/atig/Desktop/Oasis_OSINT/migrations/migrate.py): Standalone migration runner and schema manager.
+* [`migrations/001_initial_schema.sql`](migrations/001_initial_schema.sql): DDL creating `roles`, `users`, `service_executions`, and indexes with default Admin and Analyst accounts.
+* [`migrations/002_seed_test_executions.sql`](migrations/002_seed_test_executions.sql): Realistic multi-user investigation test runs across all 6 intelligence suites.
+* [`migrations/003_add_user_email_and_otp.sql`](migrations/003_add_user_email_and_otp.sql): Adds `users.email` and the `email_otps` table used by sign-up and password recovery.
+* [`migrations/migrate.py`](migrations/migrate.py): Standalone migration runner and schema manager. Seed passwords are hashed (PBKDF2-HMAC-SHA256) automatically after migrations run.
+
+---
+
+## Authentication Configuration
+
+| Variable | Purpose |
+| :--- | :--- |
+| `OASIS_SMTP_HOST`, `OASIS_SMTP_PORT`, `OASIS_SMTP_USER`, `OASIS_SMTP_PASS`, `OASIS_SMTP_FROM`, `OASIS_SMTP_SSL` | Real email delivery for sign-up and password-recovery OTPs. |
+| `OASIS_DEV_MODE=1` | **Local development only.** Shows the seeded-account presets on the login page and, when SMTP is *not* configured, returns the OTP in the API response so it can be auto-filled. |
+| `OASIS_JWT_SECRET`, `OASIS_REFRESH_SECRET` | Optional token signing secrets (otherwise generated once and stored in `.oasis_secret`). |
+
+> ⚠️ Never enable `OASIS_DEV_MODE` on a shared or production deployment. Without it, OTPs are only delivered by email (or printed to the local server console when SMTP is not configured).
+
+Default seeded accounts (`admin` / `admin123`, `alex` / `alex123`, …) exist for local development. **Change the admin password via _Forgot Password_ before exposing an instance to anyone else.** Once changed, the old default no longer works, and the reset signs out all existing sessions for that account.

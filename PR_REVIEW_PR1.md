@@ -5,7 +5,7 @@
 **Author:** `@Atig-Singh`  
 **Reviewer:** Oasis OSINT Security & Architecture Review  
 **Date:** November 17, 2026  
-**Status:** ✅ **APPROVED & RESOLVED ON BRANCH `new-features-and-fixations` (READY TO MERGE)**
+**Status:** ✅ **READY TO MERGE after second-round fixes** (see §5 and §6; the first-round “ready” verdict was premature)
 
 ---
 
@@ -202,5 +202,28 @@ While the design vision, UX direction, and authentication middleware are great a
 
 ## 5. Resolution Status & Verdict After Fixes
 
-**Status:** ✅ **READY TO MERGE** (All critical blockers and high-severity security vulnerabilities resolved on branch `new-features-and-fixations` in commit `514c9ee`).
+**First-round status (commit `514c9ee`):** ❌ *Withdrawn.* The original findings were fixed, but re-testing the live auth flow uncovered two new critical issues (below), so the PR was not yet safe to merge.
+
+---
+
+## 6. Re-Review (Round 2) — New Findings & Resolution
+
+| # | Severity | Finding | Resolution |
+| :--- | :---: | :--- | :--- |
+| 1 | 🔴 Critical | **Account takeover:** `/api/auth/signup/send-otp` and `/api/auth/forgot-password/send-otp` returned the OTP in the JSON response (`dev_otp`) unconditionally. Anyone knowing an email (e.g. `admin@oasis.live`) could reset the password and log in as admin — reproduced end-to-end. | `dev_otp` is returned only when `OASIS_DEV_MODE` is explicitly enabled **and** SMTP is not configured (`core/mailer.should_expose_dev_otp`). Full OTP is no longer printed to the console when SMTP delivery succeeded. |
+| 2 | 🔴 Critical | **Default password could never be changed:** `authenticate_user` fell back to the hardcoded in-memory registry (`admin123`) whenever the DB check failed, so the old default still worked after a reset, and deactivated users could still log in. The login page also advertised `admin / admin123`. | In-memory registry is used **only** if the database layer cannot be imported. DB is the single source of truth; inactive users are rejected; refresh tokens of deactivated users no longer re-authenticate. Credential presets render only in dev mode. |
+| 3 | 🟠 High | Password hash still leaked via signup response and role template contexts (`user_account`). | Public user getters no longer select `password`; a dedicated `get_user_credentials()` is used only for verification. `get_user`/`authenticate_user` return `strip_secrets()` copies. |
+| 4 | 🟡 Medium | Migration `ADD COLUMN` workaround checked every statement against the `users` table only. | Replaced with a table-aware `ALTER TABLE <t> ADD COLUMN <c>` parser. |
+| 5 | 🟡 Medium | `migrate.py` left seed passwords in plaintext; `init_db()` seeded users without emails. | `migrate.py` hashes plaintext passwords after migrating; `init_db()` seeds emails. |
+| 6 | 🟡 Medium | Password reset did not invalidate existing sessions. | `update_user_password` revokes all tokens issued before the change (in-memory, consistent with the existing revocation list). |
+
+**Also:** 17 regression tests added (`tests/test_auth_security.py`, run with `python -m unittest discover -s tests -v`) covering every item above; README documents `OASIS_DEV_MODE` / SMTP configuration, and broken `file:///home/...` links were fixed. All role pages smoke-tested (admin + user) with no credential material in output.
+
+**Known limitations (non-blocking, follow-up):**
+- Token revocation (logout & password-change) is in-memory and resets on server restart.
+- Schema is still defined in both `init_db()` and `migrations/`; consolidate into one source of truth.
+- Admin/User template duplication (~25k lines) — refactor into shared Jinja2 templates.
+- Photon (`services/domain_intelligence/engine/`) is GPL-3.0; confirm licence compatibility.
+
+**Final status:** ✅ **READY TO MERGE**
 

@@ -26,7 +26,7 @@ from core.database import (
     is_otp_verified_for_reset,
     consume_verified_otp,
 )
-from core.mailer import generate_alphanumeric_otp, send_email_otp
+from core.mailer import generate_alphanumeric_otp, send_email_otp, should_expose_dev_otp
 from core.security import (
     get_session_from_request,
     set_auth_cookies,
@@ -38,6 +38,8 @@ from core.security import (
     record_login_failure,
     record_login_success,
     is_any_osint_scan_running,
+    is_dev_mode,
+    strip_secrets,
     validate_password_strength,
     create_verification_token,
     verify_verification_token,
@@ -111,6 +113,7 @@ async def landing_page(request: Request):
             "current_user_obj": safe_current_user_obj,
             "admin_account": safe_admin_account,
             "seed_users": safe_seed_users,
+            "show_demo_credentials": is_dev_mode(),
         }
     )
 
@@ -318,15 +321,14 @@ async def api_signup_send_otp(payload: SendOtpPayload):
     save_email_otp(clean_email, otp_code, purpose="signup", validity_seconds=300)
     _, send_msg = send_email_otp(clean_email, otp_code, purpose="signup", validity_minutes=5)
 
-    return JSONResponse(
-        status_code=200,
-        content={
-            "success": True,
-            "message": f"8-digit verification code dispatched to {clean_email}. Valid for 5 minutes.",
-            "expires_in": 300,
-            "dev_otp": otp_code,  # For seamless local testing preview
-        }
-    )
+    content = {
+        "success": True,
+        "message": f"8-digit verification code dispatched to {clean_email}. Valid for 5 minutes.",
+        "expires_in": 300,
+    }
+    if should_expose_dev_otp():
+        content["dev_otp"] = otp_code  # Local development preview only (OASIS_DEV_MODE, no SMTP)
+    return JSONResponse(status_code=200, content=content)
 
 
 @router.post("/api/auth/signup/verify-otp")
@@ -459,7 +461,7 @@ async def api_signup_complete(payload: SignupCompletePayload, response: Response
         content={
             "success": True,
             "message": f"Station analyst account initialized. Welcome, {new_user['displayName']}!",
-            "user": new_user,
+            "user": strip_secrets(new_user),
             "is_admin": False,
             "redirect": "/role_user/dashboard",
             "expires_in": ACCESS_TOKEN_EXPIRE_SECONDS,
@@ -501,15 +503,14 @@ async def api_forgot_password_send_otp(payload: SendOtpPayload):
     save_email_otp(clean_email, otp_code, purpose="forgot_password", validity_seconds=300)
     _, send_msg = send_email_otp(clean_email, otp_code, purpose="forgot_password", validity_minutes=5)
 
-    return JSONResponse(
-        status_code=200,
-        content={
-            "success": True,
-            "message": f"8-digit recovery code dispatched to {clean_email}. Valid for 5 minutes.",
-            "expires_in": 300,
-            "dev_otp": otp_code,
-        }
-    )
+    content = {
+        "success": True,
+        "message": f"8-digit recovery code dispatched to {clean_email}. Valid for 5 minutes.",
+        "expires_in": 300,
+    }
+    if should_expose_dev_otp():
+        content["dev_otp"] = otp_code  # Local development preview only (OASIS_DEV_MODE, no SMTP)
+    return JSONResponse(status_code=200, content=content)
 
 
 @router.post("/api/auth/forgot-password/verify-otp")

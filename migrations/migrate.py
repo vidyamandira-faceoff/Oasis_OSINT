@@ -12,12 +12,15 @@ Usage:
 
 import sys
 import os
+import re
 import argparse
 import sqlite3
 from pathlib import Path
 
 # Resolve Base Directory
 BASE_DIR = Path(__file__).resolve().parent.parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 DB_PATH = BASE_DIR / "oasis.sqlite3"
 MIGRATIONS_DIR = Path(__file__).resolve().parent
 
@@ -48,6 +51,51 @@ def get_applied_migrations(conn: sqlite3.Connection) -> set:
     return {row["version"] for row in cursor.fetchall()}
 
 
+# Matches: ALTER TABLE <table> ADD [COLUMN] <column> ...
+_ADD_COLUMN_RE = re.compile(
+    r"^\s*ALTER\s+TABLE\s+[\"`\[]?(\w+)[\"`\]]?\s+ADD\s+(?:COLUMN\s+)?[\"`\[]?(\w+)[\"`\]]?",
+    re.IGNORECASE,
+)
+
+
+def _table_columns(conn: sqlite3.Connection, table: str) -> set:
+    return {r["name"] for r in conn.execute(f"PRAGMA table_info({table});").fetchall()}
+
+
+def _skip_existing_add_columns(conn: sqlite3.Connection, sql_content: str) -> str:
+    """
+    SQLite has no `ADD COLUMN IF NOT EXISTS`. Databases bootstrapped by the
+    application's init_db() may already contain a column that a migration adds,
+    so drop any `ALTER TABLE <t> ADD COLUMN <c>` statement whose column already
+    exists on that specific table. Each ALTER statement must be on one line.
+    """
+    kept = []
+    for line in sql_content.splitlines():
+        m = _ADD_COLUMN_RE.match(line)
+        if m:
+            table, column = m.group(1), m.group(2)
+            if column.lower() in {c.lower() for c in _table_columns(conn, table)}:
+                continue
+        kept.append(line)
+    return "\n".join(kept)
+
+
+def _hash_plaintext_passwords(conn: sqlite3.Connection) -> int:
+    """Upgrades any plaintext seed passwords to PBKDF2 hashes. Idempotent."""
+    from core.security import hash_password
+    tables = {r["name"] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table';")}
+    if "users" not in tables:
+        return 0
+    upgraded = 0
+    for row in conn.execute("SELECT id, password FROM users;").fetchall():
+        pwd = row["password"]
+        if pwd and not pwd.startswith("pbkdf2_sha256$"):
+            conn.execute("UPDATE users SET password = ? WHERE id = ?;", (hash_password(pwd), row["id"]))
+            upgraded += 1
+    conn.commit()
+    return upgraded
+
+
 def run_migrations(db_path: Path = DB_PATH, include_seed: bool = True) -> int:
     """Discovers and applies all pending .sql migration scripts."""
     print(f"[*] OASIS Database Migration Tool")
@@ -75,22 +123,7 @@ def run_migrations(db_path: Path = DB_PATH, include_seed: bool = True) -> int:
         print(f" -> Applying migration: {file_path.name} ...", end=" ", flush=True)
         try:
             sql_content = file_path.read_text(encoding="utf-8")
-            # If migration attempts to add an existing column, bypass duplicate column error
-            if "ADD COLUMN" in sql_content:
-                cur = conn.cursor()
-                cur.execute("PRAGMA table_info(users);")
-                existing_cols = {r["name"] for r in cur.fetchall()}
-                filtered_lines = []
-                for line in sql_content.splitlines():
-                    if "ADD COLUMN" in line:
-                        parts = line.strip().split()
-                        col_idx = parts.index("COLUMN") + 1 if "COLUMN" in parts else -1
-                        col_name = parts[col_idx] if col_idx != -1 and col_idx < len(parts) else ""
-                        if col_name and col_name in existing_cols:
-                            continue
-                    filtered_lines.append(line)
-                sql_content = "\n".join(filtered_lines)
-
+            sql_content = _skip_existing_add_columns(conn, sql_content)
             conn.executescript(sql_content)
             conn.execute(
                 "INSERT INTO schema_migrations (version, filename) VALUES (?, ?);",
@@ -103,6 +136,11 @@ def run_migrations(db_path: Path = DB_PATH, include_seed: bool = True) -> int:
             conn.rollback()
             print(f"[FAILED]\n[!] Error applying {file_path.name}: {e}")
             sys.exit(1)
+
+    # Seed SQL inserts default passwords as plaintext; hash them immediately
+    upgraded = _hash_plaintext_passwords(conn)
+    if upgraded:
+        print(f"[*] Hashed {upgraded} plaintext password(s) with PBKDF2.")
 
     if applied_count == 0:
         print("[*] Database is already up-to-date. No pending migrations.")

@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
 from core.config import BASE_DIR
-from core.security import hash_password
+from core.security import hash_password, invalidate_user_sessions
 
 DB_PATH = BASE_DIR / "oasis.sqlite3"
 
@@ -147,13 +147,13 @@ def init_db() -> None:
             now_iso = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             cursor.executemany("""
-                INSERT INTO users (username, password, role_id, display_name, avatar, is_active, last_login)
-                VALUES (?, ?, ?, ?, ?, ?, ?);
+                INSERT INTO users (username, email, password, role_id, display_name, avatar, is_active, last_login)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?);
             """, [
-                ("admin", hash_password("admin123"), admin_role_id, "Admin", "A", 1, now_iso),
-                ("alex", hash_password("alex123"), user_role_id, "Alex", "A", 1, now_iso),
-                ("sam", hash_password("sam123"), user_role_id, "Sam", "S", 1, now_iso),
-                ("jordan", hash_password("jordan123"), user_role_id, "Jordan", "J", 1, now_iso),
+                ("admin", "admin@oasis.live", hash_password("admin123"), admin_role_id, "Admin", "A", 1, now_iso),
+                ("alex", "alex@oasis.live", hash_password("alex123"), user_role_id, "Alex", "A", 1, now_iso),
+                ("sam", "sam@oasis.live", hash_password("sam123"), user_role_id, "Sam", "S", 1, now_iso),
+                ("jordan", "jordan@oasis.live", hash_password("jordan123"), user_role_id, "Jordan", "J", 1, now_iso),
             ])
             conn.commit()
 
@@ -307,7 +307,7 @@ def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT u.id, u.username, u.email, u.password, u.display_name as displayName,
+            SELECT u.id, u.username, u.email, u.display_name as displayName,
                    u.avatar, u.is_active, u.created_at, u.last_login,
                    r.id as role_id, r.name as role, r.display_name as role_display_name,
                    r.can_view_telemetry, r.can_manage_services
@@ -330,7 +330,7 @@ def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT u.id, u.username, u.email, u.password, u.display_name as displayName,
+            SELECT u.id, u.username, u.email, u.display_name as displayName,
                    u.avatar, u.is_active, u.created_at, u.last_login,
                    r.id as role_id, r.name as role, r.display_name as role_display_name,
                    r.can_view_telemetry, r.can_manage_services
@@ -353,7 +353,7 @@ def get_user_by_username_or_email(identifier: str) -> Optional[Dict[str, Any]]:
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT u.id, u.username, u.email, u.password, u.display_name as displayName,
+            SELECT u.id, u.username, u.email, u.display_name as displayName,
                    u.avatar, u.is_active, u.created_at, u.last_login,
                    r.id as role_id, r.name as role, r.display_name as role_display_name,
                    r.can_view_telemetry, r.can_manage_services
@@ -365,6 +365,33 @@ def get_user_by_username_or_email(identifier: str) -> Optional[Dict[str, Any]]:
         if row:
             return dict(row)
     return None
+
+
+def get_user_credentials(identifier: str) -> Optional[Tuple[Dict[str, Any], str]]:
+    """
+    Returns (public_user_record, password_hash) for an active user matched by
+    username or email. This is the ONLY accessor that reads the password hash;
+    it exists solely for credential verification and its hash must never be
+    passed to templates or API responses.
+    """
+    init_db()
+    clean = (identifier or "").strip().lower()
+    if not clean:
+        return None
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT u.id, u.password
+            FROM users u
+            WHERE (LOWER(u.username) = ? OR LOWER(u.email) = ?) AND u.is_active = 1;
+        """, (clean, clean))
+        row = cursor.fetchone()
+    if not row:
+        return None
+    user = get_user_by_username_or_email(clean)
+    if not user or user.get("id") != row["id"]:
+        return None
+    return user, row["password"] or ""
 
 
 def create_user(
@@ -404,12 +431,23 @@ def update_user_password(identifier: str, new_password: str) -> bool:
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            UPDATE users 
-            SET password = ? 
+            SELECT username FROM users
+            WHERE (LOWER(username) = ? OR LOWER(email) = ?) AND is_active = 1;
+        """, (clean, clean))
+        affected = [r["username"] for r in cursor.fetchall()]
+        cursor.execute("""
+            UPDATE users
+            SET password = ?
             WHERE (LOWER(username) = ? OR LOWER(email) = ?) AND is_active = 1;
         """, (hash_password(new_password), clean, clean))
         conn.commit()
-        return cursor.rowcount > 0
+        updated = cursor.rowcount > 0
+
+    # Sign out every existing session for the account(s) whose password changed
+    if updated:
+        for uname in affected:
+            invalidate_user_sessions(uname)
+    return updated
 
 
 # =============================================================================

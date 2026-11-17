@@ -100,6 +100,40 @@ def verify_password(plain_password: str, stored_hash: str) -> bool:
         return False
 
 
+def strip_secrets(user: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """Returns a copy of a user record without credential material."""
+    if not user:
+        return user
+    return {k: v for k, v in user.items() if k != "password"}
+
+
+# -----------------------------------------------------------------------------
+# Development Mode
+# -----------------------------------------------------------------------------
+def is_dev_mode() -> bool:
+    """
+    True only when OASIS_DEV_MODE is explicitly enabled. Dev mode exposes
+    convenience helpers (OTP preview, demo credential presets) that must never
+    be active on a shared or production deployment.
+    """
+    return os.getenv("OASIS_DEV_MODE", "").strip().lower() in ("1", "true", "yes", "on")
+
+
+# -----------------------------------------------------------------------------
+# Credential-Change Session Invalidation
+# -----------------------------------------------------------------------------
+# username -> unix timestamp of the last password change. Any token issued
+# before this moment is rejected, so a password reset signs out every session.
+CREDENTIALS_CHANGED_AT: Dict[str, int] = {}
+
+
+def invalidate_user_sessions(username: str) -> None:
+    """Revokes all access/refresh tokens issued to `username` before now."""
+    clean = (username or "").strip().lower()
+    if clean:
+        CREDENTIALS_CHANGED_AT[clean] = int(time.time())
+
+
 
 # -----------------------------------------------------------------------------
 # Base64URL Helpers
@@ -197,7 +231,13 @@ def decode_token(token: str, is_refresh: bool = False) -> Optional[Dict[str, Any
         jti = payload.get("jti")
         if jti and jti in REVOKED_TOKENS:
             return None
-        
+
+        # Credential-change check: tokens issued before a password reset are void
+        subject = str(payload.get("sub") or payload.get("username") or "").lower()
+        changed_at = CREDENTIALS_CHANGED_AT.get(subject)
+        if changed_at is not None and int(payload.get("iat", 0)) < changed_at:
+            return None
+
         return payload
     except Exception:
         return None
@@ -340,6 +380,9 @@ def get_session_from_request(request: Request) -> Optional[Dict[str, Any]]:
             from roles.accounts import get_user
             u = r_payload.get("sub")
             acc = get_user(u)
+            if not acc:
+                # Account was deleted or deactivated: refresh must not resurrect it
+                return None
             return {
                 "authenticated": True,
                 "username": u,

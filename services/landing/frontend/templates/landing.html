@@ -743,7 +743,7 @@
                     </svg>
                   </span>
                   <input type="password" id="login-password" name="password" class="login-input"
-                    placeholder="Enter Password (e.g. admin123 or alex123)" autocomplete="current-password">
+                    placeholder="Enter Password" autocomplete="current-password">
                   <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('login-password')"
                     title="Toggle Password visibility">
                     <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -775,7 +775,8 @@
               </button>
             </form>
 
-            <!-- Quick Presets for Demo Reviewers -->
+            <!-- Quick Presets for Demo Reviewers (rendered only when OASIS_DEV_MODE is enabled) -->
+            {% if show_demo_credentials %}
             <div class="quick-presets-box">
               <div class="quick-presets-title">
                 <span>Seeded Role Presets:</span>
@@ -824,6 +825,7 @@
                 &bull; <code>jordan</code> (pass: <code>name123</code>) &rarr; <em>Accesses standard user dashboard</em>
               </div>
             </div>
+            {% endif %}
 
             <!-- Switch to Sign Up -->
             <div class="auth-switch-row">
