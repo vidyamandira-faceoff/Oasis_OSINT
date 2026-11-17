@@ -1,0 +1,92 @@
+/* ==========================================================================
+   OASIS IP & NETWORK INTELLIGENCE - DEDICATED DARK MODE STYLESHEET
+   Module: IP, ASN & Infrastructure Reconnaissance
+   Path: services/ip_network_intelligence/frontend/static/css/dark_mode.css
+   ========================================================================== */
+
+/* Header Card & Panels */
+html[data-theme="dark"] .platform-header-card,
+html.dark-theme .platform-header-card,
+body.dark-mode .platform-header-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+html[data-theme="dark"] .platform-title-group h3,
+body.dark-mode .platform-title-group h3 {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .platform-title-group p,
+body.dark-mode .platform-title-group p {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .platform-icon-box,
+body.dark-mode .platform-icon-box {
+  background: rgba(14, 165, 233, 0.16) !important;
+  border: 1px solid rgba(14, 165, 233, 0.35) !important;
+  color: #38bdf8 !important;
+}
+
+/* Capabilities Sidebar Card */
+html[data-theme="dark"] .network-capabilities-card,
+body.dark-mode .network-capabilities-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .network-capabilities-header,
+body.dark-mode .network-capabilities-header {
+  background: #162032 !important;
+  border-bottom: 1px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .network-cap-tile,
+body.dark-mode .network-cap-tile {
+  background: #162032 !important;
+  border: 1px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .network-cap-tile:hover,
+body.dark-mode .network-cap-tile:hover {
+  background: #1e293b !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+}
+
+/* Query Input Panel */
+html[data-theme="dark"] .input-panel,
+body.dark-mode .input-panel {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Result Cards & Tables */
+html[data-theme="dark"] .network-result-card,
+html[data-theme="dark"] .asn-info-card,
+html[data-theme="dark"] .geo-map-card,
+body.dark-mode .network-result-card,
+body.dark-mode .asn-info-card,
+body.dark-mode .geo-map-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-theme="dark"] .badge-asn,
+body.dark-mode .badge-asn {
+  background: rgba(99, 102, 241, 0.18) !important;
+  color: #a5b4fc !important;
+  border: 1px solid rgba(99, 102, 241, 0.35) !important;
+}
+
+html[data-theme="dark"] .badge-port-open,
+body.dark-mode .badge-port-open {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+}
+

@@ -1,0 +1,109 @@
+/* ==========================================================================
+   OASIS EMAIL INTELLIGENCE - DEDICATED DARK MODE STYLESHEET
+   Module: Email Validation & Correlation Suite
+   Path: services/email_intelligence/frontend/static/css/dark_mode.css
+   ========================================================================== */
+
+/* Suite Navigation Tabs */
+html[data-theme="dark"] .email-suite-nav,
+html.dark-theme .email-suite-nav,
+body.dark-mode .email-suite-nav {
+  border-bottom-color: #1f2c42 !important;
+}
+
+html[data-theme="dark"] .email-suite-tab,
+html.dark-theme .email-suite-tab,
+body.dark-mode .email-suite-tab {
+  background: #111827 !important;
+  border-color: #1f2c42 !important;
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .email-suite-tab:hover,
+html.dark-theme .email-suite-tab:hover,
+body.dark-mode .email-suite-tab:hover {
+  background: #162032 !important;
+  border-color: #2b3952 !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .email-suite-tab.active,
+html.dark-theme .email-suite-tab.active,
+body.dark-mode .email-suite-tab.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.16) 0%, rgba(139, 92, 246, 0.18) 100%) !important;
+  border-color: #6366f1 !important;
+  color: #a5b4fc !important;
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.25) !important;
+}
+
+html[data-theme="dark"] .email-suite-tab .pill,
+html.dark-theme .email-suite-tab .pill,
+body.dark-mode .email-suite-tab .pill {
+  background: #162032 !important;
+  color: #cbd5e1 !important;
+}
+
+/* Capabilities Sidebar Card */
+html[data-theme="dark"] .email-capabilities-card,
+html.dark-theme .email-capabilities-card,
+body.dark-mode .email-capabilities-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .email-capabilities-header,
+html.dark-theme .email-capabilities-header,
+body.dark-mode .email-capabilities-header {
+  background: #162032 !important;
+  border-bottom: 1px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .email-cap-tile,
+html.dark-theme .email-cap-tile,
+body.dark-mode .email-cap-tile {
+  background: #162032 !important;
+  border: 1px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .email-cap-tile:hover,
+html.dark-theme .email-cap-tile:hover,
+body.dark-mode .email-cap-tile:hover {
+  background: #1e293b !important;
+  border-color: rgba(99, 102, 241, 0.45) !important;
+}
+
+/* Query Control Panels & Results */
+html[data-theme="dark"] .input-panel,
+html[data-theme="dark"] .email-result-card,
+html[data-theme="dark"] .mx-record-card,
+html[data-theme="dark"] .deliverability-gauge-card,
+body.dark-mode .input-panel,
+body.dark-mode .email-result-card,
+body.dark-mode .mx-record-card,
+body.dark-mode .deliverability-gauge-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-theme="dark"] .breach-item,
+body.dark-mode .breach-item {
+  background: #162032 !important;
+  border: 1px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .badge-deliverable,
+body.dark-mode .badge-deliverable {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+
+html[data-theme="dark"] .badge-undeliverable,
+body.dark-mode .badge-undeliverable {
+  background: rgba(244, 63, 94, 0.18) !important;
+  color: #fb7185 !important;
+  border: 1px solid rgba(244, 63, 94, 0.4) !important;
+}
+

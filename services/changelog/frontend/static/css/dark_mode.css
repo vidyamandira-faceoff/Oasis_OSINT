@@ -1,0 +1,85 @@
+/* ==========================================================================
+   OASIS SYSTEM CHANGELOG - DEDICATED DARK MODE STYLESHEET
+   Module: System Releases & Changelog
+   Path: services/changelog/frontend/static/css/dark_mode.css
+   ========================================================================== */
+
+/* Hero Banner */
+html[data-theme="dark"] .cl-hero-banner,
+html.dark-theme .cl-hero-banner,
+body.dark-mode .cl-hero-banner {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+html[data-theme="dark"] .cl-hero-icon-box,
+body.dark-mode .cl-hero-icon-box {
+  background: #162032 !important;
+  border-color: #2b3952 !important;
+  color: #fbbf24 !important;
+}
+
+html[data-theme="dark"] .cl-btn-secondary,
+body.dark-mode .cl-btn-secondary {
+  background: #162032 !important;
+  border: 1px solid #1f2c42 !important;
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .cl-btn-secondary:hover,
+body.dark-mode .cl-btn-secondary:hover {
+  background: #1e293b !important;
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  color: #fbbf24 !important;
+}
+
+/* Metric Cards */
+html[data-theme="dark"] .cl-metric-card,
+body.dark-mode .cl-metric-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-theme="dark"] .cl-metric-value,
+body.dark-mode .cl-metric-value {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .cl-metric-label,
+body.dark-mode .cl-metric-label {
+  color: #94a3b8 !important;
+}
+
+/* Release Cards & Entries */
+html[data-theme="dark"] .cl-release-card,
+body.dark-mode .cl-release-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .cl-release-header,
+body.dark-mode .cl-release-header {
+  background: #162032 !important;
+  border-bottom: 1px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .cl-section-box,
+body.dark-mode .cl-section-box {
+  background: #162032 !important;
+  border: 1px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .cl-feature-item,
+body.dark-mode .cl-feature-item {
+  border-bottom-color: #1f2c42 !important;
+  color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .cl-feature-item:hover,
+body.dark-mode .cl-feature-item:hover {
+  background: #1e293b !important;
+}
+

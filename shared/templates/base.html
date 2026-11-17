@@ -18,7 +18,7 @@
   </script>
   {% block head_extra %}{% endblock %}
 </head>
-<body>
+<body class="{% if is_admin %}role-admin{% else %}role-user{% endif %}">
 
   <!-- =========================================================================
        COMMAND HEADER BAR (Intelligence Operations Station)
@@ -87,7 +87,7 @@
       </button>
 
       <div class="header-user-group">
-        <div class="header-avatar" id="header-user-avatar" title="Analyst Station">{{ user_avatar | default("A") }}</div>
+        <div class="header-avatar {% if is_admin %}is-admin-avatar{% else %}is-user-avatar{% endif %}" id="header-user-avatar" data-role="{% if is_admin %}admin{% else %}user{% endif %}" title="Analyst Station: {{ user_name | default('Analyst') }} ({{ user_role | default('USER') }})">{{ user_avatar | default("A") }}</div>
         <button class="header-signout-btn" title="Sign Out Session" onclick="handleSignOut()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>

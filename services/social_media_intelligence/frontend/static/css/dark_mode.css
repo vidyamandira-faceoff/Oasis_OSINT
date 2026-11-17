@@ -1,0 +1,340 @@
+/* ==========================================================================
+   OASIS SOCIAL MEDIA INTELLIGENCE - DEDICATED DARK MODE STYLESHEET
+   Module: Social Media Intelligence (Instagram, Facebook, X/Twitter, LinkedIn)
+   Path: services/social_media_intelligence/frontend/static/css/dark_mode.css
+   ========================================================================== */
+
+/* Platform Navigation Tabs */
+html[data-theme="dark"] .platform-nav-tabs,
+html.dark-theme .platform-nav-tabs,
+body.dark-mode .platform-nav-tabs,
+body.dark-theme .platform-nav-tabs {
+  border-bottom-color: #1f2c42 !important;
+}
+
+html[data-theme="dark"] .platform-tab-btn,
+html.dark-theme .platform-tab-btn,
+body.dark-mode .platform-tab-btn,
+body.dark-theme .platform-tab-btn {
+  color: #94a3b8 !important;
+  background: transparent !important;
+}
+
+html[data-theme="dark"] .platform-tab-btn:hover,
+html.dark-theme .platform-tab-btn:hover,
+body.dark-mode .platform-tab-btn:hover,
+body.dark-theme .platform-tab-btn:hover {
+  color: #f8fafc !important;
+  background: #162032 !important;
+}
+
+html[data-theme="dark"] .platform-tab-btn.active,
+html.dark-theme .platform-tab-btn.active,
+body.dark-mode .platform-tab-btn.active,
+body.dark-theme .platform-tab-btn.active {
+  background: #111827 !important;
+  border-color: #1f2c42 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .platform-tab-btn.active.tab-instagram,
+html.dark-theme .platform-tab-btn.active.tab-instagram,
+body.dark-mode .platform-tab-btn.active.tab-instagram {
+  border-bottom: 3px solid #e1306c !important;
+  color: #f43f5e !important;
+}
+
+html[data-theme="dark"] .platform-tab-btn.active.tab-facebook,
+html.dark-theme .platform-tab-btn.active.tab-facebook,
+body.dark-mode .platform-tab-btn.active.tab-facebook {
+  border-bottom: 3px solid #1877f2 !important;
+  color: #38bdf8 !important;
+}
+
+html[data-theme="dark"] .platform-tab-btn.active.tab-twitter,
+html.dark-theme .platform-tab-btn.active.tab-twitter,
+body.dark-mode .platform-tab-btn.active.tab-twitter {
+  border-bottom: 3px solid #f8fafc !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .platform-tab-btn.active.tab-linkedin,
+html.dark-theme .platform-tab-btn.active.tab-linkedin,
+body.dark-mode .platform-tab-btn.active.tab-linkedin {
+  border-bottom: 3px solid #0a66c2 !important;
+  color: #38bdf8 !important;
+}
+
+/* Platform Hero Card */
+html[data-theme="dark"] .platform-hero-card,
+html.dark-theme .platform-hero-card,
+body.dark-mode .platform-hero-card,
+body.dark-theme .platform-hero-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+html[data-theme="dark"] .platform-hero-card.card-twitter::before,
+html.dark-theme .platform-hero-card.card-twitter::before,
+body.dark-mode .platform-hero-card.card-twitter::before {
+  background: #f8fafc !important;
+}
+
+html[data-theme="dark"] .platform-header-row,
+html.dark-theme .platform-header-row,
+body.dark-mode .platform-header-row {
+  border-bottom-color: #1f2c42 !important;
+}
+
+html[data-theme="dark"] .platform-title-group h3,
+html.dark-theme .platform-title-group h3,
+body.dark-mode .platform-title-group h3 {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .platform-title-group p,
+html.dark-theme .platform-title-group p,
+body.dark-mode .platform-title-group p {
+  color: #94a3b8 !important;
+}
+
+/* Launchpad Action Box */
+html[data-theme="dark"] .launchpad-action-box,
+html.dark-theme .launchpad-action-box,
+body.dark-mode .launchpad-action-box {
+  background: #162032 !important;
+  border-color: #2b3952 !important;
+}
+
+html[data-theme="dark"] .launchpad-action-box h4,
+html.dark-theme .launchpad-action-box h4,
+body.dark-mode .launchpad-action-box h4 {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .launchpad-action-box p,
+html.dark-theme .launchpad-action-box p,
+body.dark-mode .launchpad-action-box p {
+  color: #94a3b8 !important;
+}
+
+/* Mini Capabilities Grid */
+html[data-theme="dark"] .cap-box,
+html.dark-theme .cap-box,
+body.dark-mode .cap-box {
+  background: #162032 !important;
+  border-color: #1f2c42 !important;
+}
+
+html[data-theme="dark"] .cap-box-title,
+html.dark-theme .cap-box-title,
+body.dark-mode .cap-box-title {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] .cap-box p,
+html.dark-theme .cap-box p,
+body.dark-mode .cap-box p {
+  color: #94a3b8 !important;
+}
+
+/* Intelligence Mode Toggle Cards */
+html[data-theme="dark"] .ig-mode-btn,
+html.dark-theme .ig-mode-btn,
+body.dark-mode .ig-mode-btn,
+body.dark-theme .ig-mode-btn {
+  background: #111827 !important;
+  border: 1.5px solid #1f2c42 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Flash Mode Option Card */
+html[data-theme="dark"] .ig-mode-btn.mode-flash,
+html.dark-theme .ig-mode-btn.mode-flash,
+body.dark-mode .ig-mode-btn.mode-flash {
+  background: linear-gradient(135deg, rgba(225, 48, 108, 0.08) 0%, rgba(249, 115, 22, 0.05) 100%) !important;
+  border: 1.5px solid rgba(225, 48, 108, 0.35) !important;
+}
+
+html[data-theme="dark"] .ig-mode-btn.mode-flash:hover,
+html.dark-theme .ig-mode-btn.mode-flash:hover,
+body.dark-mode .ig-mode-btn.mode-flash:hover {
+  background: linear-gradient(135deg, rgba(225, 48, 108, 0.14) 0%, rgba(249, 115, 22, 0.08) 100%) !important;
+  border-color: rgba(225, 48, 108, 0.6) !important;
+  box-shadow: 0 6px 20px rgba(225, 48, 108, 0.2) !important;
+}
+
+html[data-theme="dark"] .ig-mode-btn.mode-flash .ig-mode-title,
+html.dark-theme .ig-mode-btn.mode-flash .ig-mode-title,
+body.dark-mode .ig-mode-btn.mode-flash .ig-mode-title {
+  color: #fb7185 !important;
+}
+
+html[data-theme="dark"] .ig-mode-btn.mode-flash.active,
+html.dark-theme .ig-mode-btn.mode-flash.active,
+body.dark-mode .ig-mode-btn.mode-flash.active {
+  background: linear-gradient(135deg, rgba(225, 48, 108, 0.18) 0%, rgba(249, 115, 22, 0.10) 100%) !important;
+  border: 2px solid #f43f5e !important;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.25), inset 0 0 0 1px rgba(244, 63, 94, 0.2) !important;
+}
+
+html[data-theme="dark"] .ig-mode-btn.mode-flash.active::before,
+html.dark-theme .ig-mode-btn.mode-flash.active::before,
+body.dark-mode .ig-mode-btn.mode-flash.active::before {
+  background: #f43f5e !important;
+}
+
+/* Pro Mode Option Card */
+html[data-theme="dark"] .ig-mode-btn.mode-pro,
+html.dark-theme .ig-mode-btn.mode-pro,
+body.dark-mode .ig-mode-btn.mode-pro {
+  background: #111827 !important;
+  border: 1.5px solid #1f2c42 !important;
+}
+
+html[data-theme="dark"] .ig-mode-btn.mode-pro:hover,
+html.dark-theme .ig-mode-btn.mode-pro:hover,
+body.dark-mode .ig-mode-btn.mode-pro:hover {
+  background: #162032 !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15) !important;
+}
+
+html[data-theme="dark"] .ig-mode-btn.mode-pro .ig-mode-title,
+html.dark-theme .ig-mode-btn.mode-pro .ig-mode-title,
+body.dark-mode .ig-mode-btn.mode-pro .ig-mode-title {
+  color: #818cf8 !important;
+}
+
+html[data-theme="dark"] .ig-mode-btn.mode-pro.active,
+html.dark-theme .ig-mode-btn.mode-pro.active,
+body.dark-mode .ig-mode-btn.mode-pro.active {
+  background: #131c2e !important;
+  border: 2px solid #6366f1 !important;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.25) !important;
+}
+
+html[data-theme="dark"] .ig-mode-btn.mode-pro.active::before,
+html.dark-theme .ig-mode-btn.mode-pro.active::before,
+body.dark-mode .ig-mode-btn.mode-pro.active::before {
+  background: #6366f1 !important;
+}
+
+/* Option Badges in Dark Mode */
+html[data-theme="dark"] .ig-mode-badge,
+html.dark-theme .ig-mode-badge,
+body.dark-mode .ig-mode-badge,
+body.dark-theme .ig-mode-badge {
+  font-weight: 800 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Flash Mode Badges */
+html[data-theme="dark"] .mode-flash .ig-mode-badge,
+html.dark-theme .mode-flash .ig-mode-badge,
+body.dark-mode .mode-flash .ig-mode-badge {
+  background: rgba(244, 63, 94, 0.18) !important;
+  color: #fda4af !important;
+  border: 1px solid rgba(244, 63, 94, 0.45) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .mode-flash.active .ig-mode-badge,
+html.dark-theme .mode-flash.active .ig-mode-badge,
+body.dark-mode .mode-flash.active .ig-mode-badge {
+  background: #e11d48 !important;
+  color: #ffffff !important;
+  border: 1px solid #e11d48 !important;
+  box-shadow: 0 2px 10px rgba(225, 29, 72, 0.5) !important;
+}
+
+/* Pro Mode Badges */
+html[data-theme="dark"] .mode-pro .ig-mode-badge,
+html.dark-theme .mode-pro .ig-mode-badge,
+body.dark-mode .mode-pro .ig-mode-badge {
+  background: rgba(99, 102, 241, 0.16) !important;
+  color: #a5b4fc !important;
+  border: 1px solid rgba(99, 102, 241, 0.4) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .mode-pro.active .ig-mode-badge,
+html.dark-theme .mode-pro.active .ig-mode-badge,
+body.dark-mode .mode-pro.active .ig-mode-badge {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+  border: 1px solid #4f46e5 !important;
+  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.5) !important;
+}
+
+/* Dedicated Flash Badges */
+html[data-theme="dark"] .badge-tw-flash,
+html.dark-theme .badge-tw-flash,
+body.dark-mode .badge-tw-flash {
+  background: rgba(244, 63, 94, 0.18) !important;
+  color: #fda4af !important;
+  border: 1px solid rgba(244, 63, 94, 0.45) !important;
+}
+
+html[data-theme="dark"] .mode-flash.active .badge-tw-flash,
+html.dark-theme .mode-flash.active .badge-tw-flash,
+body.dark-mode .mode-flash.active .badge-tw-flash {
+  background: #e11d48 !important;
+  color: #ffffff !important;
+  border: 1px solid #e11d48 !important;
+  box-shadow: 0 2px 10px rgba(225, 29, 72, 0.5) !important;
+}
+
+html[data-theme="dark"] .badge-li-flash,
+html.dark-theme .badge-li-flash,
+body.dark-mode .badge-li-flash {
+  background: rgba(14, 165, 233, 0.18) !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(56, 189, 248, 0.45) !important;
+}
+
+html[data-theme="dark"] .mode-flash.active .badge-li-flash,
+html.dark-theme .mode-flash.active .badge-li-flash,
+body.dark-mode .mode-flash.active .badge-li-flash {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  border: 1px solid #0284c7 !important;
+  box-shadow: 0 2px 10px rgba(2, 132, 199, 0.5) !important;
+}
+
+/* Dossier Cards, Results & Tables */
+html[data-theme="dark"] .result-card,
+html[data-theme="dark"] .dossier-card,
+body.dark-mode .result-card,
+body.dark-mode .dossier-card {
+  background: #111827 !important;
+  border: 1px solid #1f2c42 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] .dossier-header,
+body.dark-mode .dossier-header {
+  border-bottom: 1px solid #1f2c42 !important;
+  background: #162032 !important;
+}
+
+html[data-theme="dark"] .data-table th,
+body.dark-mode .data-table th {
+  background: #162032 !important;
+  color: #94a3b8 !important;
+  border-color: #1f2c42 !important;
+}
+
+html[data-theme="dark"] .data-table td,
+body.dark-mode .data-table td {
+  border-color: #1f2c42 !important;
+  color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] .data-table tr:hover td,
+body.dark-mode .data-table tr:hover td {
+  background: #1a2538 !important;
+}
+
