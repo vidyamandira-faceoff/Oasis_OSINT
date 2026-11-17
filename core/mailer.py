@@ -9,11 +9,16 @@ import smtplib
 import secrets
 import string
 import time
+from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Tuple, Optional
+from dotenv import load_dotenv
 
 from core.logger import add_log
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 # Alphanumeric character pool for 8-digit OTP (Clean uppercase & numbers)
 OTP_CHARSET = string.ascii_uppercase + string.digits
@@ -64,12 +69,16 @@ def send_email_otp(
     )
 
     # Check for SMTP configuration
-    smtp_host = os.getenv("OASIS_SMTP_HOST") or os.getenv("SMTP_HOST")
+    smtp_host = (os.getenv("OASIS_SMTP_HOST") or os.getenv("SMTP_HOST") or "").strip()
     smtp_port = int(os.getenv("OASIS_SMTP_PORT") or os.getenv("SMTP_PORT") or 587)
-    smtp_user = os.getenv("OASIS_SMTP_USER") or os.getenv("SMTP_USER")
-    smtp_pass = os.getenv("OASIS_SMTP_PASS") or os.getenv("SMTP_PASS")
-    smtp_from = os.getenv("OASIS_SMTP_FROM") or os.getenv("SMTP_FROM") or "auth@oasis.intelligence"
+    smtp_user = (os.getenv("OASIS_SMTP_USER") or os.getenv("SMTP_USER") or "").strip()
+    smtp_pass = (os.getenv("OASIS_SMTP_PASS") or os.getenv("SMTP_PASS") or "").strip()
+    smtp_from = (os.getenv("OASIS_SMTP_FROM") or os.getenv("SMTP_FROM") or smtp_user or "auth@oasis.intelligence").strip()
     use_ssl = os.getenv("OASIS_SMTP_SSL", "false").lower() in ("true", "1", "yes")
+
+    # Clean Google App Password spaces if present
+    if smtp_pass and ("gmail.com" in smtp_host.lower() or len(smtp_pass.replace(" ", "")) == 16):
+        smtp_pass = smtp_pass.replace(" ", "")
 
     sent_via_smtp = False
     smtp_error = ""
@@ -118,12 +127,14 @@ def send_email_otp(
             msg.attach(MIMEText(html_content, "html"))
 
             if use_ssl or smtp_port == 465:
-                with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10) as server:
+                with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=15) as server:
                     server.login(smtp_user, smtp_pass)
                     server.send_message(msg)
             else:
-                with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
+                with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as server:
+                    server.ehlo()
                     server.starttls()
+                    server.ehlo()
                     server.login(smtp_user, smtp_pass)
                     server.send_message(msg)
             

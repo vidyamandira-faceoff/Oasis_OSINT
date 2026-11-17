@@ -13,8 +13,8 @@ INSERT OR IGNORE INTO service_executions (
 ) VALUES 
     -- Alex: Username Reconnaissance
     (1, 2, 'alex', 'user', 'recon_username', 'Username Intelligence', 'Maigret Async Engine',
-     'oushnikbhaduri', 4.2, 128, '128 verified endpoints across public developer registries', 'Success',
-     'badge-status-success', 'services/recon_username/reports/report_oushnikbhaduri.json',
+     'octocat', 4.2, 128, '128 verified endpoints across public developer registries', 'Success',
+     'badge-status-success', 'services/recon_username/reports/report_octocat.json',
      datetime('now', '-6 minutes')),
 
     -- Alex: Email Footprint

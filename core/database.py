@@ -183,8 +183,8 @@ def init_db() -> None:
                 (
                     user_map["alex"]["id"], "alex", user_map["alex"]["role"],
                     "recon_username", "Username Intelligence", "Maigret Async Engine",
-                    "oushnikbhaduri", 4.2, 128, "128 verified endpoints", "Success", "badge-status-success",
-                    "services/recon_username/reports/report_oushnikbhaduri.json",
+                    "octocat", 4.2, 128, "128 verified endpoints", "Success", "badge-status-success",
+                    "services/recon_username/reports/report_octocat.json",
                     (now - datetime.timedelta(minutes=6)).strftime("%Y-%m-%d %H:%M:%S")
                 ),
                 (
@@ -204,8 +204,8 @@ def init_db() -> None:
                 (
                     user_map["alex"]["id"], "alex", user_map["alex"]["role"],
                     "recon_username", "Username Intelligence", "Maigret Async Engine",
-                    "atig", 3.9, 94, "94 profiles identified", "Success", "badge-status-success",
-                    "services/recon_username/reports/report_atig.json",
+                    "johndoe", 3.9, 94, "94 profiles identified", "Success", "badge-status-success",
+                    "services/recon_username/reports/report_johndoe.json",
                     (now - datetime.timedelta(hours=4, minutes=15)).strftime("%Y-%m-%d %H:%M:%S")
                 ),
 
