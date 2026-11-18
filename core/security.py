@@ -112,11 +112,15 @@ def strip_secrets(user: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
 # -----------------------------------------------------------------------------
 def is_dev_mode() -> bool:
     """
-    True only when OASIS_DEV_MODE is explicitly enabled. Dev mode exposes
-    convenience helpers (OTP preview, demo credential presets) that must never
-    be active on a shared or production deployment.
+    True only when OASIS_DEV_MODE is explicitly enabled, or when
+    OASIS_ENV / APP_ENV is explicitly set to development.
+    Dev mode exposes convenience helpers (OTP preview, demo credential presets)
+    that must never be active on a production deployment.
     """
-    return os.getenv("OASIS_DEV_MODE", "").strip().lower() in ("1", "true", "yes", "on")
+    if os.getenv("OASIS_DEV_MODE", "").strip().lower() in ("1", "true", "yes", "on"):
+        return True
+    raw = (os.getenv("OASIS_ENV") or os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or "").strip().lower()
+    return raw in ("development", "dev", "local")
 
 
 # -----------------------------------------------------------------------------

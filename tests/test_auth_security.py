@@ -22,8 +22,13 @@ sys.path.insert(0, str(BASE_DIR))
 import core.database as database  # noqa: E402
 import core.security as security  # noqa: E402
 
-_ENV_KEYS = ("OASIS_DEV_MODE", "OASIS_SMTP_HOST", "OASIS_SMTP_USER", "OASIS_SMTP_PASS",
-             "SMTP_HOST", "SMTP_USER", "SMTP_PASS")
+_ENV_KEYS = (
+    "OASIS_DEV_MODE", "OASIS_ENV", "APP_ENV", "ENVIRONMENT",
+    "OASIS_SMTP_HOST", "OASIS_SMTP_USER", "OASIS_SMTP_PASS",
+    "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "SMTP_PASSWORD", "SMTP_FROM_EMAIL",
+    "PROD_SMTP_HOST", "PROD_SMTP_PORT", "PROD_SMTP_USER", "PROD_SMTP_PASS", "PROD_SMTP_PASSWORD", "PROD_SMTP_FROM_EMAIL",
+    "DEV_SMTP_HOST", "DEV_SMTP_PORT", "DEV_SMTP_USER", "DEV_SMTP_PASS", "DEV_SMTP_PASSWORD", "DEV_SMTP_FROM_EMAIL",
+)
 
 
 class _TempDbCase(unittest.TestCase):
@@ -189,6 +194,33 @@ class AuthApiTests(_TempDbCase):
         res = self.client.post("/api/auth/login", json={"username": "admin", "password": "admin123"})
         self.assertEqual(res.status_code, 200)
         self.assertNotIn("pbkdf2", res.text)
+
+    def test_smtp_environment_resolution(self):
+        from core.mailer import get_smtp_config, get_app_environment
+
+        # Test Development Environment
+        os.environ["OASIS_ENV"] = "development"
+        os.environ["DEV_SMTP_HOST"] = "smtp.gmail.com"
+        os.environ["DEV_SMTP_USER"] = "faceoffonboarding@gmail.com"
+        os.environ["DEV_SMTP_PASSWORD"] = "irlm ftie gvzs lmia"
+
+        self.assertEqual(get_app_environment(), "development")
+        dev_cfg = get_smtp_config()
+        self.assertEqual(dev_cfg["user"], "faceoffonboarding@gmail.com")
+        self.assertEqual(dev_cfg["password"], "irlmftiegvzslmia")
+        self.assertEqual(dev_cfg["host"], "smtp.gmail.com")
+
+        # Test Production Environment
+        os.environ["OASIS_ENV"] = "production"
+        os.environ["PROD_SMTP_HOST"] = "smtp.gmail.com"
+        os.environ["PROD_SMTP_USER"] = "admin@foai.site"
+        os.environ["PROD_SMTP_PASSWORD"] = "rsft ecax vktb owyy"
+
+        self.assertEqual(get_app_environment(), "production")
+        prod_cfg = get_smtp_config()
+        self.assertEqual(prod_cfg["user"], "admin@foai.site")
+        self.assertEqual(prod_cfg["password"], "rsftecaxvktbowyy")
+        self.assertEqual(prod_cfg["host"], "smtp.gmail.com")
 
 
 if __name__ == "__main__":

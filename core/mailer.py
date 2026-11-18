@@ -29,12 +29,78 @@ def generate_alphanumeric_otp(length: int = 8) -> str:
     return "".join(secrets.choice(OTP_CHARSET) for _ in range(length))
 
 
+def get_app_environment() -> str:
+    """
+    Returns 'development' or 'production'.
+    Defaults to 'production' for safety unless explicitly marked as development.
+    """
+    raw = (os.getenv("OASIS_ENV") or os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or "").strip().lower()
+    if raw in ("development", "dev", "local", "staging", "test", "testing"):
+        return "development"
+    if raw in ("production", "prod", "live"):
+        return "production"
+    from core.security import is_dev_mode
+    if is_dev_mode():
+        return "development"
+    return "production"
+
+
+def get_smtp_config() -> dict:
+    """
+    Resolves SMTP credentials dynamically according to the active environment:
+    - In production: Uses production credentials (admin@foai.site / PROD_SMTP_*)
+    - In development: Uses development credentials (faceoffonboarding@gmail.com / DEV_SMTP_*)
+    Generic SMTP_* and OASIS_SMTP_* environment variables act as overrides.
+    """
+    env = get_app_environment()
+    prefix = "PROD_SMTP_" if env == "production" else "DEV_SMTP_"
+
+    # 1. Environment-specific keys (e.g. PROD_SMTP_USER or DEV_SMTP_USER)
+    host = os.getenv(f"{prefix}HOST")
+    port_str = os.getenv(f"{prefix}PORT")
+    user = os.getenv(f"{prefix}USER")
+    pwd = os.getenv(f"{prefix}PASSWORD") or os.getenv(f"{prefix}PASS")
+    from_email = os.getenv(f"{prefix}FROM_EMAIL") or os.getenv(f"{prefix}FROM")
+
+    # 2. General / standard SMTP environment variables
+    host = host or os.getenv("OASIS_SMTP_HOST") or os.getenv("SMTP_HOST")
+    port_str = port_str or os.getenv("OASIS_SMTP_PORT") or os.getenv("SMTP_PORT") or "587"
+    user = user or os.getenv("OASIS_SMTP_USER") or os.getenv("SMTP_USER")
+    pwd = pwd or os.getenv("OASIS_SMTP_PASS") or os.getenv("SMTP_PASS") or os.getenv("SMTP_PASSWORD")
+    from_email = from_email or os.getenv("OASIS_SMTP_FROM") or os.getenv("SMTP_FROM") or os.getenv("SMTP_FROM_EMAIL")
+
+    ssl_val = os.getenv(f"{prefix}SSL") or os.getenv("OASIS_SMTP_SSL") or os.getenv("SMTP_SSL") or "false"
+    use_ssl = ssl_val.strip().lower() in ("true", "1", "yes")
+
+    try:
+        port = int(port_str)
+    except (ValueError, TypeError):
+        port = 587
+
+    host = (host or "").strip()
+    user = (user or "").strip()
+    pwd = (pwd or "").strip()
+    from_email = (from_email or "").strip() or user
+
+    # Normalize Google App Password spaces if present
+    if pwd and (("gmail.com" in host.lower()) or len(pwd.replace(" ", "")) == 16):
+        pwd = pwd.replace(" ", "")
+
+    return {
+        "env": env,
+        "host": host,
+        "port": port,
+        "user": user,
+        "password": pwd,
+        "from_email": from_email,
+        "use_ssl": use_ssl,
+    }
+
+
 def is_smtp_configured() -> bool:
-    """True when SMTP host and credentials are present in the environment."""
-    host = os.getenv("OASIS_SMTP_HOST") or os.getenv("SMTP_HOST")
-    user = os.getenv("OASIS_SMTP_USER") or os.getenv("SMTP_USER")
-    pwd = os.getenv("OASIS_SMTP_PASS") or os.getenv("SMTP_PASS")
-    return bool(host and user and pwd)
+    """True when SMTP host and credentials are present for the active environment."""
+    cfg = get_smtp_config()
+    return bool(cfg.get("host") and cfg.get("user") and cfg.get("password"))
 
 
 def should_expose_dev_otp() -> bool:
@@ -68,17 +134,14 @@ def send_email_otp(
         else "authorize a passkey reset for your account"
     )
 
-    # Check for SMTP configuration
-    smtp_host = (os.getenv("OASIS_SMTP_HOST") or os.getenv("SMTP_HOST") or "").strip()
-    smtp_port = int(os.getenv("OASIS_SMTP_PORT") or os.getenv("SMTP_PORT") or 587)
-    smtp_user = (os.getenv("OASIS_SMTP_USER") or os.getenv("SMTP_USER") or "").strip()
-    smtp_pass = (os.getenv("OASIS_SMTP_PASS") or os.getenv("SMTP_PASS") or "").strip()
-    smtp_from = (os.getenv("OASIS_SMTP_FROM") or os.getenv("SMTP_FROM") or smtp_user or "auth@oasis.intelligence").strip()
-    use_ssl = os.getenv("OASIS_SMTP_SSL", "false").lower() in ("true", "1", "yes")
-
-    # Clean Google App Password spaces if present
-    if smtp_pass and ("gmail.com" in smtp_host.lower() or len(smtp_pass.replace(" ", "")) == 16):
-        smtp_pass = smtp_pass.replace(" ", "")
+    # Resolve active SMTP configuration
+    smtp_cfg = get_smtp_config()
+    smtp_host = smtp_cfg["host"]
+    smtp_port = smtp_cfg["port"]
+    smtp_user = smtp_cfg["user"]
+    smtp_pass = smtp_cfg["password"]
+    smtp_from = smtp_cfg["from_email"] or "auth@oasis.intelligence"
+    use_ssl = smtp_cfg["use_ssl"]
 
     sent_via_smtp = False
     smtp_error = ""
